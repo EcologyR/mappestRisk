@@ -1,12 +1,12 @@
 Package: mappestRisk
-Title: What the Package Does (One Line, Title Case)
+Title: Map pest risk
 Version: 0.0.0.9000
 Authors@R: 
   c(
     person("Darío", "San Segundo - Molina", , "dario.ssm2@gmail.com", role = c("cre"),
            comment = c(ORCID = "0000-0002-7831-9623")),
-    person("My", "coauthor", role = "aut")
-  )
+    person("A. Marcia", "Barbosa", role = "aut")
+    )
 Description: The package provides maps that forecast 
 crop pest risk of occurrence in response to experienced temperature. It takes as 
 input development data parameterised in controlled conditions (i.e. constant or 
@@ -19,7 +19,7 @@ RoxygenNote: 7.2.3
 URL: https://github.com/EcologyR/mappestRisk
 BugReports: https://github.com/EcologyR/mappestRisk/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 3.6)
 LazyData: true
 Suggests: 
     covr,
