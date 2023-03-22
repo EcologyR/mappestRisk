@@ -13,14 +13,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-# templateRpackage
+# mappestRisk
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/EcologyR/templateRpackage/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/templateRpackage/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/EcologyR/templateRpackage/branch/master/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/templateRpackage?branch=master)
-`r badger::badge_lifecycle("experimental")`
-`r badger::badge_repostatus("WIP")`
-<!-- `r badger::badge_codefactor("ecologyr/templaterpackage")` -->
+[![R-CMD-check](https://github.com/EcologyR/templateRpackage/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/templateRpackage/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/EcologyR/templateRpackage/branch/master/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/templateRpackage?branch=master) `r badger::badge_lifecycle("experimental")` `r badger::badge_repostatus("WIP")` <!-- `r badger::badge_codefactor("ecologyr/templaterpackage")` -->
+
 <!-- badges: end -->
 
 The goal of templateRpackage is to ...
@@ -33,7 +30,6 @@ devtools::install_github("EcologyR/templateRpackage")
 ```
 
 The code to create this package is available [here](https://gist.github.com/Pakillo/999e34301c56011138ef164363502465).
-
 
 ## Example
 
@@ -68,10 +64,8 @@ If using this package, please cite it:
 citation("templateRpackage")
 ```
 
-
 ## Funding
 
 The development of this software has been funded by Fondo Europeo de Desarrollo Regional (FEDER) and Consejería de Transformación Económica, Industria, Conocimiento y Universidades of Junta de Andalucía (proyecto US-1381388 led by Francisco Rodríguez Sánchez, Universidad de Sevilla).
 
 ![](https://ecologyr.github.io/workshop/images/logos.png)
-
