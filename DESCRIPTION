@@ -3,17 +3,21 @@ Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
   c(
-    person("Francisco", "Rodriguez-Sanchez", , "f.rodriguez.sanc@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-7981-1599")),
+    person("Darío", "San Segundo - Molina", , "dario.ssm2@gmail.com", role = c("cre"),
+           comment = c(ORCID = "0000-0002-7831-9623")),
     person("My", "coauthor", role = "aut")
   )
-Description: What the package does (one paragraph).
+Description: The package provides maps that forecast 
+crop pest risk of occurrence in response to experienced temperature. It takes as 
+input development data parameterised in controlled conditions (i.e. constant or 
+fluctuating temperatures) for different life stages of a species. The output can either
+assess climatic suitability or phenological progress simulations.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-URL: https://github.com/EcologyR/templateRpackage
-BugReports: https://github.com/EcologyR/templateRpackage/issues
+URL: https://github.com/EcologyR/mappestRisk
+BugReports: https://github.com/EcologyR/mappestRisk/issues
 Depends: 
     R (>= 2.10)
 LazyData: true
