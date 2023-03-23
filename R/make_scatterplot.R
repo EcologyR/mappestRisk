@@ -29,3 +29,8 @@ make_scatterplot <- function(var1 = NULL,
     labs(...)
 
 }
+
+
+
+make_scatterplot(c(2,3,4), c(10, 20, 30))
+
