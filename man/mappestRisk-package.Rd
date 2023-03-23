@@ -16,6 +16,7 @@ Useful links:
 }
 
 }
+<<<<<<< HEAD
 \author{
 \strong{Maintainer}: Darío dario.ssm2@gmail.com San-Segundo Molina (\href{https://orcid.org/0000-0002-7831-9623}{ORCID})
 
@@ -30,4 +31,6 @@ Other contributors:
 }
 
 }
+=======
+>>>>>>> b1f05c53734c45665a149a9fe48ea0adc9306318
 \keyword{internal}
