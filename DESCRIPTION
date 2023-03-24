@@ -5,17 +5,10 @@ Authors@R:
   c(
     person("Darío", "San-Segundo  Molina", "dario.ssm2@gmail.com", role = c("cre"),
            comment = c(ORCID = "0000-0002-7831-9623")),
-<<<<<<< HEAD
     person("A. Marcia", "Barbosa", role =  ("aut")),
-    person("Antonio Jesús", "Pérez-Luque", "ajpelu@gmail.com", role = c("con"),
+    person("Antonio Jesús", "Pérez-Luque", "ajpelu@gmail.com", role = c("aut"),
            comment = c(ORCID = "0000-0002-1747-0469"))
     )
-=======
-    person("A. Marcia", "Barbosa", role = "aut"),
-    person("Antonio Jesús", "Pérez-Luque", , "ajpelu@gmail.com", role = c("con"),
-           comment = c(ORCID = "0000-0002-1747-0469"))
-           )
->>>>>>> b1f05c53734c45665a149a9fe48ea0adc9306318
 Description: The package provides maps that forecast crop pest risk of occurrence in response to experienced temperature. It takes as input development data parameterised in controlled conditions (i.e. constant or fluctuating temperatures) for different life stages of a species. The output can either assess climatic suitability or phenological progress simulations.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -33,4 +26,5 @@ Config/testthat/edition: 3
 Imports: 
     dplyr,
     ggplot2,
+    leaflet,
     tibble
