@@ -9,6 +9,7 @@
 #' @return a dynamic map and a html with the dynamic map
 #' @export
 #'
+#' @example
 #' \dontrun{
 #' p <- tempdir()
 #' r <- raster::raster("inst/trioza_rast.tif")
