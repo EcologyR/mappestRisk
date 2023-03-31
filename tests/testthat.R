@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(templateRpackage)
+library(mappestRisk)
 
-test_check("templateRpackage")
+test_check("mappestRisk")
