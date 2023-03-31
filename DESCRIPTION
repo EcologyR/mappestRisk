@@ -26,5 +26,11 @@ Config/testthat/edition: 3
 Imports: 
     dplyr,
     ggplot2,
+    htmlwidgets,
+    leafem,
+    leaflegend,
     leaflet,
+    leaflet.opacity,
+    raster,
+    terra,
     tibble
