@@ -9,14 +9,20 @@
 #' @return a dynamic map and a html with the dynamic map
 #' @export
 #'
+#' \dontrun{
+#' p <- tempdir()
+#' r <- raster::raster("inst/trioza_rast.tif")
+#' plot_map(x = r, map_type = "high", path_out = paste0(tempdir(), "test_map.html"))
+#' }
+#'
 plot_map <- function(x, legend_title = NULL,
                      map_type = "high",
                      path_out = NULL,
                      pal = NULL, ...){
 
- #  if(!is(x, "RasterLayer"))
- # if(!any(x %in% c("SpatRaster", "RasterLayer", "stars", "terra")))
- #     stop("x has to be a raster object")
+  #  if(!is(x, "RasterLayer"))
+  # if(!any(x %in% c("SpatRaster", "RasterLayer", "stars", "terra")))
+  #     stop("x has to be a raster object")
 
   # argument legend
   if (is.null(legend_title)) {
@@ -58,9 +64,9 @@ plot_map <- function(x, legend_title = NULL,
                      overlayGroups = c("Risk Map"),
                      options = layersControlOptions(collapsed = TRUE))
 
-    # export html file
-    htmlwidgets::saveWidget(widget = outmap, file = path_out,
-                            selfcontained = TRUE)
+  # export html file
+  htmlwidgets::saveWidget(widget = outmap, file = path_out,
+                          selfcontained = TRUE)
 
   return(outmap)
 
