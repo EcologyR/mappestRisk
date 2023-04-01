@@ -38,28 +38,28 @@ plot_map <- function(x, legend_title = NULL,
     pal <- colorFactor(mycolors, values(x), na.color = "transparent")
   }
 
-  outmap <- leaflet() %>%
+  outmap <- leaflet() |>
     addProviderTiles(providers$CartoDB.Positron,
-                     group = "Basemap") %>%
+                     group = "Basemap") |>
     addProviderTiles(providers$Esri.WorldImagery,
-                     group = "Satellite") %>%
+                     group = "Satellite") |>
     addRasterImage(x,
                    layerId = "Risk Map",
                    group = "Risk Map",
-                   colors = mycolors) %>%
+                   colors = mycolors) |>
     addMiniMap(tiles = providers$Jawg.Light,
-               toggleDisplay = TRUE) %>%
+               toggleDisplay = TRUE) |>
     leaflegend::addLegendFactor(values = values(x),
                                 pal = pal,
                                 title = legend_title,
                                 position = "bottomleft",
-                                orientation = 'horizontal') %>%
-    leaflet.opacity::addOpacitySlider(layerId = "Risk Map") %>%
+                                orientation = 'horizontal') |>
+    leaflet.opacity::addOpacitySlider(layerId = "Risk Map") |>
     leafem::addImageQuery(x, project = FALSE,
                           type="mousemove",
                           layerId = "Risk Map",
                           digits = 2
-    ) %>%
+    ) |>
     addLayersControl(position = "bottomright",
                      baseGroups = c("Basemap", "Satellite"),
                      overlayGroups = c("Risk Map"),
