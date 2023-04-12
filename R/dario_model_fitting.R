@@ -2,10 +2,13 @@
 
 
 # 0. example data ---------------------------------------------------------
-aphis_tsai1999_simexample <- readRDS(file = here::here("data/a.citricidus_tsai1999.rds"))
+a.citricidus_tsai1999 <- readRDS(file = here::here("data/a.citricidus_tsai1999.rds"))
 
 # 1. development rate equations -------------------------------------------
 library(rTPC)
+library(devRate)
+library(tidyverse)
+library(nlme)
 # get parameters
 extract_param_names <- function(nls_object){
   parameter_est <- coef(nls_object)
@@ -30,11 +33,10 @@ mod_weibull <- function (temp, a, topt, b, c) {
                                                                                         (((c - 1)/c)^(1/c)))^c) + ((c - 1)/c)))))
 }
 
-lactin2 <- function (temp, a, b, tmax, delta_t) {
+lactin2 <- function (temp, tmax, delta_t, a, b) {
   est <- exp(a * temp) - exp(a * tmax - ((tmax - temp)/delta_t)) +  b
   return(est)
 }
-
 rezende <- function (temp, q10, a, b, c) {
   est <- {
     ifelse(temp < b,
@@ -169,16 +171,23 @@ start_vals_devRate <- function(model_name, temperature, dev_rate){
                                         model_name == "mod_polynomial" ~ "mod_polynomial(temp, a_0, a_1, a_2, a_3, a_4)"
                     )
   )
-  start_vals_fit <- nls2::nls2(reformulate(response = "dev_rate", termlabels = unique(devdata$formula)) ,
-                               data = devdata,
-                               start = exp_grid_startvals,
-                               algorithm = "brute-force",
-                               trace = FALSE,
-                               control = nls.control(tol = 1e-01))
+  capture.output(type="message",
+                 start_vals_fit <- try(nls2::nls2(reformulate(response = "dev_rate", termlabels = unique(devdata$formula)) ,
+                                                  data = devdata,
+                                                  start = exp_grid_startvals,
+                                                  algorithm = "brute-force",
+                                                  trace = FALSE,
+                                                  control = nls.control(tol = 1e-01)),
+                                       silent=TRUE)
+                 )
   sum_start_vals_fit <- summary(start_vals_fit)
   if(is.null(start_vals_fit)){start_vals_explore <- tibble(param_name = names(start_vals_prev),
-                                                           start_value = NA,
-                                                           model_name = model_name)}
+                                                           start_value = unlist(start_vals_prev),
+                                                           model_name = model_name) |>
+    pull(start_value)
+
+  warning("generic starting values")
+  }
   else {start_vals_names <- extract_param_names(start_vals_fit)
   start_vals <- sum_start_vals_fit$parameters[1:length(start_vals_names),1]
   start_vals_explore <- tibble(param_name = start_vals_names,
@@ -187,7 +196,7 @@ start_vals_devRate <- function(model_name, temperature, dev_rate){
     pull(start_value)}
   return(start_vals_explore)
 }
-ex_lactin1 <- start_vals_devRate(model_name = "lactin1",
+ex_briere1 <- start_vals_devRate(model_name = "briere1",
                    temp = aphis_tsai1999_simexample$temperature,
                    dev_rate = aphis_tsai1999_simexample$rate_development)
 
@@ -195,55 +204,57 @@ fit_vals <- function(temp, dev_rate){
   predict2fill <- tibble(temp = NULL,
                          dev_rate = NULL,
                          model_name = NULL)
-  for(i in c("lactin1", "lactin2", "rezende", "mod_weibull", "logan6")){
+  for(i in "briere1"){
     model_i <- dev_model_table |> filter(model_name == i)
     if(model_i$package == "devRate") {
-      start_vals <- start_vals_devRate(model_name = i, temperature = temp, dev_rate = dev_rate)
+      start_vals <- start_vals_devRate(model_name = i,
+                                       temperature = temp,
+                                       dev_rate = dev_rate)
       } else if (model_i$package == "rTPC") {
-      start_vals <- start_vals_rtpc(model_name = i, temperature = a.citricidus_tsai1999$temperature,
-                                         dev_rate = a.citricidus_tsai1999$rate_development)
+      start_vals <- start_vals_rtpc(model_name = i,
+                                    temperature = temp,
+                                    dev_rate = dev_rate)
       }
     explore_preds <- tibble(temp = seq(0,50,.001),
                               model_name = i,
                             start_vals = list(start_vals))
     fit_vals_tbl <- explore_preds |>
       select(temp, model_name) |>
-   mutate(formula = case_when(model_name == "briere1" ~  "briere1(.x, start_vals[1], start_vals[2], start_vals[3])",
-                              model_name == "lactin1" ~ "lactin1(.x, start_vals[1], start_vals[2], start_vals[3])",
-                              model_name == "janisch" ~ "janisch(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                              model_name == "linear_campbell" ~ "linear_campbell(.x, start_vals[1], start_vals[2])",
-                              model_name == "logan6" ~ "logan6(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                              model_name == "mod_polynomial" ~ "mod_polynomial(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                              model_name == "briere2" ~ "briere2(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                              model_name == "mod_gaussian" ~ "mod_gaussian(.x, start_vals[1], start_vals[2], start_vals[3])",
-                              model_name == "lactin2" ~ "lactin2(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                              model_name == "ratkowsky" ~ "ratkowsky(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                              model_name == "rezende" ~ "rezende(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                              model_name == "ssi" ~ "ssi(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6], start_vals[7])",
-                              model_name == "mod_weibull" ~ "mod_weibull(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])"
-                              )) |>
-  mutate(preds = map_dbl(.x = temp,
-                         .f = reformulate(unique(formula)))) |>
-  filter(preds >= 0) |>
-    select(-formula)
-  predict2fill <- predict2fill |> bind_rows(fit_vals_tbl)
+   mutate(formula = case_when(model_name == "briere1" ~  "briere1(temp,a, tmin, tmax)",
+                              model_name == "lactin1" ~ "lactin1(temp, a, tmax, delta_t)",
+                              model_name == "janisch" ~ "janisch(temp, topt, dmin, a, b)",
+                              model_name == "linear_campbell" ~ "linear_campbell(temp,intercept, slope)",
+                              model_name == "logan6" ~ "logan6(temp, tmax, b, phi, delta_t)",
+                              model_name == "mod_polynomial" ~ "mod_polynomial(temp, a_0, a_1, a_2, a_3, a_4)",
+                              model_name == "briere2" ~ "briere2(temp, tmin, tmax, a, b)",
+                              model_name == "mod_gaussian" ~ "mod_gaussian(temp, rmax, topt, a)",
+                              model_name == "lactin2" ~ "lactin2(temp, tmax, delta_t, a, b)",
+                              model_name == "ratkowsky" ~ "ratkowsky(temp, tmin, tmax, a, b)",
+                              model_name == "rezende" ~ "rezende(temp, q10, a, b, c)",
+                              model_name == "ssi" ~ "ssi(temp, r_tref, e, el, tl, eh, th, tref)",
+                              model_name == "mod_weibull" ~ "mod_weibull(temp, a, topt, b, c)"
+                              )
+          )
+    devdata <- tibble(temp = a.citricidus_tsai1999$temperature,
+                      dev_rate = a.citricidus_tsai1999$rate_development)
+    fitted_model <- gnls(reformulate(response = "dev_rate",
+                                     termlabels = unique(fit_vals_tbl$formula)),
+                          data = devdata,
+                          start = start_vals,
+                          weights = varExp(form = ~temp))
+
+    predict2fill <- predict2fill |> bind_rows(fit_vals_tbl)
   }
   return(predict2fill)
 }
 
-example <- fit_vals(temp = a.citricidus_tsai1999$temperature,
+example_fit <- fit_vals(temp = a.citricidus_tsai1999$temperature,
                     dev_rate = a.citricidus_tsai1999$rate_development)
 
-view(example)
+unique(example_fit$model_name)
 
+  ggplot(example_fit, aes(x = temp, y = preds))+
 
-
-
-  ggplot(explore_preds, aes(x = temp, y = preds))+
-    geom_point(data = a.citricidus_tsai1999,
-               aes(x = temperature, y = rate_development),
-               color = "gray68",
-               alpha = .3)+
     geom_point(aes(color = model_name))+
     facet_wrap(.~model_name)+
     theme_minimal()+
@@ -326,23 +337,3 @@ exploratory_curve_fitting <- function (temp, dev_rate) {
 
   return(start_vals)
 }
-
-list_parameters_startvals <- tibble(param_name = NULL,
-                                    start_value = NULL,
-                                    model_name = NULL)
-devrate_mods <- dev_model_table |> filter(package == "devRate") |> distinct(model_name) |> pull()
-for(i in devrate_mods){
-  start_vals_model <- start_vals_devRate(model_name = i,
-                                         temperature = trioza_aidoo22_simexample$temperature,
-                                         rate_dev = trioza_aidoo22_simexample$rate_development)
-  list_parameters_startvals <- list_parameters_startvals |>
-    bind_rows(start_vals_model)
-}
-
-
-list_parameters_startvals
-
-
-start_vals_rtpc(model_name = "briere2",
-                temp = trioza_aidoo22_simexample$temperature,
-                dev_rate = trioza_aidoo22_simexample$rate_development)
