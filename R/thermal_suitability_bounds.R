@@ -68,6 +68,7 @@ thermal_suitability_bounds <- function(fitted_parameters, model_name, suitabilit
   return(tvals)
 }
 
+
 thermal_suitability_bounds(fitted_parameters = example_fit,
                            model_name = "briere2",
                            suitability_threshold = 66.6)
