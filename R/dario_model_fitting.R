@@ -446,7 +446,7 @@ pieris_data <- read_delim("~/GitHub/PhenoBrassicaPests/Data/pieris_devdata/gilbe
          parasite = ...4,
          reference = interact) |>
   filter(stage == "pupa")
-ex_pieris <- fit_vals(temp = pieris_data$temperature,
+ex_pieris <- fit_models(temp = pieris_data$temperature,
                       dev_rate = pieris_data$devrate,
                       models = "all")
 plot_devmodel(temp = pieris_data$temperature,
@@ -456,7 +456,7 @@ plot_devmodel(temp = pieris_data$temperature,
 ##### c) Diaphorina citri ---------------------------------------------------------
 
 d.citri_liu2000 <- readRDS(file = here::here("data/d.citri_liu2000.rds"))
-ex_diaphorina <- fit_vals(temp = d.citri_liu2000$temperature,
+ex_diaphorina <- fit_models(temp = d.citri_liu2000$temperature,
                           dev_rate = d.citri_liu2000$rate_development,
                           models = "all")
 plot_devmodel(temp = d.citri_liu2000$temperature,
@@ -467,7 +467,7 @@ plot_devmodel(temp = d.citri_liu2000$temperature,
 ## much different thermal traits than the previous species, more difficult to converge.
 
 t.erytreae_aidoo2022 <- readRDS(file = here::here("data/t.erytreae_aidoo2022.rds"))
-ex_trioza <- fit_vals(temp = t.erytreae_aidoo2022$temperature,
+ex_trioza <- fit_models(temp = t.erytreae_aidoo2022$temperature,
                           dev_rate = t.erytreae_aidoo2022$rate_development,
                           models = "all")
 plot_devmodel(temp = t.erytreae_aidoo2022$temperature,
