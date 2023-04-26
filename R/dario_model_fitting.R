@@ -428,52 +428,52 @@ plot_devmodel <- function(temp, dev_rate, param_tbl){
 
 # 5. Examples ----
 
-##### a) Aphis citricidus (main example) ---------------------------------------------------------
-a.citricidus_tsai1999 <- readRDS(file = here::here("data/a.citricidus_tsai1999.rds"))
-
-## fit models to development data and return a tibble to select parameters from the chosen model(s)
-example_fit <- fit_models(temp = a.citricidus_tsai1999$temperature,
-                          dev_rate = a.citricidus_tsai1999$rate_development,
-                          models = "all")
-print(example_fit)
-
-## visualize plots of the model to
-plot_example <- plot_devmodel(temp = a.citricidus_tsai1999$temperature,
-                              dev_rate = a.citricidus_tsai1999$rate_development,
-                              param_tbl = example_fit)
-print(plot_example)
-
-##### b) Pieris rapae  ---------------------------------------------------------
-pieris_data <- read_delim("~/GitHub/PhenoBrassicaPests/Data/pieris_devdata/gilbert_pupa.csv",
-                          delim = ";") |>
-  rename(stage = ...3,
-         parasite = ...4,
-         reference = interact) |>
-  filter(stage == "pupa")
-ex_pieris <- fit_models(temp = pieris_data$temperature,
-                      dev_rate = pieris_data$devrate,
-                      models = "all")
-plot_devmodel(temp = pieris_data$temperature,
-              dev_rate = pieris_data$devrate,
-              param_tbl = ex_pieris)
-
-##### c) Diaphorina citri ---------------------------------------------------------
-
-d.citri_liu2000 <- readRDS(file = here::here("data/d.citri_liu2000.rds"))
-ex_diaphorina <- fit_models(temp = d.citri_liu2000$temperature,
-                          dev_rate = d.citri_liu2000$rate_development,
-                          models = "all")
-plot_devmodel(temp = d.citri_liu2000$temperature,
-              dev_rate = d.citri_liu2000$rate_development,
-              param_tbl = ex_diaphorina)
-
-##### d) Trioza erytreae ---------------------------------------------------------
-## much different thermal traits than the previous species, more difficult to converge.
-
-t.erytreae_aidoo2022 <- readRDS(file = here::here("data/t.erytreae_aidoo2022.rds"))
-ex_trioza <- fit_models(temp = t.erytreae_aidoo2022$temperature,
-                          dev_rate = t.erytreae_aidoo2022$rate_development,
-                          models = "all")
-plot_devmodel(temp = t.erytreae_aidoo2022$temperature,
-              dev_rate = t.erytreae_aidoo2022$rate_development,
-              param_tbl = ex_trioza)
+#   ##### a) Aphis citricidus (main example) ---------------------------------------------------------
+#   a.citricidus_tsai1999 <- readRDS(file = here::here("data/a.citricidus_tsai1999.rds"))
+#
+#   ## fit models to development data and return a tibble to select parameters from the chosen model(s)
+#   example_fit <- fit_models(temp = a.citricidus_tsai1999$temperature,
+#                             dev_rate = a.citricidus_tsai1999$rate_development,
+#                             models = "all")
+#   print(example_fit)
+#
+#   ## visualize plots of the model to
+#   plot_example <- plot_devmodel(temp = a.citricidus_tsai1999$temperature,
+#                                 dev_rate = a.citricidus_tsai1999$rate_development,
+#                                 param_tbl = example_fit)
+#   print(plot_example)
+#
+#   ##### b) Pieris rapae  ---------------------------------------------------------
+#   pieris_data <- read_delim("~/GitHub/PhenoBrassicaPests/Data/pieris_devdata/gilbert_pupa.csv",
+#                             delim = ";") |>
+#     rename(stage = ...3,
+#            parasite = ...4,
+#            reference = interact) |>
+#     filter(stage == "pupa")
+#   ex_pieris <- fit_models(temp = pieris_data$temperature,
+#                         dev_rate = pieris_data$devrate,
+#                         models = "all")
+#   plot_devmodel(temp = pieris_data$temperature,
+#                 dev_rate = pieris_data$devrate,
+#                 param_tbl = ex_pieris)
+#
+#   ##### c) Diaphorina citri ---------------------------------------------------------
+#
+#   d.citri_liu2000 <- readRDS(file = here::here("data/d.citri_liu2000.rds"))
+#   ex_diaphorina <- fit_models(temp = d.citri_liu2000$temperature,
+#                             dev_rate = d.citri_liu2000$rate_development,
+#                             models = "all")
+#   plot_devmodel(temp = d.citri_liu2000$temperature,
+#                 dev_rate = d.citri_liu2000$rate_development,
+#                 param_tbl = ex_diaphorina)
+#
+#   ##### d) Trioza erytreae ---------------------------------------------------------
+#   ## much different thermal traits than the previous species, more difficult to converge.
+#
+#   t.erytreae_aidoo2022 <- readRDS(file = here::here("data/t.erytreae_aidoo2022.rds"))
+#   ex_trioza <- fit_models(temp = t.erytreae_aidoo2022$temperature,
+#                             dev_rate = t.erytreae_aidoo2022$rate_development,
+#                             models = "all")
+#   plot_devmodel(temp = t.erytreae_aidoo2022$temperature,
+#                 dev_rate = t.erytreae_aidoo2022$rate_development,
+#                 param_tbl = ex_trioza)
