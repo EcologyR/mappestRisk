@@ -102,6 +102,10 @@ dev_model_table <- tibble(model_name = model_names) |>
                            "devRate",
                            "rTPC"),
          source_model_name = pkg_model_names) #table for equivalencies
+list_available_models <- dev_model_table |> pull(model_name)
+rm(pkg_model_names)
+rm(model_names)
+save(list_available_models, file = here::here("data/list_available_models.rda"))
 
 # 3. Auxiliary functions ---------------------------------------------------------
 #### a) names functions ----
@@ -113,7 +117,7 @@ model_name_translate<- function(user_model_name){
     select(source_model_name) |>
     pull()
   if(length(model_eq)==0) {
-    stop("model name not available. See list of model names in curve_fitting vignette")
+    stop("model name not available. For available model names, run 'data(list_available_models); list_available_models'.")
   }
   return(model_eq)
 
@@ -319,7 +323,7 @@ fit_models <- function(temp, dev_rate, models){
                                                   .y)))
     }
   }
-
+list_param <- list_param |> drop_na() # exclude false convergence
   return(list_param)
 }
 
