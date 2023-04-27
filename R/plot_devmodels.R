@@ -10,13 +10,13 @@
 #'
 #' @examples   a.citricidus_tsai1999 <- readRDS("data/a.citricidus_tsai1999.rds")
 #' source("R/dario_model_fitting.R")
-#' aphis_citricida_fitted <- fit_models(temp = a.citricidus_tsai1999$temperature,
-#'                                      dev_rate = a.citricidus_tsai1999$rate_development,
-#'                                      models = "all") #might be a bit slow
+#' aphis_citricida_fitted <- fit_devmodels(temp = a.citricidus_tsai1999$temperature,
+#'                                         dev_rate = a.citricidus_tsai1999$rate_development,
+#'                                         model_name = "all") #might be a bit slow
 #' ## examine them visually to better choose on ecological criteria and not only on statistical fitting
-#' plot_devmodel(temp = a.citricidus_tsai1999$temperature,
-#'               dev_rate = a.citricidus_tsai1999$rate_development,
-#'               param_tbl = aphis_citricida_fitted)
+#' plot_devmodels(temp = a.citricidus_tsai1999$temperature,
+#'                dev_rate = a.citricidus_tsai1999$rate_development,
+#'                fitted_parameters = aphis_citricida_fitted)
 
 plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   devdata <- tibble (temperature = temp,

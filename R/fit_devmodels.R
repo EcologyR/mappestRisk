@@ -10,9 +10,9 @@
 #' @examples  a.citricidus_tsai1999 <- readRDS("data/a.citricidus_tsai1999.rds")
 #' source("R/dario_model_fitting.R")
 #'
-#' aphis_citricida_fitted <- fit_models(temp = a.citricidus_tsai1999$temperature,
-#'                                      dev_rate = a.citricidus_tsai1999$rate_development,
-#'                                      models = c("all")) #might be a bit slow
+#' aphis_citricida_fitted <- fit_devmodels(temp = a.citricidus_tsai1999$temperature,
+#'                                         dev_rate = a.citricidus_tsai1999$rate_development,
+#'                                         model_name = c("all")) #might be a bit slow
 #'
 #'
 #'
