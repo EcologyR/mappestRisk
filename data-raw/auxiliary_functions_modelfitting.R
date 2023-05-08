@@ -99,11 +99,26 @@ dev_model_table <- tibble(model_name = model_names) |>
                                              "linear_campbell", "mod_polynomial"),
                            "devRate",
                            "rTPC"),
-         source_model_name = pkg_model_names) #table for equivalencies
-list_available_models <- dev_model_table |> pull(model_name)
+         source_model_name = pkg_model_names,
+         formula = case_when(model_name == "briere1" ~  "briere1(temp, tmin, tmax, a)",
+                             model_name == "lactin1" ~ "lactin1(temp, a, tmax, delta_t)",
+                             model_name == "janisch" ~ "janisch(temp, topt, dmin, a, b)",
+                             model_name == "linear_campbell" ~ "linear_campbell(temp,intercept, slope)",
+                             model_name == "wang" ~ "wang(temp, k, r, topt, tmin, tmax, a)",
+                             model_name == "mod_polynomial" ~ "mod_polynomial(temp, a_0, a_1, a_2, a_3, a_4)",
+                             model_name == "briere2" ~ "briere2(temp, tmin, tmax, a, b)",
+                             model_name == "mod_gaussian" ~ "mod_gaussian(temp, rmax, topt, a)",
+                             model_name == "lactin2" ~ "lactin2(temp, a, tmax, delta_t, b)",
+                             model_name == "ratkowsky" ~ "ratkowsky(temp, tmin, tmax, a, b)",
+                             model_name == "rezende" ~ "rezende(temp, q10, a, b, c)",
+                             model_name == "ssi" ~ "ssi(temp, r_tref, e, el, tl, eh, th, tref = 20)",
+                             model_name == "mod_weibull" ~ "mod_weibull(temp, a, topt, b, c)")
+         ) #table for equivalencies
+
+available_models <- dev_model_table |> pull(model_name)
 rm(pkg_model_names)
 rm(model_names)
-save(list_available_models, file = here::here("data/list_available_models.rda"))
+save(available_models, file = here::here("data/list_available_models.rda"))
 
 # 3. Auxiliary functions ---------------------------------------------------------
 #### a) names functions ----
@@ -204,13 +219,7 @@ start_vals_devRate <- function(model_name, temperature, dev_rate){
                       )
     )
     capture.output(type = "message",
-                   start_vals_fit <- try(nls2::nls2(reformulate(response = "dev_rate", termlabels = unique(devdata$formula)) ,
-                                                    data = devdata,
-                                                    start = exp_grid_startvals,
-                                                    algorithm = "brute-force",
-                                                    trace = FALSE,
-                                                    control = nls.control(tol = 1)),
-                                         silent=TRUE) #try(object, silent = TRUE) to avoid printing usual uninformative errors
+                   start_vals_fit <- message("warning: model did not converged adequately. Try other models instead from available_models" #try(object, silent = TRUE) to avoid printing usual uninformative errors
     )
     sum_start_vals_fit <- summary(start_vals_fit)
     if(is.null(start_vals_fit)){start_vals_explore <- tibble(param_name = names(start_vals_prev),

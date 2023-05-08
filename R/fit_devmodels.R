@@ -26,27 +26,27 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
   stopifnot(length(dev_rate) == length(temp))
   stopifnot(is.character(model_name))
 
-  if (model_name != "all" | any(!model_name %in% available_models)) {
+  if (model_name != "all" && any(!model_name %in% available_models)) {
     stop("model not available. For available model names, see ?available_models")
   }
 
-  if (model_name == "all") { # it will be probably the most commonly used option for user's experience
+  if (any(model_name == "all")) { # it will be probably the most commonly used option for user's experience
     model_names <- available_models
   } else {
     model_names <- model_name
   }
 
-  list_param <- tibble(param_name = NULL,
-                       start_vals = NULL,
-                       param_est = NULL,
-                       param_se = NULL,
-                       model_name = NULL,
-                       model_AIC = NULL)
+  list_param <- tibble::tibble(param_name = NULL,
+                               start_vals = NULL,
+                               param_est = NULL,
+                               param_se = NULL,
+                               model_name = NULL,
+                               model_AIC = NULL)
 
   for (i in model_names) {
 
     model_i <- dev_model_table |>
-      filter(model_name == i)
+      dplyr::filter(model_name == i)
 
     message(paste0("fitting model ", i)) # to let people know that the function is working and R is not crashing
 
@@ -61,61 +61,31 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
                                     temperature = temp,
                                     dev_rate = dev_rate)
     }
-
-    startvals_tbl <- tibble(temp = seq(0,50,.001),  # why are these values hard-coded here? Shouldn't they be available to user?
-                            model_name = i,
-                            start_vals = list(start_vals))
-
-    start_formula_tbl <- startvals_tbl |>
-      select(temp, model_name) |>
-      ## I think these formulas below should be defined out of here, e.g. when defining dev_model_table
-      mutate(formula = case_when(model_name == "briere1" ~  "briere1(temp, tmin, tmax, a)",
-                                 model_name == "lactin1" ~ "lactin1(temp, a, tmax, delta_t)",
-                                 model_name == "janisch" ~ "janisch(temp, topt, dmin, a, b)",
-                                 model_name == "linear_campbell" ~ "linear_campbell(temp,intercept, slope)",
-                                 model_name == "wang" ~ "wang(temp, k, r, topt, tmin, tmax, a)",
-                                 model_name == "mod_polynomial" ~ "mod_polynomial(temp, a_0, a_1, a_2, a_3, a_4)",
-                                 model_name == "briere2" ~ "briere2(temp, tmin, tmax, a, b)",
-                                 model_name == "mod_gaussian" ~ "mod_gaussian(temp, rmax, topt, a)",
-                                 model_name == "lactin2" ~ "lactin2(temp, a, tmax, delta_t, b)",
-                                 model_name == "ratkowsky" ~ "ratkowsky(temp, tmin, tmax, a, b)",
-                                 model_name == "rezende" ~ "rezende(temp, q10, a, b, c)",
-                                 model_name == "ssi" ~ "ssi(temp, r_tref, e, el, tl, eh, th, tref = 20)",
-                                 model_name == "mod_weibull" ~ "mod_weibull(temp, a, topt, b, c)"
-      )
-      )
-
-    devdata <- tibble(temp = temp,
-                      dev_rate = dev_rate)
+    devdata <- tibble::tibble(temp = temp,
+                              dev_rate = dev_rate)
 
     ## then fit model with nlme::gnls function
-    #### I don't think suppressWarnings is a sensible thing to do here?
-    #### It's crucial to warn users of possible problems...
-    fit_gnls <- suppressWarnings(
-      nlme::gnls(
+    fit_gnls <- nlme::gnls(
         model = reformulate(response = "dev_rate",
-                            termlabels = unique(start_formula_tbl$formula)),
+                            termlabels = unique(model_i$formula)),
         data = devdata,
         start = replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
         weights = varExp(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
         control = gnlsControl(maxIter = 100,
                               nlsTol = 1e-07,
-                              returnObject = TRUE)
-    )
-    )
-
+                              returnObject = TRUE))
     if (is.null(fit_gnls)){ #means that it has not converged, we'll return a NA
-      list_param_tbl <- tibble(param_name = names(start_vals),
-                               start_vals = replace_na(start_vals, 0),
-                               param_est = NA,
-                               param_se = NA,
-                               model_name = i,
-                               model_AIC = NA)
+      list_param_tbl <- tibble:: tibble(param_name = names(start_vals),
+                                        start_vals = replace_na(start_vals, 0),
+                                        param_est = NA,
+                                        param_se = NA,
+                                        model_name = i,
+                                        model_AIC = NA)
 
       list_param <- list_param |>
         dplyr::bind_rows(list_param_tbl)
-      warning(paste0("model ", i, " did not converge"))
+      message(paste0("ERROR: model ", i, " did not converge. Please try other models listed in `available_models`"))
     }
 
     else {
@@ -131,16 +101,17 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
       list_param <- list_param |>
         dplyr::bind_rows(list_param_tbl)
       list_param <- list_param |>
-        mutate(preds = purrr::map2_dbl(.x = start_vals,
-                                .y = param_est,
-                                .f = ~if_else(.x == .y,
-                                              NA_real_,
-                                              .y)))
+        mutate(false_convergence_detect = purrr::map2_dbl(.x = start_vals,
+                                                          .y = param_est,
+                                                          .f = ~if_else(.x == .y,
+                                                                        NA_real_,
+                                                                        .y)))
     }
   }
 
   list_param <- list_param |>
-    tidyr::drop_na() # exclude false convergence
+    tidyr::drop_na() |>  # exclude false convergence
+    select(-false_convergence_detect)
 
   if (!is.null(fit_gnls) && nrow(list_param) == 0) {
     stop(paste("Model(s)", model_name, "did not converge. Please try other models listed in `available_models`"))
@@ -149,5 +120,4 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
     return(list_param)
   }
 }
-
 

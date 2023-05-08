@@ -21,7 +21,7 @@
 plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   devdata <- tibble (temperature = temp,
                      development_rate = dev_rate)
-  fitted_tbl <- param_tbl |> drop_na()
+  fitted_tbl <- fitted_parameters |> drop_na()
   predict2fill <- tibble(temp = NULL,
                          dev_rate = NULL,
                          model_name = NULL,
