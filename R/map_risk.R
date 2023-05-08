@@ -43,6 +43,17 @@ map_risk <- function(t_vals = NULL,
                      mask = TRUE
                      ) {
 
+  stopifnot(is.numeric(t_vals), length(t_vals) == 2, t_vals[2] > t_vals[1])
+
+  if (!is.null(t_rast)) {
+    stopifnot(inherits(t_rast, "SpatRaster"))
+    stopifnot(terra::nlyr(t_rast) == 12)
+  }
+
+  if (is.null(t_rast) & is.null(path)) {
+    stop("Please provide a path to download the temperature rasters.")
+  }
+
   if (is.null(region)) {
     region <- terra::ext()  # whole world
     mask <- FALSE  # pointless otherwise
@@ -66,6 +77,7 @@ map_risk <- function(t_vals = NULL,
   }
 
   tavg <- t_rast     # Why not use t_rast directly? No need to duplicate object?
+
   if (is.null(tavg)) {
     tavg <- geodata::worldclim_global(var = "tavg",
                                       res = res,
