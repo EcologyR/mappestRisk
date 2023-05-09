@@ -1,0 +1,109 @@
+reference;temperature;devdays;se_devdays;sample_size;stage
+liu2002;8;20.8;0.08;180;egg
+liu2002;10;15.4;0.08;126;egg
+liu2002;12;12.8;0.03;113;egg
+liu2002;14;8.4;0.06;98;egg
+liu2002;16;6.4;0.04;106;egg
+liu2002;18;4.7;0.1;59;egg
+liu2002;20;4;0.06;74;egg
+liu2002;22;3.5;0.07;58;egg
+liu2002;24;3;0.09;34;egg
+liu2002;28;2.4;0.07;36;egg
+liu2002;30;2.3;0.06;47;egg
+liu2002;32;2.2;0.08;49;egg
+liu2002;8;13;0.06;132;larva I
+liu2002;10;10.8;0.11;97;larva I
+liu2002;12;8.2;0.04;90;larva I
+liu2002;14;4.6;0.15;91;larva I
+liu2002;16;4.3;0.07;85;larva I
+liu2002;18;3.6;0.11;59;larva I
+liu2002;20;2.5;0.1;72;larva I
+liu2002;22;2.1;0.11;54;larva I
+liu2002;24;2;0.05;33;larva I
+liu2002;28;1.6;0.17;34;larva I
+liu2002;30;1.5;0.03;36;larva I
+liu2002;32;1.5;0.16;44;larva I
+liu2002;8;14.4;0.11;122;larva II
+liu2002;10;11;0.14;80;larva II
+liu2002;12;7.9;0.13;87;larva II
+liu2002;14;5.2;0.12;89;larva II
+liu2002;16;4.1;0.06;83;larva II
+liu2002;18;3.8;0.09;54;larva II
+liu2002;20;3.3;0.12;71;larva II
+liu2002;22;2.8;0.12;54;larva II
+liu2002;24;2.2;0.08;33;larva II
+liu2002;28;1.4;0.1;34;larva II
+liu2002;30;1.3;0.04;36;larva II
+liu2002;32;1;0.15;40;larva II
+liu2002;8;12.9;0.09;94;larva III
+liu2002;10;9.6;0.11;72;larva III
+liu2002;12;6.7;0.11;81;larva III
+liu2002;14;4.6;0.06;87;larva III
+liu2002;16;3.3;0.06;79;larva III
+liu2002;18;2.9;0.06;53;larva III
+liu2002;20;2.3;0.19;71;larva III
+liu2002;22;1.9;0.12;51;larva III
+liu2002;24;1.5;0.04;32;larva III
+liu2002;28;1.3;0.11;33;larva III
+liu2002;30;1.1;0.04;31;larva III
+liu2002;32;1.3;0.16;38;larva III
+liu2002;8;15.2;0.13;67;larva IV
+liu2002;10;11;0.18;54;larva IV
+liu2002;12;8;0.12;78;larva IV
+liu2002;14;5.4;0.06;87;larva IV
+liu2002;16;4.4;0.06;79;larva IV
+liu2002;18;3.7;0.04;47;larva IV
+liu2002;20;3.2;0.15;71;larva IV
+liu2002;22;2.5;0.16;47;larva IV
+liu2002;24;2;0.04;32;larva IV
+liu2002;28;1.7;0.28;30;larva IV
+liu2002;30;1.5;0.04;31;larva IV
+liu2002;32;1.7;0.15;34;larva IV
+liu2002;8;5.1;0.12;47;prepupa
+liu2002;10;4.1;0.14;37;prepupa
+liu2002;12;3.2;0.06;75;prepupa
+liu2002;14;1.9;0.08;87;prepupa
+liu2002;16;1.5;0.04;79;prepupa
+liu2002;18;1.2;0.06;46;prepupa
+liu2002;20;1;0.03;70;prepupa
+liu2002;22;0.8;0.1;47;prepupa
+liu2002;24;0.7;0.16;32;prepupa
+liu2002;28;0.5;0.18;30;prepupa
+liu2002;30;0.6;0.02;28;prepupa
+liu2002;32;0.6;0.17;34;prepupa
+liu2002;8;35.3;0.37;28;pupa female
+liu2002;10;24.9;0.24;14;pupa female
+liu2002;12;18;0.14;33;pupa female
+liu2002;14;10.8;0.12;36;pupa female
+liu2002;16;9.1;0.09;38;pupa female
+liu2002;18;6.7;0.06;20;pupa female
+liu2002;20;5.3;0.06;36;pupa female
+liu2002;22;4.5;0.17;28;pupa female
+liu2002;24;3.8;0.23;17;pupa female
+liu2002;28;3.1;0.24;15;pupa female
+liu2002;30;2.6;0.13;7;pupa female
+liu2002;32;2.9;0.16;20;pupa female
+liu2002;8;39.8;0.74;9;pupa male
+liu2002;10;27.8;0.21;11;pupa male
+liu2002;12;20.9;0.1;41;pupa male
+liu2002;14;12.3;0.08;42;pupa male
+liu2002;16;10.8;0.09;37;pupa male
+liu2002;18;7.3;0.08;22;pupa male
+liu2002;20;6.1;0.07;21;pupa male
+liu2002;22;5.1;0.16;15;pupa male
+liu2002;24;4.3;0.33;13;pupa male
+liu2002;28;3.3;0.28;12;pupa male
+liu2002;30;3;0.03;18;pupa male
+liu2002;32;2.8;0.16;5;pupa male
+liu2002;8;119;1.07;37;total
+liu2002;10;88.2;0.82;25;total
+liu2002;12;66.3;0.58;74;total
+liu2002;14;41.6;0.3;78;total
+liu2002;16;33.8;0.32;75;total
+liu2002;18;26.7;0.26;42;total
+liu2002;20;21.9;0.23;57;total
+liu2002;22;18.4;0.21;43;total
+liu2002;24;15.3;0.22;30;total
+liu2002;28;12.1;0.21;27;total
+liu2002;30;11.1;0.22;25;total
+liu2002;32;11.1;0.2;25;total

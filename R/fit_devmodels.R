@@ -8,17 +8,17 @@
 #' @export
 #'
 #' @examples
-#' data(a.citricidus_tsai1999)
+#' data(p.xylostella_liu2002)
 #'
-#' aphis_citricida_fitted <- fit_devmodels(temp = a.citricidus_tsai1999$temperature,
-#'                                         dev_rate = a.citricidus_tsai1999$rate_development,
+#' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
+#'                                         dev_rate = p.xylostella_liu2002$rate_development,
 #'                                         model_name = c("all")) #might be a bit slow
 #'
 
 fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
 
   # source("data-raw/auxiliary_functions_modelfitting.R")
-  # data("list_available_models")
+  # data("available_models")
   # `%!in%` <- Negate(`%in%`)
 
   stopifnot(is.numeric(temp) & length(temp) >= 3)
@@ -36,7 +36,7 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
     model_names <- model_name
   }
 
-  list_param <- tibble::tibble(param_name = NULL,
+  list_param <- dplyr::tibble(param_name = NULL,
                                start_vals = NULL,
                                param_est = NULL,
                                param_se = NULL,
@@ -61,7 +61,7 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
                                     temperature = temp,
                                     dev_rate = dev_rate)
     }
-    devdata <- tibble::tibble(temp = temp,
+    devdata <- dplyr::tibble(temp = temp,
                               dev_rate = dev_rate)
 
     ## then fit model with nlme::gnls function
@@ -71,12 +71,12 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
         data = devdata,
         start = replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
-        weights = varExp(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
-        control = gnlsControl(maxIter = 100,
+        weights = nlme::varExp(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
+        control = nlme::gnlsControl(maxIter = 100,
                               nlsTol = 1e-07,
                               returnObject = TRUE))
     if (is.null(fit_gnls)){ #means that it has not converged, we'll return a NA
-      list_param_tbl <- tibble:: tibble(param_name = names(start_vals),
+      list_param_tbl <- dplyr::tibble(param_name = names(start_vals),
                                         start_vals = replace_na(start_vals, 0),
                                         param_est = NA,
                                         param_se = NA,
@@ -90,18 +90,18 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
 
     else {
       sum_fit_gnls <- summary(fit_gnls)
-      list_param_tbl <- tibble(param_name = names(coef(fit_gnls)),
-                               start_vals = replace_na(start_vals, 0),
-                               param_est = fit_gnls$coefficients,
-                               param_se = sum_fit_gnls$tTable[1:length(fit_gnls$coefficients), 2],
-                               model_name = i,
-                               model_AIC = sum_fit_gnls$AIC
+      list_param_tbl <- dplyr::tibble(param_name = names(coef(fit_gnls)),
+                                      start_vals = replace_na(start_vals, 0),
+                                      param_est = fit_gnls$coefficients,
+                                      param_se = sum_fit_gnls$tTable[1:length(fit_gnls$coefficients), 2],
+                                      model_name = i,
+                                      model_AIC = sum_fit_gnls$AIC
       )
 
       list_param <- list_param |>
         dplyr::bind_rows(list_param_tbl)
       list_param <- list_param |>
-        mutate(false_convergence_detect = purrr::map2_dbl(.x = start_vals,
+        dplyr::mutate(false_convergence_detect = purrr::map2_dbl(.x = start_vals,
                                                           .y = param_est,
                                                           .f = ~if_else(.x == .y,
                                                                         NA_real_,
@@ -111,7 +111,7 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
 
   list_param <- list_param |>
     tidyr::drop_na() |>  # exclude false convergence
-    select(-false_convergence_detect)
+    dplyr::select(-false_convergence_detect)
 
   if (!is.null(fit_gnls) && nrow(list_param) == 0) {
     stop(paste("Model(s)", model_name, "did not converge. Please try other models listed in `available_models`"))
@@ -120,4 +120,12 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
     return(list_param)
   }
 }
+data("p.xylostella_liu2002")
+data("available_models_table")
+source(here::here("data-raw/auxiliary_functions_modelfitting.R"))
+cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
+                                     dev_rate = p.xylostella_liu2002$rate_development,
+                                     model_name = c("briere1", "briere2", "lactin1", "lactin2",
+                                                    "mod_gaussian", "mod_weibull", "ratkowsky",
+                                                    "wang", "ssi", "rezende")) #might be a bit slow
 
