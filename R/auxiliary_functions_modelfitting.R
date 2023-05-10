@@ -1,53 +1,6 @@
 
-# 1. development rate equations -------------------------------------------
-#### DOCUMENT THIS!!!!!
-## from rTPC package: equations and structures
-briere2 <- function (temp, tmin, tmax, a, b) {
-  est <- a * temp * (temp - tmin) * (tmax - temp)^(1/b)
-  return(est)
-}
-
-mod_gaussian <- function (temp, rmax, topt, a) {
-  est <- rmax * exp(-0.5 * (abs(temp - topt)/a)^2)
-  return(est)
-}
-
-mod_weibull <- function (temp, a, topt, b, c) {
-  return((a * (((c - 1)/c)^((1 - c)/c)) * ((((temp - topt)/b) +
-                                              (((c - 1)/c)^(1/c)))^(c - 1)) * (exp(-((((temp - topt)/b) +
-                                                                                        (((c - 1)/c)^(1/c)))^c) + ((c - 1)/c)))))
-}
-
-lactin2 <- function (temp, a, tmax, delta_t, b) {
-  est <- exp(a * temp) - exp(a * tmax - ((tmax - temp)/delta_t)) + b
-  return(est)
-}
-
-rezende <- function (temp, q10, a, b, c) {
-  est <- {
-    ifelse(temp < b,
-           (a * 10^(log10(q10)/(10/temp))),
-           (a * 10^(log10(q10)/(10/temp))) * (1 - c * (b - temp)^2))
-  }
-  return(est)
-}
-ssi <- function (temp, r_tref, e, el, tl, eh, th, tref) {
-  tref <- 273.15 + tref
-  k <- 8.62e-05
-  boltzmann.term <- r_tref * exp(e/k * (1/tref - 1/(temp +273.15)))
-  inactivation.term <- 1/(1 + exp(-el/k * (1/(tl + 273.15) - 1/(temp + 273.15)))
-                          + exp(eh/k * (1/(th + 273.15) -   1/(temp + 273.15))))
-  return(boltzmann.term * inactivation.term)
-}
-
-ratkowsky <- function (temp, tmin, tmax, a, b)
-{
-  est <- ((a * (temp - tmin)) * (1 - exp(b * (temp - tmax))))^2
-  return(est)
-}
-
-# from devRate equations
-wang <- function (temp, k, r, topt, tmin, tmax, a){
+# functions developed based on devRate formulas
+wang <- function(temp, k, r, topt, tmin, tmax, a){
   est <- (k/(1 + exp(-r * (temp - topt)))) * (1 - exp(-(temp - tmin)/a)) *
     (1 - exp(-(tmax - temp)/a))
   return(est)
