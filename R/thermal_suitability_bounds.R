@@ -24,15 +24,15 @@
 #'                dev_rate = a.citricidus_tsai1999$rate_development,
 #'                fitted_parameters = aphis_citricida_fitted)
 #'
-#' therm_bounds_aphid <- thermal_suitability_bounds(fitted_parameters = aphis_citricida_fitted,
-#'                                                  model_name = c("wang", "briere2"),
-#'                                                  suitability_threshold = 75)
+#' therm_bounds_moth <- thermal_suitability_bounds(fitted_parameters = cabbage_moth_fitted,
+#'                                                 model_name = "lactin2",
+#'                                                 suitability_threshold = 75)
 
 thermal_suitability_bounds <- function(fitted_parameters,
-                                       model_name = NULL,
+                                       model_name,
                                        suitability_threshold = NULL) {
   `%!in%` <- Negate(`%in%`)
-  data("list_available_models")
+  data("available_models_table")
   fitted_parameters_nonas <- fitted_parameters |> drop_na()
   fitted_param_names <- fitted_parameters_nonas |> distinct(model_name) |> pull(model_name)
   if(is.null(suitability_threshold)){
@@ -41,7 +41,7 @@ thermal_suitability_bounds <- function(fitted_parameters,
   }
   if(suitability_threshold < 50) {
     stop("suitability must be higher than 50% in order to have applied sense. Default 50%")
-  } else if (!is.null(model_name) && any(model_name %!in% list_available_models)) {
+  } else if (!is.null(model_name) && any(model_name %!in% available_models)) {
       stop("model name not available. For available model names, run 'data(list_available_models); list_available_models'.")
   } else if(!is.null(model_name) && any(model_name %!in% fitted_param_names)) {
       stop(paste("Model", model_name[which(model_name %!in% fitted_param_names)], "did not fitted well to your data.
@@ -49,121 +49,53 @@ thermal_suitability_bounds <- function(fitted_parameters,
   } else if(!is.null(model_name) && any(model_name == "linear_campbell")) {
       stop("Thermal Suitability predictions require nonlinear models.
    Try another fitted model in your table instead")
-    } else if(is.null(model_name)){
-      message("No model_name input. Using all models in the input parameters table")
-    fitted_parameters_nonas <- fitted_parameters
-    model2fit <- fitted_parameters_nonas |>
-      filter(model_name != "linear_campbell") |>
-      drop_na() |>
-      distinct(model_name)|>
-      pull()
-    tvals <- tibble(model_name = NULL,
-                    tval_left = NULL,
-                    tval_right = NULL)
-    for(i in model2fit){
-      params_i <- fitted_parameters_nonas |>
-        filter(model_name == i)  |>
-        pull(param_est)
-
-      ##predict based on parameters
-      explore_preds <- tibble(temp = seq(0,50, 0.001),
-                              model_name = i,
-                              preds = NULL,
-      )
-      fit_vals_tbl <- explore_preds |>
-        mutate(formula = case_when(model_name == "briere1" ~  "briere1(.x, params_i[1], params_i[2], params_i[3])",
-                                   model_name == "lactin1" ~ "lactin1(.x, params_i[1], params_i[2], params_i[3])",
-                                   model_name == "janisch" ~ "janisch(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "linear_campbell" ~ "linear_campbell(.x, params_i[1], params_i[2])",
-                                   model_name == "wang" ~ "wang(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6])",
-                                   model_name == "mod_polynomial" ~ "mod_polynomial(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
-                                   model_name == "briere2" ~ "briere2(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "mod_gaussian" ~ "mod_gaussian(.x, params_i[1], params_i[2], params_i[3])",
-                                   model_name == "lactin2" ~ "lactin2(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "ratkowsky" ~ "ratkowsky(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "rezende" ~ "rezende(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "ssi" ~ "ssi(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6], params_i[7])",
-                                   model_name == "mod_weibull" ~ "mod_weibull(.x, params_i[1], params_i[2], params_i[3], params_i[4])"
-        )) |>
-        mutate(preds = map_dbl(.x = temp,
-                               .f = reformulate(unique(formula)))) |>
-        filter(preds >= 0) |>
-        select(-formula) |>
-        mutate(preds = case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
-                                 model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
-                                 model_name == "briere1" & temp < params_i[1] ~ NA_real_,
-                                 model_name == "briere2" & temp < params_i[1] ~ NA_real_,
-                                 TRUE ~ preds)
-        ) # to exclude biological non-sense predictions due to model mathematical properties
-      topt_pred <- fit_vals_tbl |> slice_max(preds) |> pull(temp)
-      devrate_max <- fit_vals_tbl |> slice_max(preds) |> pull(preds)
-      half_left <- fit_vals_tbl |> filter(temp < topt_pred)
-      half_right <- fit_vals_tbl |> filter(temp >= topt_pred)
-      therm_suit_left <- half_left |>
-        slice(max(which(half_left$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
-        pull(temp)
-      therm_suit_right <- half_right |>
-        slice(min(which(half_right$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
-        pull(temp)
-      tvals_i <- tibble(model_name = i,
-                        tval_left = therm_suit_left,
-                        tval_right = therm_suit_right)
-      tvals <- bind_rows(tvals, tvals_i)
-    } #loop ends
-    if(any(tvals$tval_right == 50 )) warning("upper value of thermal suitability  might be non-realistic")
-    return(tvals)
   } else {
-    model2predict <- model_name
-    tvals <- tibble(model_name = NULL,
-                    tval_left = NULL,
-                    tval_right = NULL)
-    for(i in model2predict){
+    fitted_parameters_nonas <- fitted_parameters
+    model2fit <- model_name
+    tvals <- tibble::tibble(model_name = NULL,
+                            tval_left = NULL,
+                            tval_right = NULL)
+    for(i in model2fit){
+      model_i <- dev_model_table |>
+        dplyr::filter(model_name == i)
       params_i <- fitted_parameters_nonas |>
-        filter(model_name == i)  |>
-        pull(param_est)
+        dplyr::filter(model_name == i)  |>
+        dplyr::pull(param_est)
 
       ##predict based on parameters
-      explore_preds <- tibble(temp = seq(0,50, 0.001),
-                              model_name = i,
-                              preds = NULL,
+      explore_preds <- dplyr::tibble(temp = seq(0,50, 0.001),
+                                     model_name = i,
+                                     preds = NULL,
       )
       fit_vals_tbl <- explore_preds |>
-        select(temp, model_name) |>
-        mutate(formula = case_when(model_name == "briere1" ~  "briere1(.x, params_i[1], params_i[2], params_i[3])",
-                                   model_name == "lactin1" ~ "lactin1(.x, params_i[1], params_i[2], params_i[3])",
-                                   model_name == "janisch" ~ "janisch(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "linear_campbell" ~ "linear_campbell(.x, params_i[1], params_i[2])",
-                                   model_name == "wang" ~ "wang(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6])",
-                                   model_name == "mod_polynomial" ~ "mod_polynomial(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
-                                   model_name == "briere2" ~ "briere2(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "mod_gaussian" ~ "mod_gaussian(.x, params_i[1], params_i[2], params_i[3])",
-                                   model_name == "lactin2" ~ "lactin2(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "ratkowsky" ~ "ratkowsky(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "rezende" ~ "rezende(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                   model_name == "ssi" ~ "ssi(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6], params_i[7])",
-                                   model_name == "mod_weibull" ~ "mod_weibull(.x, params_i[1], params_i[2], params_i[3], params_i[4])"
-        )) |>
-        mutate(preds = map_dbl(.x = temp,
-                               .f = reformulate(unique(formula)))) |>
-        filter(preds >= 0) |>
-        select(-formula) |>
-        mutate(preds = case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
-                                 model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
-                                 model_name == "briere1" & temp < params_i[1] ~ NA_real_,
-                                 model_name == "briere2" & temp < params_i[1] ~ NA_real_,
-                                 TRUE ~ preds)
+        dplyr::mutate(formula = model_i$working_formula) |>
+        dplyr::mutate(preds = purrr::map_dbl(.x = temp,
+                                             .f = reformulate(unique(formula)))) |>
+        dplyr::filter(preds >= 0) |>
+        dplyr::select(-formula) |>
+        dplyr::mutate(preds = dplyr::case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
+                                               model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
+                                               model_name == "briere1" & temp < params_i[1] ~ NA_real_,
+                                               model_name == "briere2" & temp < params_i[1] ~ NA_real_,
+                                               TRUE ~ preds)
         ) # to exclude biological non-sense predictions due to model mathematical properties
       tryCatch(expr =
-                 {topt_pred <- fit_vals_tbl |> slice_max(preds) |> pull(temp)
-                  devrate_max <- fit_vals_tbl |> slice_max(preds) |> pull(preds)
-                  half_left <- fit_vals_tbl |> filter(temp < topt_pred)
-                  half_right <- fit_vals_tbl |> filter(temp >= topt_pred)
+                 {topt_pred <- fit_vals_tbl |>
+                   slice_max(preds) |>
+                   pull(temp)
+                  devrate_max <- fit_vals_tbl |>
+                    dplyr::slice_max(preds) |>
+                    dplyr::pull(preds)
+                  half_left <- fit_vals_tbl |>
+                    dplyr::filter(temp < topt_pred)
+                  half_right <- fit_vals_tbl |>
+                   dplyr::filter(temp >= topt_pred)
                   therm_suit_left <- half_left |>
-                    slice(max(which(half_left$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
-                    pull(temp)
+                    dplyr::slice(max(which(half_left$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
+                    dplyr::pull(temp)
                   therm_suit_right <- half_right |>
-                    slice(min(which(half_right$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
-                    pull(temp)
+                    dplyr::slice(min(which(half_right$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
+                    dplyr::pull(temp)
                  },
                error = function(error_message) {
                  message(paste("Model", model_name, "is not appropriate to model thermal suitability.
@@ -173,14 +105,13 @@ Try another instead (use `plot_devmodel()` to see curve shapes).
 --------------------------------------"))
                  }
                )
-      tvals_i <- tibble(model_name = i,
-                        tval_left = therm_suit_left,
-                        tval_right = therm_suit_right)
-      tvals <- bind_rows(tvals, tvals_i)
+      tvals_i <- dplyr::tibble(model_name = i,
+                               tval_left = therm_suit_left,
+                               tval_right = therm_suit_right)
+      tvals <- dplyr::bind_rows(tvals, tvals_i)
     } # <- loop ends
+  }
     if(any(tvals$tval_right == 50)) warning("upper value of thermal suitability  might be non-realistic")
     return(tvals)
-  }
 }
-
 

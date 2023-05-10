@@ -10,18 +10,17 @@
 #'
 #' @examples   a.citricidus_tsai1999 <- readRDS("data/a.citricidus_tsai1999.rds")
 #' source("R/dario_model_fitting.R")
-#' aphis_citricida_fitted <- fit_devmodels(temp = a.citricidus_tsai1999$temperature,
-#'                                         dev_rate = a.citricidus_tsai1999$rate_development,
-#'                                         model_name = "all") #might be a bit slow
-#' ## examine them visually to better choose on ecological criteria and not only on statistical fitting
-#' plot_devmodels(temp = a.citricidus_tsai1999$temperature,
-#'                dev_rate = a.citricidus_tsai1999$rate_development,
-#'                fitted_parameters = aphis_citricida_fitted)
+#' plot_devmodels(temp = p.xylostella_liu2002$temperature,
+#'                dev_rate = p.xylostella_liu2002$rate_development,
+#'                fitted_parameters = cabbage_moth_fitted)
+#'
+
+
 
 plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   devdata <- tibble (temperature = temp,
                      development_rate = dev_rate)
-  fitted_tbl <- param_tbl |> drop_na()
+  fitted_tbl <- fitted_parameters |> drop_na()
   predict2fill <- tibble(temp = NULL,
                          dev_rate = NULL,
                          model_name = NULL,
@@ -103,7 +102,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                size = 3)+
     geom_label(data = aic_values,
                aes(x = temp,
-                   y = preds-0.05,
+                   y = preds-0.10,
                    label = n_params,
                    fill = model_name),
                color = "white",
