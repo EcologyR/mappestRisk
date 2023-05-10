@@ -5,7 +5,6 @@
 #' @param legend_title the title of the legend.
 #' @param path_out (optional) the name and the path of the output file. Example: "data/map.html"
 #' @param pal the palette used to plot the risk map. Default ...
-#' @param ... further arguments (CURRENTLY NOT USED)
 #'
 #' @return a dynamic map and, optionally, a html with the dynamic map
 #' @export
@@ -21,8 +20,8 @@ interactive_map <- function(x,
                      legend_title = NULL,
                      map_type = c("high", "medium"),
                      path_out = NULL,
-                     pal = NULL,
-                     ...) {
+                     pal = NULL
+                     ) {
 
   stopifnot(inherits(x, "SpatRaster") | inherits(x, "RasterLayer"))
 
