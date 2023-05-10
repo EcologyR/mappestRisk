@@ -21,7 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item A. Marcia Barbosa (\href{https://orcid.org/0000-0001-8972-7713}{ORCID})
+  \item Ana Marcia Barbosa (\href{https://orcid.org/0000-0001-8972-7713}{ORCID})
   \item Antonio Jesús ajpelu@gmail.com Pérez-Luque (\href{https://orcid.org/0000-0002-1747-0469}{ORCID})
 }
 
