@@ -1,50 +1,15 @@
 
-# functions developed based on devRate formulas
-wang <- function(temp, k, r, topt, tmin, tmax, a){
-  est <- (k/(1 + exp(-r * (temp - topt)))) * (1 - exp(-(temp - tmin)/a)) *
-    (1 - exp(-(tmax - temp)/a))
-  return(est)
-}
+model_name_translate <- function(user_model_name) {
 
-mod_polynomial <- function (temp, a_0, a_1, a_2, a_3, a_4){
-  est <- a_0 + a_1 * temp + a_2 * temp^2 + a_3 * temp^3 + a_4 * temp^4
-  return(est)
-}
+  if (!user_model_name %in% available_models$model_name) {
+    stop("model name not available. Please check ?available_models ")
+  }
 
-janisch <- function (temp, topt, dmin, a, b){
-  est <- ((dmin/2 * (exp(a * (temp - topt)) + exp(-b * (temp - topt))))^(-1))
-  return(est)
-}
-
-briere1 <- function (temp, tmin, tmax, a) {
-  est <- a * temp * (temp - tmin) * (tmax - temp)^(1/2)
-  return(est)
-}
-
-linear_campbell <- function (temp, intercept, slope) {
-  est <- slope*temp + intercept
-  return(est)
-}
-
-lactin1 <- function (temp, a, tmax, delta_t) {
-  est <- exp(a * temp) - exp(a * tmax - (tmax - temp)/delta_t)
-  return(est)
-}
-# 2. Auxiliary functions ---------------------------------------------------------
-#### a) names functions ----
-
-## translate user-friendly input names for models into auxiliary packages input names
-
-## TEST THIS!
-model_name_translate <- function(user_model_name){
-  data("available_models_table")
-  model_eq <- dev_model_table |>
+  model_eq <- available_models |>
     dplyr::filter(model_name == user_model_name) |>
     dplyr::select(source_model_name) |>
     dplyr::pull()
-  if(length(model_eq)==0) {
-    stop("model name not available. For available model names, check ?available_models ")
-  }
+
   return(model_eq)
 
 }
@@ -83,16 +48,6 @@ startvals_names_translate_devrate <- function(start_vals, model_name){
 #### b) obtain start values for model fitting ----
 
 ## start_vals rTPC function, defined by the package (rTPC::get_start_vals) to adapt starting values to the input data
-## so that they are more informative
-
-
-#### NO TEST THIS SINCE IT IS JUST USING rTPC. But problems with SSI & REZENDE MODELS
-start_vals_rtpc <- function(model_name, temperature, dev_rate){
-  start_vals <- rTPC::get_start_vals(x = temperature,
-                                     y = dev_rate,
-                                     model_name = model_name_translate(model_name))
-  return(start_vals)
-}
 
 ## start_vals devRate function & example. Since the devRate package does not provide a function for start values,
 ## we use nls2::nls2() function with literature starting values given in devRate packate to iteratively calculate parameters given the input data

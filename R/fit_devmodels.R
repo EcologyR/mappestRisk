@@ -15,23 +15,21 @@
 #'                                         model_name = c("all")) #might be a bit slow
 #'
 
-fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
-
-  # source("data-raw/auxiliary_functions_modelfitting.R")
-  # data("available_models")
-  # `%!in%` <- Negate(`%in%`)
+fit_devmodels <- function(temp = NULL,
+                          dev_rate = NULL,
+                          model_name = NULL){
 
   stopifnot(is.numeric(temp) & length(temp) >= 3)
   stopifnot(is.numeric(dev_rate))
   stopifnot(length(dev_rate) == length(temp))
   stopifnot(is.character(model_name))
 
-  if (model_name != "all" && any(!model_name %in% available_models)) {
+  if (!all(model_name %in% c("all", available_models$model_name))) {
     stop("model not available. For available model names, see ?available_models")
   }
 
-  if (any(model_name == "all")) { # it will be probably the most commonly used option for user's experience
-    model_names <- available_models
+  if (model_name == "all") { # it will be probably the most commonly used option for user's experience
+    model_names <- available_models$model_name
   } else {
     model_names <- model_name
   }
@@ -57,9 +55,12 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
     }
 
     if (model_i$package == "rTPC") {
-      start_vals <- start_vals_rtpc(model_name = i,
-                                    temperature = temp,
-                                    dev_rate = dev_rate)
+      # start_vals <- start_vals_rtpc(model_name = i,
+      #                               temperature = temp,
+      #                               dev_rate = dev_rate)
+      start_vals <- rTPC::get_start_vals(x = temp,
+                                         y = dev_rate,
+                                         model_name = model_name_translate(model_name))
     }
     devdata <- dplyr::tibble(temp = temp,
                               dev_rate = dev_rate)
