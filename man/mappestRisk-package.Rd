@@ -16,4 +16,14 @@ Useful links:
 }
 
 }
+\author{
+\strong{Maintainer}: Darío dario.ssm2@gmail.com San-Segundo Molina (\href{https://orcid.org/0000-0002-7831-9623}{ORCID})
+
+Authors:
+\itemize{
+  \item A. Marcia Barbosa (\href{https://orcid.org/0000-0001-8972-7713}{ORCID})
+  \item Antonio Jesús ajpelu@gmail.com Pérez-Luque (\href{https://orcid.org/0000-0002-1747-0469}{ORCID})
+}
+
+}
 \keyword{internal}

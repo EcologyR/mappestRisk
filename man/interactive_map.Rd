@@ -30,3 +30,11 @@ a dynamic map and a html with the dynamic map
 \description{
 Generate an interactive map from a risk map
 }
+\examples{
+\dontrun{
+p <- tempdir()
+r <- raster::raster("inst/trioza_rast.tif")
+plot_map(x = r, map_type = "high", path_out = paste0(tempdir(), "test_map.html"))
+}
+
+}
