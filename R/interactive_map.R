@@ -17,7 +17,7 @@
 #' plot_map(x = r, map_type = "high", path_out = paste0(tempdir(), "test_map.html"))
 #' }
 #'
-plot_map <- function(x,
+interactive_map <- function(x,
                      legend_title = NULL,
                      map_type = c("high", "medium"),
                      path_out = NULL,
