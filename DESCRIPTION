@@ -3,10 +3,10 @@ Title: Create Maps Forecasting Risk of Pest Occurrence
 Version: 0.0.0.9000
 Authors@R: 
   c(
-    person("Darío", "San-Segundo  Molina", "dario.ssm2@gmail.com", role = c("cre"),
+    person("Darío", "San-Segundo  Molina", ,"dario.ssm2@gmail.com", role = c("cre"),
            comment = c(ORCID = "0000-0002-7831-9623")),
-    person("Ana", "Marcia Barbosa", role = c("aut"), comment = c(ORCID = "0000-0001-8972-7713")),
-    person("Antonio Jesús", "Pérez-Luque", "ajpelu@gmail.com", role = c("aut"),
+    person("Ana", "Marcia Barbosa", ,role = c("aut"), comment = c(ORCID = "0000-0001-8972-7713")),
+    person("Antonio Jesús", "Pérez-Luque", , "ajpelu@gmail.com", role = c("aut"),
            comment = c(ORCID = "0000-0002-1747-0469"))
            )
 Description: The package provides maps that forecast crop pest risk of occurrence in response to experienced temperature. It takes as input development data parameterised in controlled conditions (i.e. constant or fluctuating temperatures) for different life stages of a species. The output can either assess climatic suitability or phenological progress simulations.
