@@ -120,12 +120,3 @@ fit_devmodels <- function(temp = NULL, dev_rate = NULL, model_name = NULL){
     return(list_param)
   }
 }
-data("p.xylostella_liu2002")
-data("available_models_table")
-source(here::here("data-raw/auxiliary_functions_modelfitting.R"))
-cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-                                     dev_rate = p.xylostella_liu2002$rate_development,
-                                     model_name = c("briere1", "briere2", "lactin1", "lactin2",
-                                                    "mod_gaussian", "mod_weibull", "ratkowsky",
-                                                    "wang", "ssi", "rezende")) #might be a bit slow
-
