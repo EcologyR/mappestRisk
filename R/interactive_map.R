@@ -14,7 +14,7 @@
 #' \dontrun{
 #' r <- system.file("extdata", "trioza_rast.tif", package = "mappestRisk")
 #' # r <- terra::rast("inst/extdata/trioza_rast.tif")
-#' plot_map(x = r, map_type = "high", path_out = paste0(tempdir(), "test_map.html"))
+#' interactive_map(x = r, map_type = "high", path_out = paste0(tempdir(), "test_map.html"))
 #' }
 #'
 interactive_map <- function(x,
@@ -23,10 +23,6 @@ interactive_map <- function(x,
                      path_out = NULL,
                      pal = NULL,
                      ...) {
-
-  #  if(!is(x, "RasterLayer"))
-  # if(!any(x %in% c("SpatRaster", "RasterLayer", "stars", "terra")))
-  #     stop("x has to be a raster object")
 
   stopifnot(inherits(x, "SpatRaster") | inherits(x, "RasterLayer"))
 
