@@ -1,18 +1,36 @@
 #' Explore shape of fitted thermal performance curves to choose an appropriate model based on both statistics and ecological sense
 #'
-#' @param temp a vector containing temperature treatments (predictor variable), must have at least three different temperature treatments
-#' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp
-#' @param fitted_parameters a tibbl obtained with fit_models() function including parameter names, estimates, se and AICs
+#' @param temp a vector containing temperature treatments (predictor variable),
+#' must have at least three different temperature treatments. The function works for both
+#' aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+
+#' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
+#' The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#'
+#' @param fitted_parameters a tibble obtained with fit_models() function including parameter names,
+#' estimates, se, AICs and gnls objects (i.e. fitted_models) from `fit_devmodels()`
 #'
 #' @return a ggplot with facets printing development rate data provided by the
-#' user and the predicted values by the models fitted with fit_devmodels
+#' user and the predicted values by the models fitted with fit_devmodels and ordered by lowest AICs. Extra info is printed
+#' as labels to facilitate model selection, such as AICs, parameter uncertainty (expressed as "fit:")
+#' and number of parameters. Choosing a good balance between the least number of parameters, an "okay"
+#' fit in terms of parameter uncertainty and the lowest AIC (i.e. the most negative or the least positive) is
+#' highly recommended for model projections with other functions of the `mappestRisk` package.
 #' @export
 #'
-#' @examples   a.citricidus_tsai1999 <- readRDS("data/a.citricidus_tsai1999.rds")
-#' source("R/dario_model_fitting.R")
+#' @examples
+#' data(p.xylostella_liu2002)
+#' data(available_models)
+#'
+#' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
+#'                                      dev_rate = p.xylostella_liu2002$rate_development,
+#'                                      model_name = c("all")) #might be a bit slow
+#'
 #' plot_devmodels(temp = p.xylostella_liu2002$temperature,
-#'                dev_rate = p.xylostella_liu2002$rate_development,
-#'                fitted_parameters = cabbage_moth_fitted)
+#'                       dev_rate = p.xylostella_liu2002$rate_development,
+#'                       fitted_parameters = cabbage_moth_fitted)
 #'
 
 
@@ -40,9 +58,9 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                             model_AIC = model_AIC_i[1],
                             preds = NULL,
                             n_params = length(params_i),
-                            fitting = )
+                            fit = warnfit_i[1])
     fit_vals_tbl <- explore_preds |>
-      select(temp, model_name, model_AIC, n_params) |>
+      select(temp, model_name, model_AIC, n_params, fit) |>
       mutate(formula = formula_i) |>
       mutate(preds = purrr::map_dbl(.x = temp,
                                     .f = reformulate(unique(formula_i)))) |>
@@ -61,7 +79,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
     group_by(model_name) %>%
     summarise(aic = mean(model_AIC),
               n_params = paste(mean(n_params), "parameters"),
-              fit = ) %>%
+              fit = unique(fit)) %>%
     arrange(aic)
   aic_order <- aic_text %>%
     pull(model_name)
@@ -95,7 +113,13 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                    label = n_params,
                    fill = model_name),
                color = "white",
-               size = 3)
+               size = 3)+
+  geom_label(data = aic_values,
+            aes(x = 30,
+                y = preds,
+                label = paste("fit:", fit),
+                color = model_name),
+            size = 3)
   return(ggplot_models)
 }
 

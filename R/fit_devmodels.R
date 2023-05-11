@@ -4,9 +4,11 @@
 #' must have at least three different temperature treatments. The function works for both
 #' aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
 #' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#'
 #' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
 #' The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
 #' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#'
 #' @param model_name "all" or alternatively one or several of the models listed in `?available_models`
 #'
 #' @return this function returns a tibble with estimate and standard error for each parameter of the models from the user call
@@ -18,7 +20,8 @@
 #'
 #' #' @export
 #'
-#' @examples data(p.xylostella_liu2002)
+#' @examples
+#' data(p.xylostella_liu2002)
 #' data(available_models)
 #'
 #' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
@@ -159,11 +162,3 @@ fit_devmodels <- function(temp = NULL,
     return(list_param)}
 }
 
-ex1 <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-              dev_rate = p.xylostella_liu2002$rate_development,
-              model_name = "all")
-
-
-plot_devmodels(temp = p.xylostella_liu2002$temperature,
-               dev_rate = p.xylostella_liu2002$rate_development,
-               fitted_parameters = cabbage_moth_fitted)
