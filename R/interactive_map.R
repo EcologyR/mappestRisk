@@ -42,7 +42,7 @@ interactive_map <- function(x,
     mycolors <- c("grey65",
                   grDevices::colorRampPalette(c("#0081a7","#00afb9","#fdfcdc","#fed9b7","#f07167"))(12)
                   )
-    pal <- leaflet::colorFactor(mycolors, values(x), na.color = "transparent")
+    pal <- leaflet::colorFactor(mycolors, terra::values(x), na.color = "transparent")
   }
 
   outmap <- leaflet::leaflet() |>
@@ -56,7 +56,7 @@ interactive_map <- function(x,
                    colors = mycolors) |>
     leaflet::addMiniMap(tiles = leaflet::providers$Jawg.Light,
                toggleDisplay = TRUE) |>
-    leaflegend::addLegendFactor(values = values(x),
+    leaflegend::addLegendFactor(values = terra::values(x),
                                 pal = pal,
                                 title = legend_title,
                                 position = "bottomleft",
