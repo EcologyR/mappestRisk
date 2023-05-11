@@ -23,13 +23,17 @@ interactive_map <- function(x,
                      pal = NULL
                      ) {
 
-  stopifnot(inherits(x, "SpatRaster") | inherits(x, "RasterLayer"))
+  stopifnot(inherits(x, "SpatRaster"))
 
   # current leaflet version on CRAN (2.1.2) does not seem to accept SpatRaster yet
   # temporary fix:
   if (inherits(x, "SpatRaster")) {
     x <- raster::raster(x)
   }
+
+  # check epsg
+  crs_x <- terra::crs(x, describe=TRUE)
+  if (!(crs_x$code == "3857")) { terra::project(x, "EPSG:3857")}
 
   # argument legend
   if (is.null(legend_title)) {
@@ -62,12 +66,12 @@ interactive_map <- function(x,
                                 position = "bottomleft",
                                 orientation = 'horizontal') |>
     leaflet.opacity::addOpacitySlider(layerId = "Risk Map") |>
-    leafem::addImageQuery(x,
-                          project = FALSE,
-                          type = "mousemove",
-                          layerId = "Risk Map",
-                          digits = 2
-    ) |>
+    # leafem::addImageQuery(x,
+    #                       project = FALSE,
+    #                       type = "mousemove",
+    #                       layerId = "Risk Map",
+    #                       digits = 2
+    # ) |>
     leaflet::addLayersControl(position = "bottomright",
                      baseGroups = c("Basemap", "Satellite"),
                      overlayGroups = c("Risk Map"),
