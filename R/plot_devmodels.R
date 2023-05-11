@@ -1,18 +1,36 @@
 #' Explore shape of fitted thermal performance curves to choose an appropriate model based on both statistics and ecological sense
 #'
-#' @param temp a vector containing temperature treatments (predictor variable), must have at least three different temperature treatments
-#' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp
-#' @param fitted_parameters a tibbl obtained with fit_models() function including parameter names, estimates, se and AICs
+#' @param temp a vector containing temperature treatments (predictor variable),
+#' must have at least three different temperature treatments. The function works for both
+#' aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+
+#' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
+#' The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#'
+#' @param fitted_parameters a tibble obtained with fit_models() function including parameter names,
+#' estimates, se, AICs and gnls objects (i.e. fitted_models) from `fit_devmodels()`
 #'
 #' @return a ggplot with facets printing development rate data provided by the
-#' user and the predicted values by the models fitted with fit_devmodels
+#' user and the predicted values by the models fitted with fit_devmodels and ordered by lowest AICs. Extra info is printed
+#' as labels to facilitate model selection, such as AICs, parameter uncertainty (expressed as "fit:")
+#' and number of parameters. Choosing a good balance between the least number of parameters, an "okay"
+#' fit in terms of parameter uncertainty and the lowest AIC (i.e. the most negative or the least positive) is
+#' highly recommended for model projections with other functions of the `mappestRisk` package.
 #' @export
 #'
-#' @examples   a.citricidus_tsai1999 <- readRDS("data/a.citricidus_tsai1999.rds")
-#' source("R/dario_model_fitting.R")
+#' @examples
+#' data(p.xylostella_liu2002)
+#' data(available_models)
+#'
+#' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
+#'                                      dev_rate = p.xylostella_liu2002$rate_development,
+#'                                      model_name = c("all")) #might be a bit slow
+#'
 #' plot_devmodels(temp = p.xylostella_liu2002$temperature,
-#'                dev_rate = p.xylostella_liu2002$rate_development,
-#'                fitted_parameters = cabbage_moth_fitted)
+#'                       dev_rate = p.xylostella_liu2002$rate_development,
+#'                       fitted_parameters = cabbage_moth_fitted)
 #'
 
 
@@ -20,7 +38,7 @@
 plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   devdata <- tibble (temperature = temp,
                      development_rate = dev_rate)
-  fitted_tbl <- fitted_parameters |> drop_na()
+  fitted_tbl <- fitted_parameters |> tidyr::drop_na()
   predict2fill <- tibble(temp = NULL,
                          dev_rate = NULL,
                          model_name = NULL,
@@ -28,9 +46,10 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   model_names2plot <- fitted_tbl |> distinct(model_name) |> pull(model_name)
   for(i in model_names2plot){
     fitted_tbl_i <- fitted_tbl |> filter(model_name == i)
+    warnfit_i <- fitted_tbl_i |> pull(fit)
     model_AIC_i <-fitted_tbl_i |> pull(model_AIC)
     params_i <- fitted_tbl_i |> pull(param_est)
-
+    formula_i <- dev_model_table |> filter(model_name == i) |> pull(params_formula)
     ##predict based on parameters
     explore_preds <- tibble(temp = seq(min(devdata$temperature)-5,
                                        max(devdata$temperature) +5,
@@ -38,25 +57,13 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                             model_name = i,
                             model_AIC = model_AIC_i[1],
                             preds = NULL,
-                            n_params = length(params_i))
+                            n_params = length(params_i),
+                            fit = warnfit_i[1])
     fit_vals_tbl <- explore_preds |>
-      select(temp, model_name, model_AIC, n_params) |>
-      mutate(formula = case_when(model_name == "briere1" ~  "briere1(.x, params_i[1], params_i[2], params_i[3])",
-                                 model_name == "lactin1" ~ "lactin1(.x, params_i[1], params_i[2], params_i[3])",
-                                 model_name == "janisch" ~ "janisch(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "linear_campbell" ~ "linear_campbell(.x, params_i[1], params_i[2])",
-                                 model_name == "wang" ~ "wang(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6])",
-                                 model_name == "mod_polynomial" ~ "mod_polynomial(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
-                                 model_name == "briere2" ~ "briere2(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "mod_gaussian" ~ "mod_gaussian(.x, params_i[1], params_i[2], params_i[3])",
-                                 model_name == "lactin2" ~ "lactin2(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "ratkowsky" ~ "ratkowsky(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "rezende" ~ "rezende(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "ssi" ~ "ssi(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6], params_i[7])",
-                                 model_name == "mod_weibull" ~ "mod_weibull(.x, params_i[1], params_i[2], params_i[3], params_i[4])"
-      )) |>
-      mutate(preds = map_dbl(.x = temp,
-                             .f = reformulate(unique(formula)))) |>
+      select(temp, model_name, model_AIC, n_params, fit) |>
+      mutate(formula = formula_i) |>
+      mutate(preds = purrr::map_dbl(.x = temp,
+                                    .f = reformulate(unique(formula_i)))) |>
       filter(preds >= 0) |>
       select(-formula) |>
       mutate(preds = case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
@@ -71,11 +78,11 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   aic_text <-  predict2fill %>%
     group_by(model_name) %>%
     summarise(aic = mean(model_AIC),
-              n_params = paste(mean(n_params), "parameters")) %>%
+              n_params = paste(mean(n_params), "parameters"),
+              fit = unique(fit)) %>%
     arrange(aic)
   aic_order <- aic_text %>%
-    select(model_name) %>%
-    as_vector()
+    pull(model_name)
   aic_values <- aic_text %>%
     mutate(aic =   paste("AIC =",
                          round(aic, 2)),
@@ -102,11 +109,17 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                size = 3)+
     geom_label(data = aic_values,
                aes(x = temp,
-                   y = preds-0.10,
+                   y = preds-0.30,
                    label = n_params,
                    fill = model_name),
                color = "white",
-               size = 3)
+               size = 3)+
+  geom_label(data = aic_values,
+            aes(x = 30,
+                y = preds,
+                label = paste("fit:", fit),
+                color = model_name),
+            size = 3)
   return(ggplot_models)
 }
 

@@ -5,7 +5,6 @@ wang <- function(temp, k, r, topt, tmin, tmax, a){
     (1 - exp(-(tmax - temp)/a))
   return(est)
 }
-
 mod_polynomial <- function(temp, a_0, a_1, a_2, a_3, a_4){
   est <- a_0 + a_1 * temp + a_2 * temp^2 + a_3 * temp^3 + a_4 * temp^4
   return(est)
@@ -28,6 +27,19 @@ linear_campbell <- function(temp, intercept, slope) {
 
 lactin1 <- function(temp, a, tmax, delta_t) {
   est <- exp(a * temp) - exp(a * tmax - (tmax - temp)/delta_t)
+  return(est)
+}
+
+regniere <- function(temp,tmin, tmax, phi, delta_b, delta_m, b) {
+ est <- phi* (exp(b * (temp - tmin)) - ((tmax - temp)/(tmax - tmin)) * exp(-b *
+   (temp - tmin)/delta_b) - ((temp - tmin)/(tmax - tmin)) * exp(b * (tmax - tmin) - (tmax - temp)/delta_m))
+return(est)
+ }
+
+ssi <- function(temp, p25, a, b, c, d, e) {
+  est <- (p25 * (temp + 273.16)/298 * exp(a/1.987 * (1/298 - 1/(temp +
+          273.16))))/(1 + exp(b/1.987 * (1/c - 1/(temp + 273.16)))+
+          exp(d/1.987 * (1/e - 1/(temp + 273.16))))
   return(est)
 }
 
