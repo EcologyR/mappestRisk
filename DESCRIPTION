@@ -29,8 +29,9 @@ Imports:
     htmlwidgets,
     leafem,
     leaflegend,
-    leaflet,
     leaflet.opacity,
     raster,
     terra,
     tibble
+Remotes:
+    rstudio/leaflet
