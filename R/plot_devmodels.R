@@ -20,7 +20,7 @@
 plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   devdata <- tibble (temperature = temp,
                      development_rate = dev_rate)
-  fitted_tbl <- fitted_parameters |> drop_na()
+  fitted_tbl <- fitted_parameters |> tidyr::drop_na()
   predict2fill <- tibble(temp = NULL,
                          dev_rate = NULL,
                          model_name = NULL,
@@ -30,7 +30,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
     fitted_tbl_i <- fitted_tbl |> filter(model_name == i)
     model_AIC_i <-fitted_tbl_i |> pull(model_AIC)
     params_i <- fitted_tbl_i |> pull(param_est)
-
+    formula_i <- dev_model_table |> filter(model_name == i) |> pull(params_formula)
     ##predict based on parameters
     explore_preds <- tibble(temp = seq(min(devdata$temperature)-5,
                                        max(devdata$temperature) +5,
@@ -41,22 +41,9 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                             n_params = length(params_i))
     fit_vals_tbl <- explore_preds |>
       select(temp, model_name, model_AIC, n_params) |>
-      mutate(formula = case_when(model_name == "briere1" ~  "briere1(.x, params_i[1], params_i[2], params_i[3])",
-                                 model_name == "lactin1" ~ "lactin1(.x, params_i[1], params_i[2], params_i[3])",
-                                 model_name == "janisch" ~ "janisch(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "linear_campbell" ~ "linear_campbell(.x, params_i[1], params_i[2])",
-                                 model_name == "wang" ~ "wang(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6])",
-                                 model_name == "mod_polynomial" ~ "mod_polynomial(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
-                                 model_name == "briere2" ~ "briere2(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "mod_gaussian" ~ "mod_gaussian(.x, params_i[1], params_i[2], params_i[3])",
-                                 model_name == "lactin2" ~ "lactin2(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "ratkowsky" ~ "ratkowsky(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "rezende" ~ "rezende(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
-                                 model_name == "ssi" ~ "ssi(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6], params_i[7])",
-                                 model_name == "mod_weibull" ~ "mod_weibull(.x, params_i[1], params_i[2], params_i[3], params_i[4])"
-      )) |>
-      mutate(preds = map_dbl(.x = temp,
-                             .f = reformulate(unique(formula)))) |>
+      mutate(formula = formula_i) |>
+      mutate(preds = purrr::map_dbl(.x = temp,
+                                    .f = reformulate(unique(formula_i)))) |>
       filter(preds >= 0) |>
       select(-formula) |>
       mutate(preds = case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
@@ -74,8 +61,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
               n_params = paste(mean(n_params), "parameters")) %>%
     arrange(aic)
   aic_order <- aic_text %>%
-    select(model_name) %>%
-    as_vector()
+    pull(model_name)
   aic_values <- aic_text %>%
     mutate(aic =   paste("AIC =",
                          round(aic, 2)),

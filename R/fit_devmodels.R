@@ -9,12 +9,15 @@
 #'
 #' @examples
 #' data(p.xylostella_liu2002)
+#' data(available_models)
 #'
 #' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
 #'                                         dev_rate = p.xylostella_liu2002$rate_development,
 #'                                         model_name = c("all")) #might be a bit slow
 #'
 
+p.xylostella_liu2002_mod <- p.xylostella_liu2002 |>
+  filter(temperature != 28)
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
@@ -24,15 +27,13 @@ fit_devmodels <- function(temp = NULL,
   stopifnot(length(dev_rate) == length(temp))
   stopifnot(is.character(model_name))
 
-  if (!all(model_name %in% c("all", available_models$model_name))) {
+  if (!all(model_name %in% c("all", dev_model_table$model_name))) {
     stop("model not available. For available model names, see ?available_models")
   }
 
-  if (model_name == "all") { # it will be probably the most commonly used option for user's experience
-    model_names <- available_models$model_name
-  } else {
-    model_names <- model_name
-  }
+  if (model_name[1] == "all") { # it will be probably the most commonly used option for user's experience
+    model_names <- dev_model_table$model_name
+  } else {model_names <- model_name}
 
   list_param <- dplyr::tibble(param_name = NULL,
                                start_vals = NULL,
@@ -42,7 +43,6 @@ fit_devmodels <- function(temp = NULL,
                                model_AIC = NULL)
 
   for (i in model_names) {
-
     model_i <- dev_model_table |>
       dplyr::filter(model_name == i)
 
@@ -60,8 +60,9 @@ fit_devmodels <- function(temp = NULL,
       #                               dev_rate = dev_rate)
       start_vals <- rTPC::get_start_vals(x = temp,
                                          y = dev_rate,
-                                         model_name = model_name_translate(model_name))
+                                         model_name = model_name_translate(i))
     }
+
     devdata <- dplyr::tibble(temp = temp,
                               dev_rate = dev_rate)
 
@@ -70,29 +71,30 @@ fit_devmodels <- function(temp = NULL,
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
         data = devdata,
-        start = replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
+        start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varExp(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
         control = nlme::gnlsControl(maxIter = 100,
-                              nlsTol = 1e-07,
-                              returnObject = TRUE))
-    if (is.null(fit_gnls)){ #means that it has not converged, we'll return a NA
-      list_param_tbl <- dplyr::tibble(param_name = names(start_vals),
-                                        start_vals = replace_na(start_vals, 0),
+                                    minScale = 1e-01,
+                                    returnObject = TRUE))
+
+    if (is.null(fit_gnls)){
+       list_param_tbl <- dplyr::tibble(param_name = names(start_vals),
+                                        start_vals = tidyr::replace_na(start_vals, 0),
                                         param_est = NA,
                                         param_se = NA,
                                         model_name = i,
                                         model_AIC = NA)
 
-      list_param <- list_param |>
-        dplyr::bind_rows(list_param_tbl)
-      message(paste0("ERROR: model ", i, " did not converge. Please try other models listed in `available_models`"))
+        list_param <- list_param |>
+          dplyr::bind_rows(list_param_tbl)
+        message(paste0("ERROR: model ", i, " did not converge. Please try other models listed in `available_models`"))
     }
 
     else {
       sum_fit_gnls <- summary(fit_gnls)
       list_param_tbl <- dplyr::tibble(param_name = names(coef(fit_gnls)),
-                                      start_vals = replace_na(start_vals, 0),
+                                      start_vals = tidyr::replace_na(start_vals, 0),
                                       param_est = fit_gnls$coefficients,
                                       param_se = sum_fit_gnls$tTable[1:length(fit_gnls$coefficients), 2],
                                       model_name = i,
@@ -101,23 +103,20 @@ fit_devmodels <- function(temp = NULL,
 
       list_param <- list_param |>
         dplyr::bind_rows(list_param_tbl)
-      list_param <- list_param |>
-        dplyr::mutate(false_convergence_detect = purrr::map2_dbl(.x = start_vals,
-                                                          .y = param_est,
-                                                          .f = ~if_else(.x == .y,
-                                                                        NA_real_,
-                                                                        .y)))
     }
-  }
-
-  list_param <- list_param |>
-    tidyr::drop_na() |>  # exclude false convergence
-    dplyr::select(-false_convergence_detect)
+  } # <- loop ends
 
   if (!is.null(fit_gnls) && nrow(list_param) == 0) {
     stop(paste("Model(s)", model_name, "did not converge. Please try other models listed in `available_models`"))
     ## Maybe we can keep running all the other models rather than terminating?
-  } else {
-    return(list_param)
-  }
+  } else {return(list_param)}
 }
+
+
+cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002_mod$temperature,
+                                     dev_rate = p.xylostella_liu2002_mod$rate_development,
+                                     model_name = "all") #might be a bit slow
+
+plot_devmodels(temp = p.xylostella_liu2002_mod$temperature,
+               dev_rate = p.xylostella_liu2002_mod$rate_development,
+               fitted_parameters = cabbage_moth_fitted)
