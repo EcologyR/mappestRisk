@@ -88,7 +88,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                size = 3)+
     geom_label(data = aic_values,
                aes(x = temp,
-                   y = preds-0.10,
+                   y = preds-0.20,
                    label = n_params,
                    fill = model_name),
                color = "white",

@@ -17,7 +17,9 @@
 #'
 
 p.xylostella_liu2002_mod <- p.xylostella_liu2002 |>
-  filter(temperature != 28)
+ filter(temperature != 28) # outlying data treatment
+
+### ---
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
@@ -41,7 +43,7 @@ fit_devmodels <- function(temp = NULL,
                                param_se = NULL,
                                model_name = NULL,
                                model_AIC = NULL)
-
+  list_fit_models <- vector("list", length = length(dev_model_table$model_name))
   for (i in model_names) {
     model_i <- dev_model_table |>
       dplyr::filter(model_name == i)
@@ -75,16 +77,17 @@ fit_devmodels <- function(temp = NULL,
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varExp(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
         control = nlme::gnlsControl(maxIter = 100,
-                                    minScale = 1e-01,
                                     returnObject = TRUE))
 
     if (is.null(fit_gnls)){
+       list_fit_models[[which(dev_model_table$model_name == i)]] <- NA
        list_param_tbl <- dplyr::tibble(param_name = names(start_vals),
                                         start_vals = tidyr::replace_na(start_vals, 0),
                                         param_est = NA,
                                         param_se = NA,
                                         model_name = i,
-                                        model_AIC = NA)
+                                        model_AIC = NA,
+                                        model_fit = list(fit_gnls))
 
         list_param <- list_param |>
           dplyr::bind_rows(list_param_tbl)
@@ -92,30 +95,45 @@ fit_devmodels <- function(temp = NULL,
     }
 
     else {
-      sum_fit_gnls <- summary(fit_gnls)
+      list_fit_models[[which(dev_model_table$model_name == i)]] <- fit_gnls
+        sum_fit_gnls <- summary(fit_gnls)
       list_param_tbl <- dplyr::tibble(param_name = names(coef(fit_gnls)),
                                       start_vals = tidyr::replace_na(start_vals, 0),
                                       param_est = fit_gnls$coefficients,
                                       param_se = sum_fit_gnls$tTable[1:length(fit_gnls$coefficients), 2],
                                       model_name = i,
-                                      model_AIC = sum_fit_gnls$AIC
+                                      model_AIC = sum_fit_gnls$AIC,
+                                      model_fit = list(fit_gnls)
       )
 
       list_param <- list_param |>
-        dplyr::bind_rows(list_param_tbl)
+        bind_rows(list_param_tbl)
     }
   } # <- loop ends
 
   if (!is.null(fit_gnls) && nrow(list_param) == 0) {
     stop(paste("Model(s)", model_name, "did not converge. Please try other models listed in `available_models`"))
     ## Maybe we can keep running all the other models rather than terminating?
-  } else {return(list_param)}
+  } else { list_param <- list_param |>
+    tidyr::drop_na() |>
+    mutate(false_convergence = purrr::map2_dbl(.x = start_vals,
+                                               .y = param_se,
+                                               .f = if_else(.x == .y,
+                                                            NA_real_,
+                                                            1))) |>
+    tidyr::drop_na() |>
+    select(-false_convergence)
+    return(list_param)}
 }
 
 
-cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002_mod$temperature,
-                                     dev_rate = p.xylostella_liu2002_mod$rate_development,
+cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
+                                     dev_rate = p.xylostella_liu2002$rate_development,
                                      model_name = "all") #might be a bit slow
+
+
+cabbage_moth_fitted$model_fit[[2]]
+sumx$tTable
 
 plot_devmodels(temp = p.xylostella_liu2002_mod$temperature,
                dev_rate = p.xylostella_liu2002_mod$rate_development,
