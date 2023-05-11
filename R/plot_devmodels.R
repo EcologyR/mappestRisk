@@ -28,6 +28,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   model_names2plot <- fitted_tbl |> distinct(model_name) |> pull(model_name)
   for(i in model_names2plot){
     fitted_tbl_i <- fitted_tbl |> filter(model_name == i)
+    warnfit_i <- fitted_tbl_i |> pull(fit)
     model_AIC_i <-fitted_tbl_i |> pull(model_AIC)
     params_i <- fitted_tbl_i |> pull(param_est)
     formula_i <- dev_model_table |> filter(model_name == i) |> pull(params_formula)
@@ -38,7 +39,8 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                             model_name = i,
                             model_AIC = model_AIC_i[1],
                             preds = NULL,
-                            n_params = length(params_i))
+                            n_params = length(params_i),
+                            fitting = )
     fit_vals_tbl <- explore_preds |>
       select(temp, model_name, model_AIC, n_params) |>
       mutate(formula = formula_i) |>
@@ -58,7 +60,8 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   aic_text <-  predict2fill %>%
     group_by(model_name) %>%
     summarise(aic = mean(model_AIC),
-              n_params = paste(mean(n_params), "parameters")) %>%
+              n_params = paste(mean(n_params), "parameters"),
+              fit = ) %>%
     arrange(aic)
   aic_order <- aic_text %>%
     pull(model_name)
@@ -88,7 +91,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                size = 3)+
     geom_label(data = aic_values,
                aes(x = temp,
-                   y = preds-0.20,
+                   y = preds-0.30,
                    label = n_params,
                    fill = model_name),
                color = "white",

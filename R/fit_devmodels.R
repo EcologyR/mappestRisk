@@ -1,37 +1,57 @@
-#' Fit nonlinear regression models to development rate data
+#' Fit nonlinear regression models to development rate data across temperatures (i.e. Thermal Performance Curves)
 #'
-#' @param temp a vector containing temperature treatments (predictor variable), must have at least three different temperature treatments
-#' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp
-#' @param model_name "all" or alternatively one or several of the models listed in available_models
+#' @param temp a vector containing temperature treatments (predictor variable),
+#' must have at least three different temperature treatments. The function works for both
+#' aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
+#' The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#' @param model_name "all" or alternatively one or several of the models listed in `?available_models`
 #'
-#' @return this function returns a tibble with estimate and standard error for each parameter of the selected models and the AIC
-#' @export
+#' @return this function returns a tibble with estimate and standard error for each parameter of the models from the user call
+#' that have adequately converged to the data. It also shows an AIC value and a comment on those models whose parameter uncertainty
+#' is high (`fit = "bad"` in the tibble). Fitted models are included in list format, and can be accessed
+#' via `your_parameters_tbl$fit[[x]]` with `x` being the desired row in the table.
+#' For model selection, also ecological criteria should be followed by the user. To help that purpose,
+#' we recommend use¡ing `plot_devmodels()` and look into the literature rather than focusing only on statistical information.
 #'
-#' @examples
-#' data(p.xylostella_liu2002)
+#' #' @export
+#'
+#' @examples data(p.xylostella_liu2002)
 #' data(available_models)
 #'
 #' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-#'                                         dev_rate = p.xylostella_liu2002$rate_development,
-#'                                         model_name = c("all")) #might be a bit slow
-#'
+#'                                      dev_rate = p.xylostella_liu2002$rate_development,
+#'                                      model_name = c("all")) #might be a bit slow
+#'print(cabbage_moth_fitted)
 
-p.xylostella_liu2002_mod <- p.xylostella_liu2002 |>
- filter(temperature != 28) # outlying data treatment
-
-### ---
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
 
-  stopifnot(is.numeric(temp) & length(temp) >= 3)
-  stopifnot(is.numeric(dev_rate))
-  stopifnot(length(dev_rate) == length(temp))
-  stopifnot(is.character(model_name))
+  if(!is.numeric(temp)) {
+    stop("temperature data is not numeric. Please check it.")
+  }
+  if(length(unique(temp)) <= 3 ) {
+    stop("fit_devmodels() require at least three different temperature treatments in the data")
+  }
+  if(!is.numeric(dev_rate)) {
+    stop("development rate data is not numeric. Please check it.")
+  }
+  if(length(temp) != length(dev_rate)) {
+    stop("development rate and temperature inputs are not of same length. Please check it.")
+  }
+  if(!is.character(model_name)){
+    stop("model_name must be a string in ?available_models")}
 
   if (!all(model_name %in% c("all", dev_model_table$model_name))) {
     stop("model not available. For available model names, see ?available_models")
   }
+  if (any(dev_rate < 0) | any(dev_rate > 10)){
+    warning("development rate data might contain a typo error. Please check it.")}
+  if(any(temp < -10) | any(temp > 56)){
+    warning("experienced temperatures by active organisms (i.e. not in diapause) are usually between 0 and 50ºC")}
 
   if (model_name[1] == "all") { # it will be probably the most commonly used option for user's experience
     model_names <- dev_model_table$model_name
@@ -69,7 +89,7 @@ fit_devmodels <- function(temp = NULL,
                               dev_rate = dev_rate)
 
     ## then fit model with nlme::gnls function
-    fit_gnls <- nlme::gnls(
+    fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
         data = devdata,
@@ -77,7 +97,8 @@ fit_devmodels <- function(temp = NULL,
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varExp(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
         control = nlme::gnlsControl(maxIter = 100,
-                                    returnObject = TRUE))
+                                    nlsTol = 1e-07,
+                                    returnObject = TRUE)))
 
     if (is.null(fit_gnls)){
        list_fit_models[[which(dev_model_table$model_name == i)]] <- NA
@@ -117,24 +138,32 @@ fit_devmodels <- function(temp = NULL,
   } else { list_param <- list_param |>
     tidyr::drop_na() |>
     mutate(false_convergence = purrr::map2_dbl(.x = start_vals,
-                                               .y = param_se,
-                                               .f = if_else(.x == .y,
-                                                            NA_real_,
-                                                            1))) |>
+                                               .y = param_est,
+                                               .f = ~if_else(.x == .y,
+                                                             NA_real_,
+                                                             1))) |>
     tidyr::drop_na() |>
-    select(-false_convergence)
+    select(-false_convergence) |>
+    mutate(fit = purrr::map2_chr(.x = param_est,
+                                         .y = param_se,
+                                         .f = ~ifelse(.y > .x,
+                                                      "bad",
+                                                      "okay")))
+  }
+  if(any(list_param$fit == "bad")) {
+  message("
+  ---------------------------------------------------------------------------------------------------
+  CAUTION: where `fit = bad` in your output fitted parameters table, parameter uncertainty is very high;
+           we DO NOT recommend to select them for predictions solely based on their AIC.
+  ---------------------------------------------------------------------------------------------------" )
     return(list_param)}
 }
 
+ex1 <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
+              dev_rate = p.xylostella_liu2002$rate_development,
+              model_name = "all")
 
-cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-                                     dev_rate = p.xylostella_liu2002$rate_development,
-                                     model_name = "all") #might be a bit slow
 
-
-cabbage_moth_fitted$model_fit[[2]]
-sumx$tTable
-
-plot_devmodels(temp = p.xylostella_liu2002_mod$temperature,
-               dev_rate = p.xylostella_liu2002_mod$rate_development,
+plot_devmodels(temp = p.xylostella_liu2002$temperature,
+               dev_rate = p.xylostella_liu2002$rate_development,
                fitted_parameters = cabbage_moth_fitted)
