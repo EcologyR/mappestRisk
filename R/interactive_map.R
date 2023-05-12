@@ -32,8 +32,8 @@ interactive_map <- function(x,
   }
 
   # check epsg
-  crs_x <- terra::crs(x, describe=TRUE)
-  if (!(crs_x$code == "3857")) { terra::project(x, "EPSG:3857")}
+  if (terra::crs(x, describe=TRUE)$code != "3857") {
+    x <- terra::project(x, "EPSG:3857")}
 
   # argument legend
   if (is.null(legend_title)) {
