@@ -68,7 +68,7 @@ if(is.null(variance_model)){
     stop("model not available. For available model names, see ?available_models")
   }
   if (any(dev_rate < 0) | any(dev_rate > 10)){
-    warning("development rate data might contain a typo error. Please check it.")}
+    warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
   if(any(temp < -10) | any(temp > 56)){
     warning("experienced temperatures by active organisms (i.e. not in diapause) are usually between 0 and 50ºC")}
 
@@ -109,6 +109,7 @@ if(is.null(variance_model)){
 
     ## then fit model with nlme::gnls function
     if(varfun == "exp") {
+   possible_error <- tryCatch(expr =
       fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
@@ -118,9 +119,15 @@ if(is.null(variance_model)){
         weights = nlme::varExp(form = ~temp),
         control = nlme::gnlsControl(maxIter = 100,
                                     nlsTol = 1e-07,
-                                    returnObject = TRUE)))
-    } else if(varfun == "power") {
-      fit_gnls <- suppressWarnings(nlme::gnls(
+                                    returnObject = TRUE))),
+      error = function(e) e)
+    if(inherits(possible_error, "error")) {
+      fit_gnls <- NULL
+    }
+   }
+    else if(varfun == "power") {
+      possible_error <- tryCatch(expr =
+                                   fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
         data = devdata,
@@ -129,9 +136,14 @@ if(is.null(variance_model)){
         weights = nlme::varPower(form = ~temp),
         control = nlme::gnlsControl(maxIter = 100,
                                     nlsTol = 1e-07,
-                                    returnObject = TRUE)))
-    } else if (varfun == "constant") {
-      fit_gnls <- suppressWarnings(nlme::gnls(
+                                    returnObject = TRUE))),
+      error = function(e) e)
+    if(inherits(possible_error, "error")) {
+      fit_gnls <- NULL
+      }
+  } else if (varfun == "constant") {
+    possible_error <- tryCatch(expr =
+                                 fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
         data = devdata,
@@ -140,9 +152,10 @@ if(is.null(variance_model)){
         weights = nlme::varIdent(),
         control = nlme::gnlsControl(maxIter = 100,
                                     nlsTol = 1e-07,
-                                    returnObject = TRUE)))
+                                    returnObject = TRUE))),
+      error = function(e) e)
+  if(inherits(possible_error, "error")) {fit_gnls <- NULL}
     }
-
 
     if (is.null(fit_gnls)){
        list_fit_models[[which(dev_model_table$model_name == i)]] <- NA
@@ -172,7 +185,7 @@ if(is.null(variance_model)){
       )
 
       list_param <- list_param |>
-        bind_rows(list_param_tbl)
+        dplyr::bind_rows(list_param_tbl)
     }
   } # <- loop ends
 
