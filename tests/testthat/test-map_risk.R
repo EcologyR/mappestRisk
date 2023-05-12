@@ -10,8 +10,8 @@ ext_region <- terra::ext(-10, 10, 30, 40)
 test_that("map_risk function works with default arguments", {
   skip_on_ci()
   skip_on_cran()
-  result <- map_risk(t_vals = t_vals, path = "downloaded_maps")
-  expect_true(inherits(result, "SpatRaster"))
+  result <- map_risk(t_vals = t_vals, path = "downloaded_maps", verbose = TRUE)
+  expect_true(is(result, "SpatRaster"))
   expect_equal(terra::nlyr(result), 13)
   # unlink("downloaded_maps")
 })
@@ -107,18 +107,16 @@ test_that("the output is cropped to the extent of the input region", {
 #   skip_on_cran()
 #
 #   # Create SpatRaster with worldclim_global()
-#   wclim <- geodata::worldclim_global(var = "tavg", res = 10, path = "downloaded_maps")
-#   t_rast <- terra::crop(wclim, region)
+#   wclim <- geodata::worldclim_global(var = "tavg", res = 2.5, path = "downloaded_maps")
 #
 #   # Run function with t_rast
-#   result_t_rast <- map_risk(t_vals = t_vals, t_rast = t_rast, t_rast = tavg_rast)
+#   result_t_rast <- map_risk(t_vals = t_vals, t_rast = tavg_rast, verbose = TRUE)
 #
 #   # Run function with worldclim_global()
-#   result_worldclim <- map_risk(t_vals = t_vals, region = region, res = res, t_rast = tavg_rast)
+#   result_worldclim <- map_risk(t_vals = t_vals, region = region, res = res, t_rast = wclim, verbose = TRUE)
 #
 #   # Test output
-#   expect_identical(result_t_rast, result_worldclim)
-#
+#   expect_true(all.equal(result_t_rast, result_worldclim))
 # })
 
 # Binary output, with temperature range covering the entire range of the data, should produce only 0s and 1s
