@@ -31,9 +31,13 @@ interactive_map <- function(x,
     x <- raster::raster(x)
   }
 
+  # current leafem version does not seem to accept SpatRaster yet.
+  # tempory fix:
+  # x <- raster::raster(x)
+
   # check epsg
-  crs_x <- terra::crs(x, describe=TRUE)
-  if (!(crs_x$code == "3857")) { terra::project(x, "EPSG:3857")}
+  # if (!(terra::same.crs(x, "EPSG:3857"))) {
+  #   x <- terra::project(x, "EPSG:3857", method = "near")}
 
   # argument legend
   if (is.null(legend_title)) {
@@ -55,23 +59,24 @@ interactive_map <- function(x,
     leaflet::addProviderTiles(leaflet::providers$Esri.WorldImagery,
                      group = "Satellite") |>
     leaflet::addRasterImage(x,
-                   layerId = "Risk Map",
-                   group = "Risk Map",
-                   colors = mycolors) |>
+                            method = "ngb",
+                            layerId = "Risk Map",
+                            group = "Risk Map",
+                            colors = mycolors) |>
     leaflet::addMiniMap(tiles = leaflet::providers$Jawg.Light,
                toggleDisplay = TRUE) |>
-    leaflegend::addLegendFactor(values = terra::values(x),
+    leaflegend::addLegendFactor(values = raster::values(x),
                                 pal = pal,
                                 title = legend_title,
                                 position = "bottomleft",
                                 orientation = 'horizontal') |>
     leaflet.opacity::addOpacitySlider(layerId = "Risk Map") |>
-    # leafem::addImageQuery(x,
-    #                       project = FALSE,
-    #                       type = "mousemove",
-    #                       layerId = "Risk Map",
-    #                       digits = 2
-    # ) |>
+    leafem::addImageQuery(x,
+                          project = FALSE,
+                          type = "mousemove",
+                          layerId = "Risk Map",
+                          digits = 2
+    ) |>
     leaflet::addLayersControl(position = "bottomright",
                      baseGroups = c("Basemap", "Satellite"),
                      overlayGroups = c("Risk Map"),

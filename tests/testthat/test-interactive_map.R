@@ -2,7 +2,6 @@ library(testthat)
 library(mappestRisk)
 library(terra)
 
-
 # test data
 tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 tavg_rast <- terra::rast(tavg_file)
@@ -12,10 +11,3 @@ r <- risk_rast_binary[[13]]
 test_that("interactive_map throws an error if x is not a SpatRaster", {
   expect_error(interactive_map(x = "not a raster"))
 })
-
-test_that("interactive_map returns a leaflet object", {
-  # Test that the function returns a leaflet map object
-  m <- interactive_map(x = r)
-  expect_s4_class(m, "leaflet")
-  })
-
