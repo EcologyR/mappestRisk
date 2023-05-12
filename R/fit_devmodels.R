@@ -98,7 +98,7 @@ fit_devmodels <- function(temp = NULL,
         data = devdata,
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
-        weights = nlme::varExp(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
+        weights = nlme::varPower(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
         control = nlme::gnlsControl(maxIter = 100,
                                     nlsTol = 1e-07,
                                     returnObject = TRUE)))
@@ -162,3 +162,11 @@ fit_devmodels <- function(temp = NULL,
     return(list_param)}
 }
 
+data(p.xylostella_liu2002)
+data(available_models)
+
+cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
+                                     dev_rate = p.xylostella_liu2002$rate_development,
+                                     model_name = c("all")) #might be a bit slow
+
+print(cabbage_moth_fitted)
