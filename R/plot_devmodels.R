@@ -58,7 +58,9 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                             model_AIC = model_AIC_i[1],
                             preds = NULL,
                             n_params = length(params_i),
-                            fit = warnfit_i[1])
+                            fit = ifelse(any(warnfit_i == "bad"),
+                                         "bad",
+                                         "okay"))
     fit_vals_tbl <- explore_preds |>
       select(temp, model_name, model_AIC, n_params, fit) |>
       mutate(formula = formula_i) |>

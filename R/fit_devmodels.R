@@ -10,13 +10,21 @@
 #' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
 #'
 #' @param model_name "all" or alternatively one or several of the models listed in `?available_models`
+#' to parameterise thermal performance curves.
+#'
+#' @param variance_model argument to pass to [nlme::gnls()] in `weights` argument
+#' to take into account heterogeneity of variance. Due to higher mortalities and variability at
+#' high temperatures, variance usually increases along temperature, so an exponential or power function
+#' with `exp` (default) or `power` are recommended. Alternatively, a constant function
+#' may be used if the user defines this argument as `constant`.
+
 #'
 #' @return this function returns a tibble with estimate and standard error for each parameter of the models from the user call
 #' that have adequately converged to the data. It also shows an AIC value and a comment on those models whose parameter uncertainty
 #' is high (`fit = "bad"` in the tibble). Fitted models are included in list format, and can be accessed
 #' via `your_parameters_tbl$fit[[x]]` with `x` being the desired row in the table.
 #' For model selection, also ecological criteria should be followed by the user. To help that purpose,
-#' we recommend use¡ing `plot_devmodels()` and look into the literature rather than focusing only on statistical information.
+#' we recommend using `plot_devmodels()` and look into the literature rather than focusing only on statistical information.
 #'
 #' #' @export
 #'
@@ -26,13 +34,21 @@
 #'
 #' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
 #'                                      dev_rate = p.xylostella_liu2002$rate_development,
-#'                                      model_name = c("all")) #might be a bit slow
+#'                                      model_name = "all",  #might be a bit slow
+#'                                      variance_model = "power")
 #'print(cabbage_moth_fitted)
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
-                          model_name = NULL){
-
+                          model_name = NULL,
+                          variance_model = NULL){
+varfun <- variance_model
+if(is.null(variance_model)){
+  varfun <- "exp"
+} else if(!varfun %in% c("exp", "power", "constant")) {
+  varfun <- "exp"
+  warning("no variance_model input has been provided by the user. Using exp by default")
+}
   if(!is.numeric(temp)) {
     stop("temperature data is not numeric. Please check it.")
   }
@@ -92,16 +108,41 @@ fit_devmodels <- function(temp = NULL,
                               dev_rate = dev_rate)
 
     ## then fit model with nlme::gnls function
-    fit_gnls <- suppressWarnings(nlme::gnls(
+    if(varfun == "exp") {
+      fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
         data = devdata,
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
-        weights = nlme::varExp(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
+        weights = nlme::varExp(form = ~temp),
         control = nlme::gnlsControl(maxIter = 100,
                                     nlsTol = 1e-07,
                                     returnObject = TRUE)))
+    } else if(varfun == "power") {
+      fit_gnls <- suppressWarnings(nlme::gnls(
+        model = reformulate(response = "dev_rate",
+                            termlabels = unique(model_i$formula)),
+        data = devdata,
+        start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
+        na.action = na.exclude, #to avoid problems in the model
+        weights = nlme::varPower(form = ~temp),
+        control = nlme::gnlsControl(maxIter = 100,
+                                    nlsTol = 1e-07,
+                                    returnObject = TRUE)))
+    } else if (varfun == "constant") {
+      fit_gnls <- suppressWarnings(nlme::gnls(
+        model = reformulate(response = "dev_rate",
+                            termlabels = unique(model_i$formula)),
+        data = devdata,
+        start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
+        na.action = na.exclude, #to avoid problems in the model
+        weights = nlme::varIdent(),
+        control = nlme::gnlsControl(maxIter = 100,
+                                    nlsTol = 1e-07,
+                                    returnObject = TRUE)))
+    }
+
 
     if (is.null(fit_gnls)){
        list_fit_models[[which(dev_model_table$model_name == i)]] <- NA
@@ -149,7 +190,7 @@ fit_devmodels <- function(temp = NULL,
     select(-false_convergence) |>
     mutate(fit = purrr::map2_chr(.x = param_est,
                                          .y = param_se,
-                                         .f = ~ifelse(.y > .x,
+                                         .f = ~ifelse(abs(.y) > abs(.x),
                                                       "bad",
                                                       "okay")))
   }

@@ -109,7 +109,3 @@ if(length(temperature) != length(dev_rate)){
     }
   return(start_vals_explore)
 }
-
-start_vals_devRate(model_name = "regniere",
-                   temperature = p.xylostella_liu2002$temperature,
-                   dev_rate = p.xylostella_liu2002$rate_development)
