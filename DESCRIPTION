@@ -33,6 +33,8 @@ Imports:
     leaflet,
     leaflet.opacity,
     raster,
-    rTPC,
     terra,
     tibble
+Remotes:
+    rTPC
+    
