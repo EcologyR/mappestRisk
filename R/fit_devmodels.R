@@ -26,13 +26,21 @@
 #'
 #' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
 #'                                      dev_rate = p.xylostella_liu2002$rate_development,
-#'                                      model_name = c("all")) #might be a bit slow
+#'                                      model_name = "all",  #might be a bit slow
+#'                                      variance_model = "power")
 #'print(cabbage_moth_fitted)
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
-                          model_name = NULL){
-
+                          model_name = NULL,
+                          variance_model = NULL){
+varfun <- variance_model
+if(is.null(variance_model)){
+  varfun <- "exp"
+} else if(!varfun %in% c("exp", "power", "constant")) {
+  varfun <- "exp"
+  warning("no variance_model input has been provided by the user. Using exp by default")
+}
   if(!is.numeric(temp)) {
     stop("temperature data is not numeric. Please check it.")
   }
@@ -92,16 +100,41 @@ fit_devmodels <- function(temp = NULL,
                               dev_rate = dev_rate)
 
     ## then fit model with nlme::gnls function
-    fit_gnls <- suppressWarnings(nlme::gnls(
+    if(varfun == "exp") {
+      fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
         data = devdata,
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
-        weights = nlme::varPower(form = ~temp), #usually development at higher temperatures has higher variability due to higher mortality
+        weights = nlme::varExp(form = ~temp),
         control = nlme::gnlsControl(maxIter = 100,
                                     nlsTol = 1e-07,
                                     returnObject = TRUE)))
+    } else if(varfun == "power") {
+      fit_gnls <- suppressWarnings(nlme::gnls(
+        model = reformulate(response = "dev_rate",
+                            termlabels = unique(model_i$formula)),
+        data = devdata,
+        start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
+        na.action = na.exclude, #to avoid problems in the model
+        weights = nlme::varPower(form = ~temp),
+        control = nlme::gnlsControl(maxIter = 100,
+                                    nlsTol = 1e-07,
+                                    returnObject = TRUE)))
+    } else if (varfun == "constant") {
+      fit_gnls <- suppressWarnings(nlme::gnls(
+        model = reformulate(response = "dev_rate",
+                            termlabels = unique(model_i$formula)),
+        data = devdata,
+        start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
+        na.action = na.exclude, #to avoid problems in the model
+        weights = nlme::varIdent(),
+        control = nlme::gnlsControl(maxIter = 100,
+                                    nlsTol = 1e-07,
+                                    returnObject = TRUE)))
+    }
+
 
     if (is.null(fit_gnls)){
        list_fit_models[[which(dev_model_table$model_name == i)]] <- NA
@@ -149,7 +182,7 @@ fit_devmodels <- function(temp = NULL,
     select(-false_convergence) |>
     mutate(fit = purrr::map2_chr(.x = param_est,
                                          .y = param_se,
-                                         .f = ~ifelse(.y > .x,
+                                         .f = ~ifelse(abs(.y) > abs(.x),
                                                       "bad",
                                                       "okay")))
   }
@@ -162,11 +195,3 @@ fit_devmodels <- function(temp = NULL,
     return(list_param)}
 }
 
-data(p.xylostella_liu2002)
-data(available_models)
-
-cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-                                     dev_rate = p.xylostella_liu2002$rate_development,
-                                     model_name = c("all")) #might be a bit slow
-
-print(cabbage_moth_fitted)
