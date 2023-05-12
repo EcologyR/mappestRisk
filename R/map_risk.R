@@ -115,21 +115,9 @@ map_risk <- function(t_vals = NULL,
 
   if (is.numeric(region)) {
     if (length(region) != 4) {
-      stop("When provided as a numeric vector, 'region' must have length 4 (xmin, xmax, ymin, ymax).")
+      stop("When provided as a numeric vector, 'region' must have length 4 (xmin, xmax, ymin, ymax) in unprojected geographic coordinates.")
     }
     region <- terra::ext(region)
-  }
-
-  if (is.null(region)) {
-    if (is.null(t_rast)) {
-      region <- terra::ext()  # whole world
-    } else {
-      region <- terra::ext(t_rast)
-    }
-  }
-
-  if (is(region, "SpatExtent")) {
-    mask <- FALSE  # pointless otherwise
   }
 
   if (is.null(t_rast)) {
@@ -139,22 +127,34 @@ map_risk <- function(t_vals = NULL,
                                         path = path)
   }
 
-  if (!isTRUE(terra::compareGeom(t_rast, terra::rast(region), crs = TRUE,
-                                 lyrs = FALSE, warncrs = FALSE, ext = FALSE,
-                                 rowcol = FALSE, res = FALSE,
-                                 stopOnError = FALSE, messages = FALSE))) {
-    if (is(region, "SpatExtent")) {
-      region <- terra::vect(region, crs = "epsg:4326")
-    }  # otherwise terra::project fails
+  if (is.null(region)) {
+    region <- terra::vect(terra::ext(t_rast),
+                          crs = terra::crs(t_rast))
+  }
+
+  if (is(region, "SpatExtent")) {
+    mask <- FALSE  # pointless otherwise
+    region <- terra::vect(region, crs = "epsg:4326")  # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
+  }
+
+  if (isFALSE(terra::same.crs(t_rast, region))) {
     if (verbose) cat("\nProjecting 'region' to 't_rast'...\n")
     region <- terra::project(region, t_rast)
   }
 
-  if (!isTRUE(all.equal(terra::ext(region), terra::ext()))) {
+  if (is.null(terra::intersect(terra::ext(t_rast), terra::ext(region)))) {
+    stop("There's no overlap between 'region' and 't_rast'.")
+  }
+
+  # if (isTRUE(terra::is.lonlat(region))) {
+  #   global <- terra::vect(terra::ext(), crs = "epsg:4326")
+  # } else {
+  #   global <- terra::vect(terra::ext(), crs = terra::crs(region))
+  # }
+
+  # if (!isTRUE(all.equal(terra::ext(region), terra::ext(global)))) {
+  if (terra::ext(region) < terra::ext(t_rast)) {
     if (verbose) cat("\nCropping temperature rasters to region...\n")
-    if (is.null(terra::intersect(terra::ext(tavg_rast), terra::ext(region)))) {
-      stop("There's no overlap between 'region' and 't_rast'. Result is an empty raster.")
-    }
     t_rast <- terra::crop(t_rast,
                           region,
                           mask = mask)
@@ -185,3 +185,4 @@ map_risk <- function(t_vals = NULL,
   if (verbose) cat("\nFinished!\n")
   return(t_rast)
 }
+
