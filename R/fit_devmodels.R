@@ -10,13 +10,21 @@
 #' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
 #'
 #' @param model_name "all" or alternatively one or several of the models listed in `?available_models`
+#' to parameterise thermal performance curves.
+#'
+#' @param variance_model argument to pass to [nlme::gnls()] in `weights` argument
+#' to take into account heterogeneity of variance. Due to higher mortalities and variability at
+#' high temperatures, variance usually increases along temperature, so an exponential or power function
+#' with `exp` (default) or `power` are recommended. Alternatively, a constant function
+#' may be used if the user defines this argument as `constant`.
+
 #'
 #' @return this function returns a tibble with estimate and standard error for each parameter of the models from the user call
 #' that have adequately converged to the data. It also shows an AIC value and a comment on those models whose parameter uncertainty
 #' is high (`fit = "bad"` in the tibble). Fitted models are included in list format, and can be accessed
 #' via `your_parameters_tbl$fit[[x]]` with `x` being the desired row in the table.
 #' For model selection, also ecological criteria should be followed by the user. To help that purpose,
-#' we recommend use¡ing `plot_devmodels()` and look into the literature rather than focusing only on statistical information.
+#' we recommend using `plot_devmodels()` and look into the literature rather than focusing only on statistical information.
 #'
 #' #' @export
 #'
