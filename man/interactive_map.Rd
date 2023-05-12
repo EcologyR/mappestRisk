@@ -7,34 +7,33 @@
 interactive_map(
   x,
   legend_title = NULL,
-  map_type = "high",
+  map_type = c("high", "medium"),
   path_out = NULL,
-  pal = NULL,
-  ...
+  pal = NULL
 )
 }
 \arguments{
-\item{x}{a raster object}
+\item{x}{a SpatRaster object}
 
 \item{legend_title}{the title of the legend.}
 
-\item{map_type}{the type of map. One of "high" or "medium".}
+\item{map_type}{the type of map. One of "high" or "medium" risk.}
 
-\item{path_out}{the name and the path of the output file. Example: "data/map.html"}
+\item{path_out}{(optional) the name and the path of the output file. Example: "data/map.html"}
 
 \item{pal}{the palette used to plot the risk map. Default ...}
 }
 \value{
-a dynamic map and a html with the dynamic map
+a dynamic map and, optionally, a html with the dynamic map
 }
 \description{
 Generate an interactive map from a risk map
 }
 \examples{
 \dontrun{
-p <- tempdir()
-r <- raster::raster("inst/trioza_rast.tif")
-plot_map(x = r, map_type = "high", path_out = paste0(tempdir(), "test_map.html"))
+r <- system.file("extdata", "trioza_rast.tif", package = "mappestRisk")
+# r <- terra::rast("inst/extdata/trioza_rast.tif")
+interactive_map(x = r, map_type = "high", path_out = paste0(tempdir(), "test_map.html"))
 }
 
 }

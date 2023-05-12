@@ -23,13 +23,17 @@ interactive_map <- function(x,
                      pal = NULL
                      ) {
 
-  stopifnot(inherits(x, "SpatRaster") | inherits(x, "RasterLayer"))
+  stopifnot(inherits(x, "SpatRaster"))
 
   # current leaflet version on CRAN (2.1.2) does not seem to accept SpatRaster yet
   # temporary fix:
   if (inherits(x, "SpatRaster")) {
     x <- raster::raster(x)
   }
+
+  # check epsg
+  crs_x <- terra::crs(x, describe=TRUE)
+  if (!(crs_x$code == "3857")) { terra::project(x, "EPSG:3857")}
 
   # argument legend
   if (is.null(legend_title)) {
@@ -42,7 +46,7 @@ interactive_map <- function(x,
     mycolors <- c("grey65",
                   grDevices::colorRampPalette(c("#0081a7","#00afb9","#fdfcdc","#fed9b7","#f07167"))(12)
                   )
-    pal <- leaflet::colorFactor(mycolors, values(x), na.color = "transparent")
+    pal <- leaflet::colorFactor(mycolors, terra::values(x), na.color = "transparent")
   }
 
   outmap <- leaflet::leaflet() |>
@@ -56,18 +60,18 @@ interactive_map <- function(x,
                    colors = mycolors) |>
     leaflet::addMiniMap(tiles = leaflet::providers$Jawg.Light,
                toggleDisplay = TRUE) |>
-    leaflegend::addLegendFactor(values = values(x),
+    leaflegend::addLegendFactor(values = terra::values(x),
                                 pal = pal,
                                 title = legend_title,
                                 position = "bottomleft",
                                 orientation = 'horizontal') |>
     leaflet.opacity::addOpacitySlider(layerId = "Risk Map") |>
-    leafem::addImageQuery(x,
-                          project = FALSE,
-                          type = "mousemove",
-                          layerId = "Risk Map",
-                          digits = 2
-    ) |>
+    # leafem::addImageQuery(x,
+    #                       project = FALSE,
+    #                       type = "mousemove",
+    #                       layerId = "Risk Map",
+    #                       digits = 2
+    # ) |>
     leaflet::addLayersControl(position = "bottomright",
                      baseGroups = c("Basemap", "Satellite"),
                      overlayGroups = c("Risk Map"),
