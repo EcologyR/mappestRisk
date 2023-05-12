@@ -3,20 +3,19 @@
 #' @param t_vals Numeric vector of length 2 specifying the left (minimum) and
 #' right (maximum) temperature bounds for optimal performance of the target
 #' species.
-#' @param t_rast Optional 12-layer 'SpatRaster' with monthly mean temperatures
-#' for (at least) the target 'region'. If not provided, global WorldClim raster
-#' layers will be (down)loaded and cropped to 'region'. Note that the download
-#' can be slow the first time you use the function in a new working directory.
-#' If you get an error, consider running e.g. [options(timeout = 500)].
-#' @param region Optional object specifying the region to map. Can be a
-#' 'SpatVector' polygon map (obtained with [terra::vect()]); or a character
-#' vector of country name(s) in English, in which case a countries map will be
-#' downloaded and subsetted to those countries; or a 'SpatExtent' object
-#' (obtained with [terra::ext()]); or a numeric vector of length 4 specifying
-#' the region coordinates in the order xmin, xmax, ymin, ymax. The latter two
-#' must be in unprojected coordinates (WGS84, EPSG:4326). If NULL, the output
-#' maps will cover the entire `t_rast` if provided, or the entire world
-#' otherwise.
+#' @param t_rast Optional 12-layer [terra::SpatRaster] with monthly mean
+#' temperatures for (at least) the target 'region'. If not provided, global
+#' WorldClim raster layers will be (down)loaded and cropped to 'region'. Note
+#' that the download can be slow the first time you use the function in a new
+#' working directory. If you get an error, consider running e.g.
+#' [options(timeout = 500)] (or more).
+#' @param region Optional object specifying the region to map. Must overlap the
+#' extent of 't_rast' if both are provided. Can be a [terra::SpatVector] polygon #' map (obtained with [terra::vect()]); or a character vector of country name(s)
+#' in English, in which case a countries map will be downloaded and subsetted to #' those countries; or a [terra::SpatExtent] object (obtained with
+#' [terra::ext()]); or a numeric vector of length 4 specifying the region
+#' coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
+#' unprojected coordinates (WGS84, EPSG:4326). If NULL, the output maps will
+#' cover the entire `t_rast` if provided, or the entire world otherwise.
 #' @param res Argument to pass to [geodata::worldclim_global()] specifying
 #' the spatial resolution for the raster maps to download, if 't_rast' is not
 #' provided. The default is 2.5 arc-minutes.
@@ -35,9 +34,9 @@
 #' @param verbose Logical value specifying whether to display messages about
 #' what the function is doing at possibly slow steps. The default is FALSE.
 #' Setting it to TRUE can be useful for checking progress when maps are large.
-#' @return This function returns a 'SpatRaster' object with 13 layers: one for
-#' each month, and a final summary layer with the sum (if output="binary") or
-#' the mean (if output="value") across months.
+#' @return This function returns a [terra::SpatRaster] object with 13 layers:
+#' one for each month, and a final summary layer with the sum (if output
+#' ="binary") or the mean (if output="value") across months.
 #' @export
 #' @examples
 #' tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
@@ -122,7 +121,11 @@ map_risk <- function(t_vals = NULL,
   }
 
   if (is.null(region)) {
-    region <- terra::ext()  # whole world
+    if (is.null(t_rast)) {
+      region <- terra::ext()  # whole world
+    } else {
+      region <- terra::ext(t_rast)
+    }
   }
 
   if (is(region, "SpatExtent")) {
@@ -136,14 +139,6 @@ map_risk <- function(t_vals = NULL,
                                         path = path)
   }
 
-  if (!isTRUE(all.equal(terra::ext(region), terra::ext()))) {
-    if (verbose) cat("\nCropping temperature rasters to region...\n")
-    t_rast <- terra::crop(t_rast,
-                          region,
-                          mask = mask)
-  }
-
-
   if (!isTRUE(terra::compareGeom(t_rast, terra::rast(region), crs = TRUE,
                                  lyrs = FALSE, warncrs = FALSE, ext = FALSE,
                                  rowcol = FALSE, res = FALSE,
@@ -151,15 +146,22 @@ map_risk <- function(t_vals = NULL,
     if (is(region, "SpatExtent")) {
       region <- terra::vect(region, crs = "epsg:4326")
     }  # otherwise terra::project fails
-    cat("\nProjecting 'region' to 't_rast'...\n")
+    if (verbose) cat("\nProjecting 'region' to 't_rast'...\n")
     region <- terra::project(region, t_rast)
   }
 
+  if (!isTRUE(all.equal(terra::ext(region), terra::ext()))) {
+    if (verbose) cat("\nCropping temperature rasters to region...\n")
+    if (is.null(terra::intersect(terra::ext(tavg_rast), terra::ext(region)))) {
+      stop("There's no overlap between 'region' and 't_rast'. Result is an empty raster.")
+    }
+    t_rast <- terra::crop(t_rast,
+                          region,
+                          mask = mask)
+  }
 
   # delete values outside thermal optimum zones:
-
   outside <- t_rast < min(t_vals) | t_rast > max(t_vals)
-
   if (output == "binary") {
     t_rast[outside] <- 0
     t_rast[!outside] <- 1
@@ -168,7 +170,6 @@ map_risk <- function(t_vals = NULL,
   }
 
   # outside <- terra::app(t_rast, function(x) x < min(t_vals) | x > max(t_vals))
-  #
   # if (output == "binary") {
   #   t_rast <- !outside
   # } else {
