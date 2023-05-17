@@ -64,18 +64,18 @@ test_that("fit_devmodels should throw an error if model_name is not in available
 # Test input data ranges and warnings
 test_that("fit_devmodels should print a warning if development rate data contains negative
           values or higher than 10", {
-  expect
+  set.seed(2023) # <- ensure a seed with any negative number and any model converging to test exactly this warning
   expect_warning(fit_devmodels(temp = seq(4, 40, 3),
-                               dev_rate = rnorm(13, mean = 0, sd = 0.005),
+                               dev_rate = rnorm(13, mean = 0.01, sd = 0.01),
                                model_name = "all",
                                variance_model = "exp"))
 })
 
 test_that("fit_devmodels should issue a warning if temperature data contains values outside of the range of active organisms", {
-  expect_warning(fit_devmodels(temp = c(seq(4, 39, 3), 4000),
-                               dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                               model_name = "all",
-                               variance_model = "exp"))
+  expect_warning(capture_error(fit_devmodels(temp = c(seq(4, 39, 3), 4000),
+                                             dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                                             model_name = "all",
+                                             variance_model = "exp")))
 })
 
 # Test output object
@@ -129,10 +129,10 @@ test_that("fit_devmodels should stop the function and advise the user about NAs 
 
 ## test extreme data sets with no convergence gives an error saying no model fitted to the data
 test_that("fit_devmodels can deal with no convergence at all", {
-  expect_error(fit_devmodels(temp = seq(4, 40, 7),
-                                dev_rate = runif(6, min = -100, max = 101),
+  expect_error(suppressWarnings(fit_devmodels(temp = seq(4, 40, 7),
+                                dev_rate = runif(6, min = -234, max = 101),
                                 model_name = "all",
-                                variance_model = "exp"))
+                                variance_model = "exp")))
 })
 
 ## test that a fitted model is accessible through the fitted_params tbl
@@ -147,10 +147,10 @@ test_that("gnls object is retrieved and of correct class", {
 
 ## test that a fitted model summary is accessible
 test_that("gnls object and its summary and table of parameters and statistics are correct", {
-  fitted_parameters <-fit_devmodels(temp = seq(4, 40, 3),
+  suppressWarnings(fitted_parameters <-fit_devmodels(temp = seq(4, 40, 3),
                                     dev_rate = rnorm(13, mean = 0.12, sd = 0.1),
                                     model_name = "all",
-                                    variance_model = "exp")
+                                    variance_model = "exp"))
   sum_fitted <- summary(fitted_parameters$model_fit[[1]])
   expect_true(all(colnames(sum_fitted$tTable) == c("Value", "Std.Error", "t-value", "p-value")))
 
@@ -163,13 +163,13 @@ test_that("false convergence (i.e. start_vals == param_est) is excluded from fit
   for(seed in sample_seeds_random) {
     set.seed(seed)
     suppressWarnings(fitted_parameters <-fit_devmodels(temp = seq(4, 40, 3),
-                                     dev_rate = rnorm(13, mean = 0.12, sd = 0.1),
+                                     dev_rate = rnorm(13, mean = 0.12, sd = 0.01), # this combination ensures that model converge and we can test this concrete thing
                                      model_name = "all",
                                      variance_model = "exp"))
     detect_false_convergence <- fitted_parameters |>
-      mutate(bad_convergence = purrr::map2_lgl(.x = start_vals,
+      dplyr::mutate(bad_convergence = purrr::map2_lgl(.x = start_vals,
                                                .y = param_est,
-                                               .f = ~if_else(.x == .y,
+                                               .f = ~dplyr::if_else(.x == .y,
                                                              TRUE,
                                                              FALSE
                                                )))

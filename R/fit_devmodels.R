@@ -125,8 +125,9 @@ if(is.null(variance_model)){
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varExp(form = ~temp),
-        control = nlme::gnlsControl(maxIter = 100,
-                                    nlsTol = 1e-07,
+        control = nlme::gnlsControl(maxIter = 50,
+                                    nlsTol = 1e-09,
+                                    minScale = 1e-01,
                                     returnObject = TRUE))),
       error = function(e) e)
     if(inherits(possible_error, "error")) {
@@ -142,8 +143,10 @@ if(is.null(variance_model)){
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varPower(form = ~temp),
-        control = nlme::gnlsControl(maxIter = 100,
-                                    nlsTol = 1e-07,
+        control = nlme::gnlsControl(maxIter = 50,
+                                    nlsTol = 1e-09,
+                                    minScale = 1e-01,
+
                                     returnObject = TRUE))),
       error = function(e) e)
     if(inherits(possible_error, "error")) {
@@ -158,9 +161,8 @@ if(is.null(variance_model)){
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varIdent(),
-        control = nlme::gnlsControl(maxIter = 100,
-                                    nlsTol = 1e-12,
-                                    msTol = 1e-09,
+        control = nlme::gnlsControl(maxIter = 50,
+                                    nlsTol = 1e-09,
                                     minScale = 1e-01,
                                     returnObject = TRUE))),
       error = function(e) e)
@@ -222,7 +224,7 @@ if(is.null(variance_model)){
   ---------------------------------------------------------------------------------------------------
   CAUTION: where `fit = bad` in your output fitted parameters table, parameter uncertainty is very high;
            we DO NOT recommend to select them for predictions solely based on their AIC. We strongly
-           recommend to takea look at predictions using `plot_devmodels()` function for your data.
+           recommend to take a look at predictions using `plot_devmodels()` function for your data.
   ---------------------------------------------------------------------------------------------------" )
     }
   if(nrow(list_param) == 0 |
