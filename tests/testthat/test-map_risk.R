@@ -1,6 +1,3 @@
-library(testthat)
-library(terra)
-
 tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 tavg_rast <- terra::rast(tavg_file)
 t_vals <- c(12.5, 21.4)
