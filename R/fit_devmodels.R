@@ -221,7 +221,8 @@ if(is.null(variance_model)){
   message("
   ---------------------------------------------------------------------------------------------------
   CAUTION: where `fit = bad` in your output fitted parameters table, parameter uncertainty is very high;
-           we DO NOT recommend to select them for predictions solely based on their AIC.
+           we DO NOT recommend to select them for predictions solely based on their AIC. We strongly
+           recommend to takea look at predictions using `plot_devmodels()` function for your data.
   ---------------------------------------------------------------------------------------------------" )
     }
   if(nrow(list_param) == 0 |

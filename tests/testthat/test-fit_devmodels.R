@@ -158,10 +158,24 @@ test_that("gnls object and its summary and table of parameters and statistics ar
 
 ## test that no false convergence occurs
 test_that("false convergence (i.e. start_vals == param_est) is excluded from fitted_params", {
-  fitted_parameters <-fit_devmodels(temp = seq(4, 40, 3),
-                                    dev_rate = rnorm(13, mean = 0.12, sd = 0.1),
-                                    model_name = "all",
-                                    variance_model = "exp")
-  expect_false()
-
+  number_of_falseconverg <- vector("list", length = 20)
+  sample_seeds_random <- sample(1000, 20, replace = FALSE)
+  for(seed in sample_seeds_random) {
+    set.seed(seed)
+    suppressWarnings(fitted_parameters <-fit_devmodels(temp = seq(4, 40, 3),
+                                     dev_rate = rnorm(13, mean = 0.12, sd = 0.1),
+                                     model_name = "all",
+                                     variance_model = "exp"))
+    detect_false_convergence <- fitted_parameters |>
+      mutate(bad_convergence = purrr::map2_lgl(.x = start_vals,
+                                               .y = param_est,
+                                               .f = ~if_else(.x == .y,
+                                                             TRUE,
+                                                             FALSE
+                                               )))
+    n_false_conv_seed <- length(which(detect_false_convergence$bad_convergence == TRUE))
+    number_of_falseconverg[which(sample_seeds_random == seed)] <- n_false_conv_seed
+  }
+  total_false_conv <- purrr::pmap(number_of_falseconverg, sum)
+  expect_true(total_false_conv == 0)
 })
