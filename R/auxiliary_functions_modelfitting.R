@@ -1,9 +1,4 @@
 ### script with auxiliary functions for fit_devmodels()
-
-## translate user-friendly models into dependencies
-load(file = here::here("data/available_models.rda"))
-
-
 model_name_translate <- function(user_model_name) {
   if (!all(user_model_name %in% c("all", dev_model_table$model_name))) {
     stop("model name not available. Please check ?available_models")
@@ -99,7 +94,7 @@ if(length(temperature) != length(dev_rate)){
                                                              model_name = mod2fit) |>
       dplyr::pull(start_value)
 
-    warning("generic starting values")
+    message("generic starting values")
     } else { start_vals_names <- extract_param_names(multstart_vals_fit)
     start_vals <- sum_start_vals_fit$parameters[1:length(start_vals_names), 1]
     start_vals_explore <- dplyr::tibble(param_name = start_vals_names,

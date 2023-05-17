@@ -43,16 +43,24 @@ fit_devmodels <- function(temp = NULL,
                           model_name = NULL,
                           variance_model = NULL){
 varfun <- variance_model
+
+if(any(is.na(dev_rate))) {
+  stop("development rate data have NAs; please consider removing them or fixing them")
+}
+if(any(is.na(temp))) {
+  stop("temperature data have NAs; please consider removing them or fixing them")
+}
 if(is.null(variance_model)){
   varfun <- "exp"
-} else if(!varfun %in% c("exp", "power", "constant")) {
-  varfun <- "exp"
   warning("no variance_model input has been provided by the user. Using exp by default")
+
+} else if(!varfun %in% c("exp", "power", "constant")) {
+  stop("variance_model input not available. Use `exp`, `power` or `constant` - see ?fit_devmodels() for more information")
 }
   if(!is.numeric(temp)) {
     stop("temperature data is not numeric. Please check it.")
   }
-  if(length(unique(temp)) <= 3 ) {
+  if(length(unique(temp)) <= 3) {
     stop("fit_devmodels() require at least three different temperature treatments in the data")
   }
   if(!is.numeric(dev_rate)) {
@@ -68,7 +76,7 @@ if(is.null(variance_model)){
     stop("model not available. For available model names, see ?available_models")
   }
   if (any(dev_rate < 0) | any(dev_rate > 10)){
-    warning("development rate data might contain a typo error. Please check it.")}
+    warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
   if(any(temp < -10) | any(temp > 56)){
     warning("experienced temperatures by active organisms (i.e. not in diapause) are usually between 0 and 50ºC")}
 
@@ -109,6 +117,7 @@ if(is.null(variance_model)){
 
     ## then fit model with nlme::gnls function
     if(varfun == "exp") {
+   possible_error <- tryCatch(expr =
       fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
@@ -116,33 +125,49 @@ if(is.null(variance_model)){
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varExp(form = ~temp),
-        control = nlme::gnlsControl(maxIter = 100,
-                                    nlsTol = 1e-07,
-                                    returnObject = TRUE)))
-    } else if(varfun == "power") {
-      fit_gnls <- suppressWarnings(nlme::gnls(
+        control = nlme::gnlsControl(maxIter = 50,
+                                    nlsTol = 1e-09,
+                                    minScale = 1e-01,
+                                    returnObject = TRUE))),
+      error = function(e) e)
+    if(inherits(possible_error, "error")) {
+      fit_gnls <- NULL
+    }
+   }
+    else if(varfun == "power") {
+      possible_error <- tryCatch(expr =
+                                   fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
         data = devdata,
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varPower(form = ~temp),
-        control = nlme::gnlsControl(maxIter = 100,
-                                    nlsTol = 1e-07,
-                                    returnObject = TRUE)))
-    } else if (varfun == "constant") {
-      fit_gnls <- suppressWarnings(nlme::gnls(
+        control = nlme::gnlsControl(maxIter = 50,
+                                    nlsTol = 1e-09,
+                                    minScale = 1e-01,
+
+                                    returnObject = TRUE))),
+      error = function(e) e)
+    if(inherits(possible_error, "error")) {
+      fit_gnls <- NULL
+      }
+  } else if (varfun == "constant") {
+    possible_error <- tryCatch(expr =
+                                 fit_gnls <- suppressWarnings(nlme::gnls(
         model = reformulate(response = "dev_rate",
                             termlabels = unique(model_i$formula)),
         data = devdata,
         start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
         na.action = na.exclude, #to avoid problems in the model
         weights = nlme::varIdent(),
-        control = nlme::gnlsControl(maxIter = 100,
-                                    nlsTol = 1e-07,
-                                    returnObject = TRUE)))
+        control = nlme::gnlsControl(maxIter = 50,
+                                    nlsTol = 1e-09,
+                                    minScale = 1e-01,
+                                    returnObject = TRUE))),
+      error = function(e) e)
+  if(inherits(possible_error, "error")) {fit_gnls <- NULL}
     }
-
 
     if (is.null(fit_gnls)){
        list_fit_models[[which(dev_model_table$model_name == i)]] <- NA
@@ -172,7 +197,7 @@ if(is.null(variance_model)){
       )
 
       list_param <- list_param |>
-        bind_rows(list_param_tbl)
+        dplyr::bind_rows(list_param_tbl)
     }
   } # <- loop ends
 
@@ -181,14 +206,14 @@ if(is.null(variance_model)){
     ## Maybe we can keep running all the other models rather than terminating?
   } else { list_param <- list_param |>
     tidyr::drop_na() |>
-    mutate(false_convergence = purrr::map2_dbl(.x = start_vals,
+    dplyr::mutate(false_convergence = purrr::map2_dbl(.x = start_vals,
                                                .y = param_est,
-                                               .f = ~if_else(.x == .y,
+                                               .f = ~dplyr::if_else(.x == .y,
                                                              NA_real_,
                                                              1))) |>
     tidyr::drop_na() |>
-    select(-false_convergence) |>
-    mutate(fit = purrr::map2_chr(.x = param_est,
+    dplyr::select(-false_convergence) |>
+    dplyr::mutate(fit = purrr::map2_chr(.x = param_est,
                                          .y = param_se,
                                          .f = ~ifelse(abs(.y) > abs(.x),
                                                       "bad",
@@ -198,8 +223,19 @@ if(is.null(variance_model)){
   message("
   ---------------------------------------------------------------------------------------------------
   CAUTION: where `fit = bad` in your output fitted parameters table, parameter uncertainty is very high;
-           we DO NOT recommend to select them for predictions solely based on their AIC.
+           we DO NOT recommend to select them for predictions solely based on their AIC. We strongly
+           recommend to take a look at predictions using `plot_devmodels()` function for your data.
   ---------------------------------------------------------------------------------------------------" )
-    return(list_param)}
+    }
+  if(nrow(list_param) == 0 |
+     all(list_param |>
+         dplyr::group_by(model_name) |>
+         dplyr::summarise(length(unique(fit))) == 1) &&
+                            !all(list_param$fit == "okay")) {
+      stop("no model converged adequately for fitting your data")
+    } else {
+      return(list_param)
+      }
 }
+
 
