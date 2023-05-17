@@ -1,5 +1,6 @@
 library(dplyr)
 library(testthat)
+library(mappestRisk)
 suppressWarnings(library(ggplot2))
 ## first use a data of example
 set.seed(2023)

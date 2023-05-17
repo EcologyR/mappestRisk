@@ -1,3 +1,5 @@
+library(rTPC)
+library(dplyr)
 # Test input data types
 test_that("fit_devmodels should throw an error if temperature data is not numeric", {
   expect_error(fit_devmodels(temp = as.character(seq(4, 40, 3)),

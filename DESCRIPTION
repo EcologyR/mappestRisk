@@ -31,7 +31,6 @@ Imports:
     leafem,
     leaflegend,
     leaflet.opacity,
-    nls.multstart,
     raster,
     terra,
     tibble
