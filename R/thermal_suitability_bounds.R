@@ -33,8 +33,11 @@ thermal_suitability_bounds <- function(fitted_parameters,
                                        suitability_threshold = NULL) {
   `%!in%` <- Negate(`%in%`)
   data("available_models_table")
-  fitted_parameters_nonas <- fitted_parameters |> drop_na()
-  fitted_param_names <- fitted_parameters_nonas |> distinct(model_name) |> pull(model_name)
+  fitted_parameters_nonas <- fitted_parameters |>
+    tidyr::drop_na()
+  fitted_param_names <- fitted_parameters_nonas |>
+    distinct(model_name) |>
+    pull(model_name)
   if(is.null(suitability_threshold)){
     suitability_threshold <- 50
     message("No suitability_threshold value input. Using by default suitability_threshold = 50%")
@@ -111,7 +114,9 @@ Try another instead (use `plot_devmodel()` to see curve shapes).
       tvals <- dplyr::bind_rows(tvals, tvals_i)
     } # <- loop ends
   }
-    if(any(tvals$tval_right == 50)) warning("upper value of thermal suitability  might be non-realistic")
+    if(any(tvals$tval_right >= 50))
+    { warning("upper value of thermal suitability  might be non-realistic")
+      }
     return(tvals)
 }
 

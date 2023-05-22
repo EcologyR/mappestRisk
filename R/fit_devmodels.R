@@ -73,7 +73,7 @@ if(is.null(variance_model)){
     stop("model_name must be a string in ?available_models")}
 
   if (!all(model_name %in% c("all", dev_model_table$model_name))) {
-    stop("model not available. For available model names, see ?available_models")
+    stop("model not available. For available model names, see `dev_model_table`")
   }
   if (any(dev_rate < 0) | any(dev_rate > 10)){
     warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
