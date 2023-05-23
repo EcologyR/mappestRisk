@@ -2,7 +2,7 @@
 #'
 #' @param temp a vector containing temperature treatments (predictor variable),
 #' must have at least three different temperature treatments. The function works for both
-#' aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
 #' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
 
 #' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
@@ -10,32 +10,31 @@
 #' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
 #'
 #' @param fitted_parameters a tibble obtained with fit_models() function including parameter names,
-#' estimates, se, AICs and gnls objects (i.e. fitted_models) from `fit_devmodels()`
+#' estimates, se, AICs and gnls objects (i.e. fitted_models) from [mappestRisk::fit_devmodels()].
 #'
-#' @return a ggplot with facets printing development rate data provided by the
-#' user and the predicted values by the models fitted with fit_devmodels and ordered by lowest AICs. Extra info is printed
-#' as labels to facilitate model dplyr::selection, such as AICs, parameter uncertainty (expressed as "fit:")
+#' @return a faceted ggplot printing development rate data provided by the
+#' user and the predicted values by the models fitted with [mappestRisk::fit_devmodels()] and sorted by lowest AICs. Extra info is printed
+#' as labels to facilitate model selection, such as AICs, parameter uncertainty (expressed as "`fit:`")
 #' and number of parameters. Choosing a good balance between the least number of parameters, an "okay"
 #' fit in terms of parameter uncertainty and the lowest AIC (i.e. the most negative or the least positive) is
-#' highly recommended for model projections with other functions of the `mappestRisk` package.
+#' highly recommended for model projections with other functions of the [mappestRisk] package.
 #' @export
 #'
 #' @examples
-#' data(p.xylostella_liu2002)
-#' data(available_models)
+#' data("h.vitripennis_pilkington2014")
+#' homalodisca_fitted <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+#'                                     dev_rate = h.vitripennis_pilkington2014$rate_development,
+#'                                     model_name = c("all"),
+#'                                     variance_model = "exp") #might be a bit slow
 #'
-#' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-#'                                      dev_rate = p.xylostella_liu2002$rate_development,
-#'                                      model_name = c("all")) #might be a bit slow
-#'
-#' plot_devmodels(temp = p.xylostella_liu2002$temperature,
-#'                       dev_rate = p.xylostella_liu2002$rate_development,
-#'                       fitted_parameters = cabbage_moth_fitted)
+#' plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+#'                dev_rate = h.vitripennis_pilkington2014$rate_development,
+#'                fitted_parameters = homalodisca_fitted)
 #'
 
 
 
-plot_devmodels <- function(temp, dev_rate, fitted_parameters){
+plot_devmodels <- function(temp, dev_rate, fitted_parameters) {
 
   if(any(is.na(dev_rate))) {
     stop("development rate data have NAs; please consider removing them or fixing them")
@@ -58,18 +57,19 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   if(any(temp < -10) | any(temp > 56)) {
     warning("experienced temperatures by active organisms (i.e. not in diapause) are usually between 0 and 50ºC")
   }
-  if (!is.data.frame(fitted_parameters) |
-       suppressWarnings(any(colnames(fitted_parameters) != c("param_name", "start_vals", "param_est", "param_se",
-                                                                "model_name", "model_AIC", "model_fit", "fit")))) {
-    stop("`fitted_parameters` must be a  data.frame inherited   from the output of `mappestRisk::fit_devmodels()` function.
-  No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filter(ing
-  or subsetting by rows if desired.")
-  }
   if (is.null(fitted_parameters)) {
     stop("`fitted_parameters` is NULL; use `mappestRisk::fit_devmodels()` to check that at least one model converged")
   }
-
-
+  if(!is.data.frame(fitted_parameters)) {
+    stop("fitted_parameters` must be a  data.frame inherited from the output of `mappestRisk::fit_devmodels()` function.
+  No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering
+  or subsetting by rows if desired.")
+  }
+  if(suppressWarnings(any(!c("param_name", "start_vals", "param_est", "param_se", "model_name", "model_AIC", "model_fit", "fit") %in% colnames(fitted_parameters)))){
+    stop("fitted_parameters` must be a  data.frame inherited from the output of `mappestRisk::fit_devmodels()` function.
+  No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering
+  or subsetting by rows if desired.")
+  }
   devdata <- tibble(temperature = temp,
                      development_rate = dev_rate)
   fitted_tbl <- fitted_parameters |> tidyr::drop_na()
@@ -84,6 +84,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   model_names2plot <- fitted_tbl |>
     distinct(model_name) |>
     pull(model_name)
+
   for(i in model_names2plot){
     fitted_tbl_i <- fitted_tbl |>
       filter(model_name == i)
@@ -137,7 +138,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
            temp = min(devdata$temperature),
            preds = 1.5*max(devdata$development_rate))
   if(max(predict2fill$preds, na.rm = TRUE) > 5* max(devdata$development_rate, na.rm = TRUE) |
-     max(devdata$development_rate, na.rm = TRUE) > 5* max(predict2fill$preds, na.rm = TRUE)){
+     max(devdata$development_rate, na.rm = TRUE) > 5* max(predict2fill$preds, na.rm = TRUE)) {
     warning("scale in the plot might not be appropriate to your data or at least for some points or some regions of the curve.
   Please consider to check out the input of `dev_rate`")
   }
