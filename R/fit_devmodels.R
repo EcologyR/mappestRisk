@@ -73,7 +73,7 @@ if(is.null(variance_model)){
     stop("model_name must be a string in ?available_models")}
 
   if (!all(model_name %in% c("all", dev_model_table$model_name))) {
-    stop("model not available. For available model names, see ?available_models")
+    stop("model not available. For available model names, see `dev_model_table`")
   }
   if (any(dev_rate < 0) | any(dev_rate > 10)){
     warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
@@ -223,8 +223,8 @@ if(is.null(variance_model)){
   message("
   ---------------------------------------------------------------------------------------------------
   CAUTION: where `fit = bad` in your output fitted parameters table, parameter uncertainty is very high;
-           we DO NOT recommend to select them for predictions solely based on their AIC. We strongly
-           recommend to take a look at predictions using `plot_devmodels()` function for your data.
+  we DO NOT recommend to select them for predictions solely based on their AIC. We strongly
+  recommend to take a look at predictions using `plot_devmodels()` function for your data.
   ---------------------------------------------------------------------------------------------------" )
     }
   if(nrow(list_param) == 0 |

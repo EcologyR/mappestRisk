@@ -1,8 +1,7 @@
-library(testthat)
-library(mappestRisk)
+library(rTPC)
+library(dplyr)
 
-as.character()
-# Test input data types
+# input test
 test_that("fit_devmodels should throw an error if temperature data is not numeric", {
   expect_error(fit_devmodels(temp = as.character(seq(4, 40, 3)),
                              dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
