@@ -1,42 +1,42 @@
-#' Explore shape of fitted thermal performance curves to choose an appropriate model based on both statistics and ecological sense
+#' Plot predictions of fitted thermal performance curves to your data
+#'
+#' The function`plot_devmodels()` displays a faceted plot of fitted TPCs
+#' to help the user to select an appropriate model based both on statistical and ecological criteria.
 #'
 #' @param temp a vector containing temperature treatments (predictor variable),
-#' must have at least three different temperature treatments. The function works for both
-#' aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
-#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
-
+#'  must have at least three different temperature treatments. The function works for both
+#'  aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
+#'  rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#'
 #' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
-#' The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
-#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#'  The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
+#'  rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
 #'
-#' @param fitted_parameters a tibble obtained with fit_models() function including parameter names,
-#' estimates, se, AICs and gnls objects (i.e. fitted_models) from `fit_devmodels()`
+#' @param fitted_parameters a `tibble` obtained with `fit_devmodels()` function including parameter names,
+#'  estimates, se, AICs and gnls objects (i.e. fitted_models) from `fit_devmodels()`.
 #'
-#' @return a ggplot with facets printing development rate data provided by the
-#' user and the predicted values by the models fitted with fit_devmodels and ordered by lowest AICs. Extra info is printed
-#' as labels to facilitate model dplyr::selection, such as AICs, parameter uncertainty (expressed as "fit:")
-#' and number of parameters. Choosing a good balance between the least number of parameters, an "okay"
-#' fit in terms of parameter uncertainty and the lowest AIC (i.e. the most negative or the least positive) is
-#' highly recommended for model projections with other functions of the `mappestRisk` package.
+#' @returns takes the fitted parameters table from `fit_devmodels()` and returns a plot with the predicted values -i.e. development rate-
+#' across temperatures each for the models that adequately converged. Facets of the resulting plots are automatically sorted by lowest AIC values in descending order
+#' and more information such as number of parameters and accuracy of fit for the parameters are displayed.
+#'
+#' @seealso `fit_devmodels()` for fitting Thermal Performance Curves to development rate data
+#'
 #' @export
 #'
 #' @examples
-#' data(p.xylostella_liu2002)
-#' data(available_models)
 #'
-#' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-#'                                      dev_rate = p.xylostella_liu2002$rate_development,
-#'                                      model_name = c("all")) #might be a bit slow
+#' data("h.vitripennis_pilkington2014")
+#' homalodisca_fitted <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+#'                                     dev_rate = h.vitripennis_pilkington2014$rate_development,
+#'                                     model_name = c("all"),
+#'                                     variance_model = "exp") #might be a bit slow
 #'
-#' plot_devmodels(temp = p.xylostella_liu2002$temperature,
-#'                       dev_rate = p.xylostella_liu2002$rate_development,
-#'                       fitted_parameters = cabbage_moth_fitted)
+#' plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+#'                dev_rate = h.vitripennis_pilkington2014$rate_development,
+#'                fitted_parameters = homalodisca_fitted)
 #'
 
-
-
-plot_devmodels <- function(temp, dev_rate, fitted_parameters){
-
+plot_devmodels <- function(temp, dev_rate, fitted_parameters) {
   if(any(is.na(dev_rate))) {
     stop("development rate data have NAs; please consider removing them or fixing them")
   }
@@ -54,28 +54,29 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   }
   if (any(dev_rate < 0) | any(dev_rate > 10)){
     warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")
-    }
+  }
   if(any(temp < -10) | any(temp > 56)) {
     warning("experienced temperatures by active organisms (i.e. not in diapause) are usually between 0 and 50ºC")
-  }
-  if (!is.data.frame(fitted_parameters) |
-       suppressWarnings(any(colnames(fitted_parameters) != c("param_name", "start_vals", "param_est", "param_se",
-                                                                "model_name", "model_AIC", "model_fit", "fit")))) {
-    stop("`fitted_parameters` must be a  data.frame inherited   from the output of `mappestRisk::fit_devmodels()` function.
-  No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filter(ing
-  or subsetting by rows if desired.")
   }
   if (is.null(fitted_parameters)) {
     stop("`fitted_parameters` is NULL; use `mappestRisk::fit_devmodels()` to check that at least one model converged")
   }
-
-
+  if(!is.data.frame(fitted_parameters)) {
+    stop("fitted_parameters` must be a  data.frame inherited from the output of `mappestRisk::fit_devmodels()` function.
+    No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering
+    or subsetting by rows if desired.")
+  }
+  if(suppressWarnings(any(!c("param_name", "start_vals", "param_est", "param_se", "model_name", "model_AIC", "model_fit", "fit") %in% colnames(fitted_parameters)))){
+    stop("fitted_parameters` must be a  data.frame inherited from the output of `mappestRisk::fit_devmodels()` function.
+    No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering
+    or subsetting by rows if desired.")
+  }
   devdata <- tibble(temperature = temp,
-                     development_rate = dev_rate)
+                    development_rate = dev_rate)
   fitted_tbl <- fitted_parameters |> tidyr::drop_na()
   if(nrow(fitted_tbl) == 0){
     stop("no model has converged in your `fitted_parameters` data.frame. Is it the appropriate object coming from converged
-  `fit_devmodels()`?")
+    `fit_devmodels()`?")
   }
   predict2fill <- tibble(temp = NULL,
                          dev_rate = NULL,
@@ -84,6 +85,7 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
   model_names2plot <- fitted_tbl |>
     distinct(model_name) |>
     pull(model_name)
+
   for(i in model_names2plot){
     fitted_tbl_i <- fitted_tbl |>
       filter(model_name == i)
@@ -136,10 +138,9 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                          round(aic, 2)),
            temp = min(devdata$temperature),
            preds = 1.5*max(devdata$development_rate))
-  if(max(predict2fill$preds, na.rm = TRUE) > 5* max(devdata$development_rate, na.rm = TRUE) |
-     max(devdata$development_rate, na.rm = TRUE) > 5* max(predict2fill$preds, na.rm = TRUE)){
+  if(max(predict2fill$preds, na.rm = TRUE) > 5* max(devdata$development_rate, na.rm = TRUE) | max(devdata$development_rate, na.rm = TRUE) > 5* max(predict2fill$preds, na.rm = TRUE)) {
     warning("scale in the plot might not be appropriate to your data or at least for some points or some regions of the curve.
-  Please consider to check out the input of `dev_rate`")
+    Please consider to check out the input of `dev_rate`")
   }
   ggplot_models <- ggplot()+
     geom_point(data = devdata, aes(x = temperature,
@@ -167,14 +168,12 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters){
                    fill = model_name),
                color = "white",
                size = 3)+
-  geom_label(data = aic_values,
-            aes(x = 30,
-                y = preds,
-                label = paste("fit:", fit),
-                color = model_name),
-            size = 3)
+    geom_label(data = aic_values,
+               aes(x = 30,
+                   y = preds,
+                   label = paste("fit:", fit),
+                   color = model_name),
+               size = 3)
   return(ggplot_models)
 }
-
-
 

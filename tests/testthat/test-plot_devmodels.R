@@ -13,33 +13,40 @@ fitted_params_example <- fit_devmodels(temp = seq(4, 40, 3),
 test_that("plot_devmodels should throw an error if temperature data is not numeric", {
   expect_error(plot_devmodels(temp = as.factor(seq(4, 40, 3)),
                                dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                               fitted_parameters = fitted_params_example))
+                               fitted_parameters = fitted_params_example),
+               "temperature data is not numeric. Please check it.")
 })
 
 test_that("plot_devmodels should throw an error if dev_rate data is not numeric", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
                               dev_rate = as.character(rnorm(13, mean = 0.02, sd = 0.005)),
-                              fitted_parameters = fitted_params_example))
+                              fitted_parameters = fitted_params_example),
+               "development rate data is not numeric. Please check it.")
 })
 
 test_that("plot_devmodels should throw an error if temperature data is a data.frame", {
   expect_error(plot_devmodels(temp = data.frame(temperature = seq(4, 40, 3),
                                                temp_error = runif(13, 0, 2)),
                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                             fitted_parameters = fitted_params_example))
+                             fitted_parameters = fitted_params_example),
+               "temperature data is not numeric. Please check it.")
 })
 
 test_that("plot_devmodels should throw an error if temperature and development rate inputs are not of same length", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
                              dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
-                             fitted_parameters = fitted_params_example))
+                             fitted_parameters = fitted_params_example),
+               "development rate and temperature inputs are not of same length. Please check it.")
 })
 
 
 test_that("plot_devmodels should throw an error if fitted_parameters is not inherited unmodified from `fit_devmodels()`", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
                               dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                              fitted_parameters = fitted_params_example |> select(- model_AIC)))
+                              fitted_parameters = fitted_params_example |> select(- model_AIC)),
+               "`fitted_parameters` must be a  data.frame inherited   from the output of `mappestRisk::fit_devmodels()` function.
+  No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filter(ing
+  or subsetting by rows if desired.")
 })
 
 test_that("plot_devmodels should throw an error if fitted_parameters columns are renamed from `fit_devmodels()`", {

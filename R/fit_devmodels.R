@@ -1,8 +1,7 @@
 #' Fit nonlinear regression models to development rate data across temperatures (i.e. Thermal Performance Curves)
 #'
-#' @param temp a vector containing temperature treatments (predictor variable),
-#' must have at least three different temperature treatments. The function works for both
-#' aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' @param temp a vector containing temperature treatments (predictor variable). It must have at least four different temperature treatments. The function works for both
+#' aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
 #' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
 #'
 #' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
@@ -17,33 +16,38 @@
 #' high temperatures, variance usually increases along temperature, so an exponential or power function
 #' with `exp` (default) or `power` are recommended. Alternatively, a constant function
 #' may be used if the user defines this argument as `constant`.
-
 #'
-#' @return this function returns a tibble with estimate and standard error for each parameter of the models from the user call
-#' that have adequately converged to the data. It also shows an AIC value and a comment on those models whose parameter uncertainty
-#' is high (`fit = "bad"` in the tibble). Fitted models are included in list format, and can be accessed
+#' @returns `fit_devmodels()` returns a [tibble()] with estimate and standard error for each parameter of the models from the user call
+#' that have adequately converged to the data, sorting from lowest to highest AIC values, which are also shown. A comment on those models whose parameter uncertainty
+#' is high (`fit = "bad"` in the tibble) is advised. Fitted models are included in list format, and can be accessed
 #' via `your_parameters_tbl$fit[[x]]` with `x` being the desired row in the table.
 #' For model selection, also ecological criteria should be followed by the user. To help that purpose,
 #' we recommend using `plot_devmodels()` and look into the literature rather than focusing only on statistical information.
 #'
-#' #' @export
+#' @seealso
+#'  [nlme::varClasses()] for more information on variance structure modelling under `gnls` approaches.
+
+#'  [devRate::devRateEqList()] for information on several equations
+
+#'  `browseVignettes("rTPC")` for model names and functioning of start values searching workflows using [nls.multstart::nls_multstart()]
+#'
+#' @export
 #'
 #' @examples
-#' data(p.xylostella_liu2002)
-#' data(available_models)
+#' data("h.vitripennis_pilkington2014")
 #'
-#' cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-#'                                      dev_rate = p.xylostella_liu2002$rate_development,
-#'                                      model_name = "all",  #might be a bit slow
-#'                                      variance_model = "power")
-#'print(cabbage_moth_fitted)
+#' fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+#'               dev_rate = h.vitripennis_pilkington2014$rate_development,
+#'               model_name = c("all"),
+#'               variance_model = "exp") #might be a bit slow
+#'
+
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL,
                           variance_model = NULL){
 varfun <- variance_model
-
 if(any(is.na(dev_rate))) {
   stop("development rate data have NAs; please consider removing them or fixing them")
 }
@@ -60,8 +64,8 @@ if(is.null(variance_model)){
   if(!is.numeric(temp)) {
     stop("temperature data is not numeric. Please check it.")
   }
-  if(length(unique(temp)) <= 3) {
-    stop("fit_devmodels() require at least three different temperature treatments in the data")
+  if(length(unique(temp)) < 4) {
+    stop("At least four different temperature treatments in the data are required.")
   }
   if(!is.numeric(dev_rate)) {
     stop("development rate data is not numeric. Please check it.")
@@ -84,6 +88,27 @@ if(is.null(variance_model)){
     model_names <- dev_model_table$model_name
   } else {model_names <- model_name}
 
+  if(any(model_names == "regniere") && length(temp) < 6) {
+  model_names <- model_names[model_names != "regniere"]
+  warning("regniere model (6 parameters) needs larger data sets to converge. Model.")
+  }
+  if(any(model_names == "wang") && length(temp) < 6) {
+  model_names <- model_names[model_names != "wang"]
+  warning("wang model (6 parameters) needs larger data sets to converge. Model discarded.")
+  }
+  if(any(model_names == "ssi") && length(temp) < 6) {
+  model_names <- model_names[model_names != "ssi"]
+  warning("ssi model (6 parameters) needs larger data sets to converge. Model discarded.")
+  }
+  if(any(model_names == "mod_polynomial") && length(temp) < 5) {
+  model_names <- model_names[model_names != "mod_polynomial"]
+  warning("mod_polynomial model (5 parameters) needs larger data sets to converge. Model discarded.")
+  }
+  if(length(temp) == 3){
+    model_names <- c("briere1", "mod_gaussian", "linear_campbell", "lactin1")
+    warning("with three temperature treatments, only models with 3 parameters or less are fitted.
+  Fitting briere1, mod_gaussian, linear_campbell and lactin1")
+  }
   list_param <- dplyr::tibble(param_name = NULL,
                                start_vals = NULL,
                                param_est = NULL,
@@ -181,7 +206,7 @@ if(is.null(variance_model)){
 
         list_param <- list_param |>
           dplyr::bind_rows(list_param_tbl)
-        message(paste0("ERROR: model ", i, " did not converge. Please try other models listed in `available_models`"))
+        message(paste0("ERROR: model ", i, " did not converge. Please try other models listed in `dev_model_table`"))
     }
 
     else {
@@ -234,7 +259,8 @@ if(is.null(variance_model)){
                             !all(list_param$fit == "okay")) {
       stop("no model converged adequately for fitting your data")
     } else {
-      return(list_param)
+      return(list_param |>
+               dplyr::arrange(model_AIC))
       }
 }
 

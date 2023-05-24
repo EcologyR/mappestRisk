@@ -44,7 +44,7 @@
 #' terra:::plot(tavg_rast)
 #'
 #' risk_rast_binary <- map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast)
-#' # note that 't_vals' should be an output of fit_devmodels()
+#' # note that 't_vals' should be an output of `thermal_suitability_bounds()`
 #'
 #' terra::plot(risk_rast_binary)
 #'

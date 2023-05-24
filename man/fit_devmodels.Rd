@@ -2,28 +2,55 @@
 % Please edit documentation in R/fit_devmodels.R
 \name{fit_devmodels}
 \alias{fit_devmodels}
-\title{Fit nonlinear regression models to development rate data}
+\title{Fit nonlinear regression models to development rate data across temperatures (i.e. Thermal Performance Curves)}
 \usage{
-fit_devmodels(temp = NULL, dev_rate = NULL, model_name = NULL)
+fit_devmodels(
+  temp = NULL,
+  dev_rate = NULL,
+  model_name = NULL,
+  variance_model = NULL
+)
 }
 \arguments{
-\item{temp}{a vector containing temperature treatments (predictor variable), must have at least three different temperature treatments}
+\item{temp}{a vector containing temperature treatments (predictor variable). It must have at least four different temperature treatments. The function works for both
+aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
+rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)}
 
-\item{dev_rate}{a vector containing development rate estimates (1/days of development); must be of same length than temp}
+\item{dev_rate}{a vector containing development rate estimates (1/days of development); must be of same length than temp.
+The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)}
 
-\item{model_name}{"all" or alternatively one or several of the models listed in available_models}
+\item{model_name}{"all" or alternatively one or several of the models listed in \code{?available_models}
+to parameterise thermal performance curves.}
+
+\item{variance_model}{argument to pass to \code{\link[nlme:gnls]{nlme::gnls()}} in \code{weights} argument
+to take into account heterogeneity of variance. Due to higher mortalities and variability at
+high temperatures, variance usually increases along temperature, so an exponential or power function
+with \code{exp} (default) or \code{power} are recommended. Alternatively, a constant function
+may be used if the user defines this argument as \code{constant}.}
 }
 \value{
-this function returns a tibble with estimate and standard error for each parameter of the selected models and the AIC
+\code{fit_devmodels()} returns a \code{\link[=tibble]{tibble()}} with estimate and standard error for each parameter of the models from the user call
+that have adequately converged to the data, sorting from lowest to highest AIC values, which are also shown. A comment on those models whose parameter uncertainty
+is high (\code{fit = "bad"} in the tibble) is advised. Fitted models are included in list format, and can be accessed
+via \code{your_parameters_tbl$fit[[x]]} with \code{x} being the desired row in the table.
+For model selection, also ecological criteria should be followed by the user. To help that purpose,
+we recommend using \code{plot_devmodels()} and look into the literature rather than focusing only on statistical information.
 }
 \description{
-Fit nonlinear regression models to development rate data
+Fit nonlinear regression models to development rate data across temperatures (i.e. Thermal Performance Curves)
 }
 \examples{
-data(p.xylostella_liu2002)
+data("h.vitripennis_pilkington2014")
 
-cabbage_moth_fitted <- fit_devmodels(temp = p.xylostella_liu2002$temperature,
-                                        dev_rate = p.xylostella_liu2002$rate_development,
-                                        model_name = c("all")) #might be a bit slow
+fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+              dev_rate = h.vitripennis_pilkington2014$rate_development,
+              model_name = c("all"),
+              variance_model = "exp") #might be a bit slow
 
+}
+\seealso{
+\code{\link[nlme:varClasses]{nlme::varClasses()}} for more information on variance structure modelling under \code{gnls} approaches.
+\code{\link[devRate:devRateEqList]{devRate::devRateEqList()}} for information on several equations
+\code{browseVignettes("rTPC")} for model names and functioning of start values searching workflows using \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}
 }
