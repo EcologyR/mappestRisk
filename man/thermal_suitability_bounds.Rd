@@ -11,33 +11,37 @@ thermal_suitability_bounds(
 )
 }
 \arguments{
-\item{fitted_parameters}{a tibble/data.frame obtained with fit_models() function}
+\item{fitted_parameters}{a \code{tibble} obtained with \code{fit_devmodels()} function including parameter names,
+estimates, se, AICs and gnls objects (i.e. fitted_models) from \code{fit_devmodels()}.}
 
 \item{model_name}{one or several of the models in fitted_parameters.
-Must belong to available models in list_available_models}
+Must belong to available models in \code{dev_model_table}.}
 
-\item{suitability_threshold}{Quantile (\%) of the curve; e.g. 75 would give
+\item{suitability_threshold}{Quantile of the curve; e.g. 75 would give
 the temperatures within the values at which development rate is in the
-top 25\% of its possible values}
+top 25\% of its possible values. Def. 50. Note that \code{suitability_threshold < 50} is not allowed.}
 }
 \value{
 a tibble/data.frame with name of the model and two thermal traits representing the above-mentioned suitability boundaries
 }
 \description{
-Obtain thermal traits representing boundaries of optimal thermal suitability for pest risk occurrence assessment
+Similar to calculating thermal breadth, \code{thermal_suitability_bounds()} computes the temperature bounds delimiting the optimum performance
+as defined by user's suitability threshold.
 }
 \examples{
- a.citricidus_tsai1999 <- readRDS("data/a.citricidus_tsai1999.rds")
-source("R/dario_model_fitting.R")
-aphis_citricida_fitted <- fit_devmodels(temp = a.citricidus_tsai1999$temperature,
-                                        dev_rate = a.citricidus_tsai1999$rate_development,
-                                        model_name = "all") #might be a bit slow
-## examine them visually to better choose on ecological criteria and not only on statistical fitting
-plot_devmodels(temp = a.citricidus_tsai1999$temperature,
-               dev_rate = a.citricidus_tsai1999$rate_development,
-               fitted_parameters = aphis_citricida_fitted)
+data("h.vitripennis_pilkington2014")
+homalodisca_fitted <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+                                    dev_rate = h.vitripennis_pilkington2014$rate_development,
+                                    model_name = c("all"),
+                                    variance_model = "exp") #might be a bit slow
 
-therm_bounds_moth <- thermal_suitability_bounds(fitted_parameters = cabbage_moth_fitted,
-                                                model_name = "lactin2",
-                                                suitability_threshold = 75)
+## examine plots to decide an appropriate model
+plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+               dev_rate = h.vitripennis_pilkington2014$rate_development,
+               fitted_parameters = homalodisca_fitted)
+
+thermal_suitability_bounds(fitted_parameters = homalodisca_fitted,
+                           model_name = "lactin2", # <- seems realistic
+                           suitability_threshold = 75)
+
 }

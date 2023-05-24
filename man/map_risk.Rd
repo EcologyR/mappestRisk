@@ -20,21 +20,20 @@ map_risk(
 right (maximum) temperature bounds for optimal performance of the target
 species.}
 
-\item{t_rast}{Optional 12-layer \link[terra:SpatRaster-class]{terra::SpatRaster} with monthly mean temperatures
-for (at least) the target 'region'. If not provided, global WorldClim raster
-layers will be (down)loaded and cropped to 'region'. Note that the download
-can be slow the first time you use the function in a new working directory.
-If you get an error, consider running e.g. \link{options(timeout = 500)}.}
+\item{t_rast}{Optional 12-layer \link[terra:SpatRaster-class]{terra::SpatRaster} with monthly mean
+temperatures for (at least) the target 'region'. If not provided, global
+WorldClim raster layers will be (down)loaded and cropped to 'region'. Note
+that the download can be slow the first time you use the function in a new
+working directory. If you get an error, consider running e.g.
+\link{options(timeout = 500)} (or more).}
 
-\item{region}{Optional object specifying the region to map. Can be a
-\link[terra:SpatVector-class]{terra::SpatVector} polygon map (obtained with \code{\link[terra:vect]{terra::vect()}}); or a character
-vector of country name(s) in English, in which case a countries map will be
-downloaded and subsetted to those countries; or a \link[terra:SpatExtent-class]{terra::SpatExtent} object
-(obtained with \code{\link[terra:ext]{terra::ext()}}); or a numeric vector of length 4 specifying
-the region coordinates in the order xmin, xmax, ymin, ymax. The latter two
-must be in unprojected coordinates (WGS84, EPSG:4326). If NULL, the output
-maps will cover the entire \code{t_rast} if provided, or the entire world
-otherwise.}
+\item{region}{Optional object specifying the region to map. Must overlap the
+extent of 't_rast' if both are provided. Can be a \link[terra:SpatVector-class]{terra::SpatVector} polygon #' map (obtained with \code{\link[terra:vect]{terra::vect()}}); or a character vector of country name(s)
+in English, in which case a countries map will be downloaded and subsetted to #' those countries; or a \link[terra:SpatExtent-class]{terra::SpatExtent} object (obtained with
+\code{\link[terra:ext]{terra::ext()}}); or a numeric vector of length 4 specifying the region
+coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
+unprojected coordinates (WGS84, EPSG:4326). If NULL, the output maps will
+cover the entire \code{t_rast} if provided, or the entire world otherwise.}
 
 \item{res}{Argument to pass to \code{\link[geodata:worldclim]{geodata::worldclim_global()}} specifying
 the spatial resolution for the raster maps to download, if 't_rast' is not
@@ -73,7 +72,7 @@ tavg_rast <- terra::rast(tavg_file)
 terra:::plot(tavg_rast)
 
 risk_rast_binary <- map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast)
-# note that 't_vals' should be an output of fit_devmodels()
+# note that 't_vals' should be an output of `thermal_suitability_bounds()`
 
 terra::plot(risk_rast_binary)
 

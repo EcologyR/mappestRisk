@@ -1,34 +1,38 @@
 #' Obtain thermal traits representing boundaries of optimal thermal suitability for pest risk occurrence assessment
 #'
+#' Similar to calculating thermal breadth, `thermal_suitability_bounds()` computes the temperature bounds delimiting the optimum performance
+#' as defined by user's suitability threshold.
+
+#' @param fitted_parameters a `tibble` obtained with `fit_devmodels()` function including parameter names,
+#'  estimates, se, AICs and gnls objects (i.e. fitted_models) from `fit_devmodels()`.
 #'
-#'
-#' @param fitted_parameters a tibble/data.frame obtained with [mappestRisk::fit_devmodels()] function
 #' @param model_name one or several of the models in fitted_parameters.
 #' Must belong to available models in `dev_model_table`.
+#'
 #' @param suitability_threshold Quantile of the curve; e.g. 75 would give
 #'  the temperatures within the values at which development rate is in the
 #'  top 25% of its possible values. Def. 50. Note that `suitability_threshold < 50` is not allowed.
 #'
-#' @return a tibble/data.frame with name of the model and two thermal traits representing the above-mentioned suitability boundaries
+#' @returns a tibble/data.frame with name of the model and two thermal traits representing the above-mentioned suitability boundaries
 #' @export
 #'
 #'
 #'
-#' @examples  a.citricidus_tsai1999 <- readRDS("data/a.citricidus_tsai1999.rds")
+#' @examples
 #' data("h.vitripennis_pilkington2014")
 #' homalodisca_fitted <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
 #'                                     dev_rate = h.vitripennis_pilkington2014$rate_development,
 #'                                     model_name = c("all"),
 #'                                     variance_model = "exp") #might be a bit slow
 #'
+#' ## examine plots to decide an appropriate model
 #' plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
 #'                dev_rate = h.vitripennis_pilkington2014$rate_development,
 #'                fitted_parameters = homalodisca_fitted)
 #'
-#' therm_bounds_moth <- thermal_suitability_bounds(fitted_parameters = homalodisca_fitted,
-#'                                                 model_name = "lactin2",
-#'                                                 suitability_threshold = 75)
-#' print(therm_bounds_moth)
+#' thermal_suitability_bounds(fitted_parameters = homalodisca_fitted,
+#'                            model_name = "briere1", # <- seems realistic
+#'                            suitability_threshold = 75)
 #'
 
 thermal_suitability_bounds <- function(fitted_parameters,

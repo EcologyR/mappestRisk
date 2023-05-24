@@ -1,7 +1,6 @@
 #' Fit nonlinear regression models to development rate data across temperatures (i.e. Thermal Performance Curves)
 #'
-#' @param temp a vector containing temperature treatments (predictor variable),
-#' must have at least three different temperature treatments. The function works for both
+#' @param temp a vector containing temperature treatments (predictor variable). It must have at least four different temperature treatments. The function works for both
 #' aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
 #' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
 #'
@@ -17,24 +16,30 @@
 #' high temperatures, variance usually increases along temperature, so an exponential or power function
 #' with `exp` (default) or `power` are recommended. Alternatively, a constant function
 #' may be used if the user defines this argument as `constant`.
-
 #'
-#' @return this function returns a tibble with estimate and standard error for each parameter of the models from the user call
-#' that have adequately converged to the data. It also shows an AIC value and a comment on those models whose parameter uncertainty
-#' is high (`fit = "bad"` in the tibble). Fitted models are included in list format, and can be accessed
+#' @returns `fit_devmodels()` returns a [tibble()] with estimate and standard error for each parameter of the models from the user call
+#' that have adequately converged to the data, sorting from lowest to highest AIC values, which are also shown. A comment on those models whose parameter uncertainty
+#' is high (`fit = "bad"` in the tibble) is advised. Fitted models are included in list format, and can be accessed
 #' via `your_parameters_tbl$fit[[x]]` with `x` being the desired row in the table.
 #' For model selection, also ecological criteria should be followed by the user. To help that purpose,
-#' we recommend using [mappestRisk::plot_devmodels()] and look into the literature rather than focusing only on statistical information.
+#' we recommend using `plot_devmodels()` and look into the literature rather than focusing only on statistical information.
 #'
-#' #' @export
+#' @seealso
+#'  [nlme::varClasses()] for more information on variance structure modelling under `gnls` approaches.
+
+#'  [devRate::devRateEqList()] for information on several equations
+
+#'  `browseVignettes("rTPC")` for model names and functioning of start values searching workflows using [nls.multstart::nls_multstart()]
+#'
+#' @export
 #'
 #' @examples
 #' data("h.vitripennis_pilkington2014")
 #'
-#' homalodisca_fitted <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
-#'                                     dev_rate = h.vitripennis_pilkington2014$rate_development,
-#'                                     model_name = c("all"),
-#'                                     variance_model = "exp") #might be a bit slow
+#' fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+#'               dev_rate = h.vitripennis_pilkington2014$rate_development,
+#'               model_name = c("all"),
+#'               variance_model = "exp") #might be a bit slow
 #'
 
 
@@ -254,7 +259,8 @@ if(is.null(variance_model)){
                             !all(list_param$fit == "okay")) {
       stop("no model converged adequately for fitting your data")
     } else {
-      return(list_param)
+      return(list_param |>
+               dplyr::arrange(model_AIC))
       }
 }
 

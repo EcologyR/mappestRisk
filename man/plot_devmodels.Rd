@@ -2,29 +2,45 @@
 % Please edit documentation in R/plot_devmodels.R
 \name{plot_devmodels}
 \alias{plot_devmodels}
-\title{Explore shape of fitted thermal performance curves to choose an appropriate model based on both statistics and ecological sense}
+\title{Plot predictions of fitted thermal performance curves to your data}
 \usage{
 plot_devmodels(temp, dev_rate, fitted_parameters)
 }
 \arguments{
-\item{temp}{a vector containing temperature treatments (predictor variable), must have at least three different temperature treatments}
+\item{temp}{a vector containing temperature treatments (predictor variable),
+must have at least three different temperature treatments. The function works for both
+aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
+rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)}
 
-\item{dev_rate}{a vector containing development rate estimates (1/days of development); must be of same length than temp}
+\item{dev_rate}{a vector containing development rate estimates (1/days of development); must be of same length than temp.
+The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
+rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)}
 
-\item{fitted_parameters}{a tibbl obtained with fit_models() function including parameter names, estimates, se and AICs}
+\item{fitted_parameters}{a \code{tibble} obtained with \code{fit_devmodels()} function including parameter names,
+estimates, se, AICs and gnls objects (i.e. fitted_models) from \code{fit_devmodels()}.}
 }
 \value{
-a ggplot with facets printing development rate data provided by the
-user and the predicted values by the models fitted with fit_devmodels
+takes the fitted parameters table from \code{fit_devmodels()} and returns a plot with the predicted values -i.e. development rate-
+across temperatures each for the models that adequately converged. Facets of the resulting plots are automatically sorted by lowest AIC values in descending order
+and more information such as number of parameters and accuracy of fit for the parameters are displayed.
 }
 \description{
-Explore shape of fitted thermal performance curves to choose an appropriate model based on both statistics and ecological sense
+The function\code{plot_devmodels()} displays a faceted plot of fitted TPCs
+to help the user to select an appropriate model based both on statistical and ecological criteria.
 }
 \examples{
-  a.citricidus_tsai1999 <- readRDS("data/a.citricidus_tsai1999.rds")
-source("R/dario_model_fitting.R")
-plot_devmodels(temp = p.xylostella_liu2002$temperature,
-               dev_rate = p.xylostella_liu2002$rate_development,
-               fitted_parameters = cabbage_moth_fitted)
 
+data("h.vitripennis_pilkington2014")
+homalodisca_fitted <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+                                    dev_rate = h.vitripennis_pilkington2014$rate_development,
+                                    model_name = c("all"),
+                                    variance_model = "exp") #might be a bit slow
+
+plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+               dev_rate = h.vitripennis_pilkington2014$rate_development,
+               fitted_parameters = homalodisca_fitted)
+
+}
+\seealso{
+\code{fit_devmodels()} for fitting Thermal Performance Curves to development rate data
 }
