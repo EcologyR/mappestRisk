@@ -43,5 +43,7 @@ h.vitripennis_pilkington2014 <- merging_h.vitripennis_pilkington2014  |>
   select(-devdays_est) |>
   filter(rate_development >= 0 &
            rate_development < 1)
-save(h.vitripennis_pilkington2014,
-     file = here::here("data/h.vitripennis_pilkington2014.rda"))
+usethis::use_data(h.vitripennis_pilkington2014,
+                  # overwrite = TRUE
+                  )
+

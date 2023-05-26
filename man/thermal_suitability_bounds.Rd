@@ -41,7 +41,7 @@ plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
                fitted_parameters = homalodisca_fitted)
 
 thermal_suitability_bounds(fitted_parameters = homalodisca_fitted,
-                           model_name = "lactin2", # <- seems realistic
+                           model_name = "briere1", # <- seems realistic
                            suitability_threshold = 75)
 
 }
