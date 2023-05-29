@@ -28,15 +28,16 @@ For that purpose, mappestRisk is built upon previous efforts such as `devRate` [
 
 ## Installation
 
-``` r
+``` {r}
 # install.packages("devtools")
-devtools::install_github("EcologyR/mappestRisk")
+# devtools::install_github("EcologyR/mappestRisk")
 
 #or alternatively
-remotes::install_github("EcologyR/mappestRisk")
+# remotes::install_github("EcologyR/mappestRisk")
 
 #and load the package
-library(mappestRisk)
+#library(mappestRisk)
+devtools::load_all() #for now, provisionally
 ```
 
 If you want to clone or fork the repository or open and read some issues, you can find the code [here](https://github.com/EcologyR/mappestRisk).
@@ -57,7 +58,7 @@ fitted_tpcs_sharpshooter <- fit_devmodels(temp = h.vitripennis_pilkington2014$te
               dev_rate = h.vitripennis_pilkington2014$rate_development,
               model_name = c("all"), #might be a bit slow
               variance_model = "exp") 
-DT::datatable(fitted_tpcs_sharpshooter)
+print(fitted_tpcs_sharpshooter)
 ```
 
 ### 2. Plot fitted TPCs and select the most appropriate:
@@ -65,7 +66,8 @@ DT::datatable(fitted_tpcs_sharpshooter)
 To help select which model might be more appropriate, the function `plot_devmodels()` draws the predicted TPCs for each adequately-converged model. This step aims to improve model selection based not only on statistical criteria (i.e. AIC and number of parameters) but also on ecological realism, since curves can be graphically checked to select realistic shapes and thermal traits --vertical cuts with x-axis such as $CT_\min$, $CT_\max$ and $T_{opt}$ .
 
 ```{r, warning=FALSE}
-#library(ggplot2)
+library(ggplot2)
+library(dplyr)
 plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
                dev_rate = h.vitripennis_pilkington2014$rate_development,
                fitted_parameters = fitted_tpcs_sharpshooter)
@@ -84,6 +86,8 @@ print(thermal_boundaries_sharpshooter)
 
 ### 4. Climatic data extraction and projection
 
+[to be completed]
+
 ```{r}
 # downloading data from geodata::wordlclim_global. It will takes several minutes the first time you download the data.
 risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
@@ -92,6 +96,9 @@ risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
                       region = "Réunion", 
                       verbose = TRUE)
 terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+
+#we can also save the raster with:
+# terra::writeRaster(risk_rast, filename = "inst/extdata/risk_rast.tif")
 
 # Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use it as an input of `map_risk()`
 ## load it (here Luxembourg data)
@@ -102,19 +109,26 @@ tavg_rast <- terra::rast(tavg_file)
 risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
                                         thermal_boundaries_sharpshooter$tval_right), 
                              t_rast = tavg_rast)
-terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+# terra::plot(risk_rast_binary[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+
+
 
 
 
 
 ```
 
+### 5. Interactive map with `leaflet`
+
+[to be completed]
+
+
 ## Citation
 
 If using this package, please cite it:
 
 ```{r comment=NA}
-# citation("mappestRisk")
+#citation("mappestRisk")
 ```
 
 ## Funding
@@ -122,3 +136,5 @@ If using this package, please cite it:
 The development of this software has been funded by Fondo Europeo de Desarrollo Regional (FEDER) and Consejería de Transformación Económica, Industria, Conocimiento y Universidades of Junta de Andalucía (proyecto US-1381388 led by Francisco Rodríguez Sánchez, Universidad de Sevilla).
 
 ![](https://ecologyr.github.io/workshop/images/logos.png)
+
+## References:

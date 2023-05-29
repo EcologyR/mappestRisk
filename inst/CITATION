@@ -8,7 +8,7 @@ citEntry(
       email = "dario.ssm2@gmail.com",
       role = c("cre"),
       comment = c(ORCID = "0000-0002-7831-9623")),
-    person("Ana", "Marcia Barbosa"
+    person("Ana", "Marcia Barbosa",
       role = c("aut"),
       comment = c(ORCID = "0000-0001-8972-7713")),
     person("Antonio Jesús", "Pérez-Luque",
@@ -19,8 +19,7 @@ citEntry(
       email = "f.rodriguez.sanc@gmail.com",
       role = c("aut"),
       comment = c(ORCID = "0000-0002-1747-0469"))
-           ) "Francisco Rodriguez-Sanchez",
-  # journal  = "to be defined",
+  # journal  = ,
   year     = "2023",
   # volume   = ,
   # number   = ,

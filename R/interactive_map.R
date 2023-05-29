@@ -27,9 +27,9 @@ interactive_map <- function(x,
 
   # current leaflet version on CRAN (2.1.2) does not seem to accept SpatRaster yet
   # temporary fix:
-  if (inherits(x, "SpatRaster")) {
-    x <- raster::raster(x)
-  }
+   if (inherits(x, "SpatRaster")) {
+     x <- raster::raster(x)
+   }
 
   # current leafem version does not seem to accept SpatRaster yet.
   # tempory fix:
