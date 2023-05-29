@@ -6,7 +6,7 @@
 \alias{mappestRisk-package}
 \title{mappestRisk: Create Maps Forecasting Risk of Pest Occurrence}
 \description{
-The package provides maps that forecast crop pest risk of occurrence in response to experienced temperature. It takes as input development data parameterised in controlled conditions (i.e. constant or fluctuating temperatures) for different life stages of a species. The output can either assess climatic suitability or phenological progress simulations.
+The package provides maps that forecast crop pest risk of occurrence in response to experienced temperature. It takes as input development data parameterised in controlled conditions (i.e. constant or fluctuating temperatures) for different life stages of a species. By fitting thermal performance curves and extracting climate data from WorldClim, the output can assess climatic suitability based on number of months within a year at a selected geographic region with highly suitable temperatures for the pest.
 }
 \seealso{
 Useful links:
@@ -23,6 +23,8 @@ Authors:
 \itemize{
   \item Ana Marcia Barbosa (\href{https://orcid.org/0000-0001-8972-7713}{ORCID})
   \item Antonio Jesús Pérez-Luque \email{ajpelu@gmail.com} (\href{https://orcid.org/0000-0002-1747-0469}{ORCID})
+  \item Francisco Rodríguez Sánchez (\href{https://orcid.org/0000-0002-7981-1599}{ORCID})
+
 }
 
 }

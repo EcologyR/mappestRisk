@@ -1,15 +1,30 @@
-citHeader("To cite templateRpackage in publications use:")
+citHeader("To cite mappestRisk in publications use:")
 
 citEntry(
   entry    = "Manual",
-  title    = "templateRpackage",
-  author   = "Francisco Rodriguez-Sanchez",
+  title    = "mappestRisk",
+  author   = personList(
+    person("Darío", "San-Segundo  Molina",
+      email = "dario.ssm2@gmail.com",
+      role = c("cre"),
+      comment = c(ORCID = "0000-0002-7831-9623")),
+    person("Ana", "Marcia Barbosa",
+      role = c("aut"),
+      comment = c(ORCID = "0000-0001-8972-7713")),
+    person("Antonio Jesús", "Pérez-Luque",
+      email = "ajpelu@gmail.com",
+      role = c("aut"),
+      comment = c(ORCID = "0000-0002-7981-1599")),
+    person("Francisco", "Rodríguez-Sánchez",
+      email = "f.rodriguez.sanc@gmail.com",
+      role = c("aut"),
+      comment = c(ORCID = "0000-0002-1747-0469"))
   # journal  = ,
   year     = "2023",
   # volume   = ,
   # number   = ,
   # pages    = ,
-  url      = "https://ecologyr.github.io/templateRpackage/",
-  textVersion = paste("Rodriguez-Sanchez F. 2023. templateRpackage.",
-                      "https://ecologyr.github.io/templateRpackage/")
+  url      = "https://ecologyr.github.io/templateRpackage/mappestRisk",
+  textVersion = paste("San Segundo Molina, D., Barbosa, A.M., Pérez-Luque, A.J. & Rodríguez-Sánchez, F. 2023. mappestRisk: Create Maps Forecasting Risk of Pest Occurrence",
+                      "https://ecologyr.github.io/templateRpackage/mappestRisk")
 )

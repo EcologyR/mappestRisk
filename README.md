@@ -16,62 +16,210 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 
 <!-- badges: end -->
 
-The goal of templateRpackage is to …
+The goal of mappestRisk package is to facilitate the transition from
+development data of pests obtained in lab-controlled conditions to
+understandable forecasts assessing risk of pest occurrence in a certain
+region.
+
+For that purpose, mappestRisk is built upon previous efforts such as
+`devRate` (Rebaudo, Struelens, and Dangles 2018), `rTPC` and
+`nls.multstart` packages (Padfield, O’Sullivan, and Pawar 2021) and a
+methodology for predicting climatic suitability based on fundamental
+thermal niche as estimated by mechanistic, process-based approaches
+suggested in Taylor et al. (2019) . Therefore, mappestRisk has three
+different modules: *(1) model fitting & selection* using a set of the
+most used equations describing developmental responses to temperature
+under `nls.multstart` (Padfield and Matheson 2020) and `nlme` (Pinheiro,
+Bates 2022) frameworks with visualization of model fitting to help model
+selection by the user; (2) *thermal traits extraction:* including
+selection of the suitability threshold guiding the forecast
+(i.e. obtaining the temperatures at which estimated performance lies
+upon a performance higher threshold percentage); and (3) *climatic data
+extraction & visualization* with either exportable rasters or
+interactive maps with `leaflet` (Cheng, Karambelkar, and Xie 2022).
 
 ## Installation
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("EcologyR/templateRpackage")
+# devtools::install_github("EcologyR/mappestRisk")
+
+#or alternatively
+# remotes::install_github("EcologyR/mappestRisk")
+
+#and load the package
+#library(mappestRisk)
+devtools::load_all() #for now, provisionally
+#> ℹ Loading mappestRisk
+#> Warning: package 'testthat' was built under R version 4.2.2
 ```
 
-The code to create this package is available
-[here](https://gist.github.com/Pakillo/999e34301c56011138ef164363502465).
+If you want to clone or fork the repository or open and read some
+issues, you can find the code
+[here](https://github.com/EcologyR/mappestRisk).
 
-## Example
+## Example: mappestRisk workflow
 
-This is a basic example which shows you how to solve a common problem:
+### 1. Fit a thermal performance curve to your data:
+
+In this example, we’ll show how to fit one to several thermal
+performance curves to a data set of development rate variation across
+temperatures[^1]. The following code provides an example as given in
+`fit_devmodels()` function documentation, with a data table showing the
+output of fitted models.
 
 ``` r
-# library(templateRpackage)
-## basic example code
+
+data("h.vitripennis_pilkington2014")
+
+fitted_tpcs_sharpshooter <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+              dev_rate = h.vitripennis_pilkington2014$rate_development,
+              model_name = c("all"), #might be a bit slow
+              variance_model = "exp") 
+#> Warning in start_vals_devRate(model_name = i, temperature = temp, dev_rate =
+#> dev_rate): briere1 start values are uninformative; default to `c(tmin = 6, tmax
+#> = 32, a = 1e-04)`
+#> [1] "approximate covariance matrix for parameter estimates not of full rank"
+#> [1] "approximate covariance matrix for parameter estimates not of full rank"
+#> [1] "approximate covariance matrix for parameter estimates not of full rank"
+#> [1] "approximate covariance matrix for parameter estimates not of full rank"
+#> [1] "approximate covariance matrix for parameter estimates not of full rank"
+#> [1] "approximate covariance matrix for parameter estimates not of full rank"
+print(fitted_tpcs_sharpshooter)
+#> # A tibble: 16 × 8
+#>    param_name start_vals param_est param_se model_name model_AIC model_fit fit  
+#>    <chr>           <dbl>     <dbl>    <dbl> <chr>          <dbl> <list>    <chr>
+#>  1 tmin       12.9         1.28e+1  3.78e-1 briere1       -3097. <gnls>    okay 
+#>  2 tmax       34.9         3.50e+1  4.56e-1 briere1       -3097. <gnls>    okay 
+#>  3 a           0.0000240   2.36e-5  1.39e-6 briere1       -3097. <gnls>    okay 
+#>  4 rmax        0.0469      2.72e-2  3.78e-4 mod_gauss…    -3097. <gnls>    okay 
+#>  5 topt       30           2.99e+1  3.99e-1 mod_gauss…    -3097. <gnls>    okay 
+#>  6 a          13           8.20e+0  3.09e-1 mod_gauss…    -3097. <gnls>    okay 
+#>  7 a           0.119       2.12e-3  2.80e-4 lactin2       -3096. <gnls>    okay 
+#>  8 b          -0.254      -1.03e+0  5.10e-3 lactin2       -3096. <gnls>    okay 
+#>  9 tmax       33           4.62e+1  6.08e+0 lactin2       -3096. <gnls>    okay 
+#> 10 delta_t     3           3.35e+0  1.55e+0 lactin2       -3096. <gnls>    okay 
+#> 11 tmin       20           1.26e+1  8.80e-1 briere2       -3096. <gnls>    okay 
+#> 12 tmax       33           3.46e+1  1.88e+0 briere2       -3096. <gnls>    okay 
+#> 13 a           0.0002      2.59e-5  1.04e-5 briere2       -3096. <gnls>    okay 
+#> 14 b           3           2.16e+0  7.77e-1 briere2       -3096. <gnls>    okay 
+#> 15 intercept  -0.0111     -1.79e-2  9.39e-4 linear_ca…    -3034. <gnls>    okay 
+#> 16 slope       0.00129     1.57e-3  4.14e-5 linear_ca…    -3034. <gnls>    okay
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+### 2. Plot fitted TPCs and select the most appropriate:
+
+To help select which model might be more appropriate, the function
+`plot_devmodels()` draws the predicted TPCs for each
+adequately-converged model. This step aims to improve model selection
+based not only on statistical criteria (i.e. AIC and number of
+parameters) but also on ecological realism, since curves can be
+graphically checked to select realistic shapes and thermal traits
+–vertical cuts with x-axis such as
+![CT\_\min](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;CT_%5Cmin "CT_\min"),
+![CT\_\max](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;CT_%5Cmax "CT_\max")
+and
+![T\_{opt}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;T_%7Bopt%7D "T_{opt}")
+.
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+library(ggplot2)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following object is masked from 'package:testthat':
+#> 
+#>     matches
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+               dev_rate = h.vitripennis_pilkington2014$rate_development,
+               fitted_parameters = fitted_tpcs_sharpshooter)
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-You can also embed plots, for example:
+### 3. Calculate thermal suitability bounds:
+
+Once a model have been selected under both ecological realism and
+statistical criteria, the user can estimate the thermal boundaries
+defining the suitable range of temperatures for the studied population.
+The `thermal_suitability_bounds()` function calculate these values given
+the `fitted_parameters` output from `fit_devmodels()` and the selected
+model name. Additionally, a value of suitability defining the
+quantile-upper part of the curve can be providen by the user. The output
+is a data.frame with the model name, the suitability threshold and the
+two *thermal boundaries* required for the mapping functions (as
+described below).
 
 ``` r
-plot(pressure)
+thermal_boundaries_sharpshooter <- thermal_suitability_bounds(fitted_parameters = fitted_tpcs_sharpshooter,
+                           model_name = "briere1", # <- seems realistic according to `plot_devmodels()` and `fit_devmodels()` outputs
+                           suitability_threshold = 75)
+print(thermal_boundaries_sharpshooter)
+#> # A tibble: 1 × 4
+#>   model_name tval_left tval_right suitability
+#>   <chr>          <dbl>      <dbl> <chr>      
+#> 1 briere1         23.7       33.4 75 %
 ```
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+### 4. Climatic data extraction and projection
+
+\[to be completed\]
+
+``` r
+# downloading data from geodata::wordlclim_global. It will takes several minutes the first time you download the data.
+risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
+                                 thermal_boundaries_sharpshooter$tval_right),
+                      path = "~/downloaded_maps", # directory to download data
+                      region = "Réunion", 
+                      verbose = TRUE)
+#> 
+#> (Down)loading countries map...
+#> 
+#> (Down)loading temperature rasters...
+#> 
+#> Cropping temperature rasters to region...
+#> 
+#> Computing final summary layer...
+#> 
+#> Finished!
+terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+
+``` r
+
+#we can also save the raster with:
+# terra::writeRaster(risk_rast, filename = "inst/extdata/risk_rast.tif")
+
+# Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use it as an input of `map_risk()`
+## load it (here Luxembourg data)
+tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+## convert it into a raster-compatible file with `terra`
+tavg_rast <- terra::rast(tavg_file)
+## and apply the function
+risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
+                                        thermal_boundaries_sharpshooter$tval_right), 
+                             t_rast = tavg_rast)
+# terra::plot(risk_rast_binary[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+```
+
+### 5. Interactive map with `leaflet`
+
+\[to be completed\]
 
 ## Citation
 
 If using this package, please cite it:
 
 ``` r
-# citation("mappestRisk")
+#citation("mappestRisk")
 ```
 
 ## Funding
@@ -82,3 +230,65 @@ Industria, Conocimiento y Universidades of Junta de Andalucía (proyecto
 US-1381388 led by Francisco Rodríguez Sánchez, Universidad de Sevilla).
 
 ![](https://ecologyr.github.io/workshop/images/logos.png)
+
+## References:
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-leaflet" class="csl-entry">
+
+Cheng, Joe, Bhaskar Karambelkar, and Yihui Xie. 2022. “Leaflet: Create
+Interactive Web Maps with the JavaScript ’Leaflet’ Library.”
+<https://CRAN.R-project.org/package=leaflet>.
+
+</div>
+
+<div id="ref-nls.multstart" class="csl-entry">
+
+Padfield, Daniel, and Granville Matheson. 2020. “Nls.multstart: Robust
+Non-Linear Regression Using AIC Scores.”
+<https://CRAN.R-project.org/package=nls.multstart>.
+
+</div>
+
+<div id="ref-padfield2021" class="csl-entry">
+
+Padfield, Daniel, Hannah O’Sullivan, and Samraat Pawar. 2021. “rTPC and
+Nls.multstart: A New Pipeline to Fit Thermal Performance Curves in r.”
+*Methods in Ecology and Evolution* 12 (6): 1138–43.
+<https://doi.org/10.1111/2041-210X.13585>.
+
+</div>
+
+<div id="ref-nlme" class="csl-entry">
+
+Pinheiro, José, Douglas Bates, and R Core Team. 2022. “Nlme: Linear and
+Nonlinear Mixed Effects Models.”
+<https://CRAN.R-project.org/package=nlme>.
+
+</div>
+
+<div id="ref-rebaudo2018" class="csl-entry">
+
+Rebaudo, François, Quentin Struelens, and Olivier Dangles. 2018.
+“Modelling Temperature-Dependent Development Rate and Phenology in
+Arthropods: The devRate Package for r.” *Methods in Ecology and
+Evolution* 9 (4): 1144–50.
+https://doi.org/<https://doi.org/10.1111/2041-210X.12935>.
+
+</div>
+
+<div id="ref-taylor2019" class="csl-entry">
+
+Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, David G. Hall,
+Hossein A. Narouei-Khandan, Jason R. Rohr, and Leah R. Johnson. 2019.
+“Predicting the Fundamental Thermal Niche of Crop Pests and Diseases in
+a Changing World: A Case Study on Citrus Greening.” *Journal of Applied
+Ecology* 56 (8): 2057–68. <https://doi.org/10.1111/1365-2664.13455>.
+
+</div>
+
+</div>
+
+[^1]: At least 4 unique temperatures are required. Fore more details,
+    see *vignette*.

@@ -26,5 +26,5 @@
 #'   for <i>Homalodisca vitripennis</i> (Hemiptera: Cicadellidae) in California.
 #'   Ann. Entomol. Soc. Am. 107: 424-434. <https://doi.org/10.1603/AN13144>}.</br>
 #'
-#'   Licence: <a href="https://creativecommons.org/licenses/by-nc/3.0">CC BY-NC 3.0</a> (modified material).}
+#'   Licence: <a href="https://creativecommons.org/licenses/by-nc/3.0">CC BY-NC 3.0</a> (modified material).
 "h.vitripennis_pilkington2014"

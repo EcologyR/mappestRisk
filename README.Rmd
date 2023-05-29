@@ -1,5 +1,6 @@
 ---
 output: github_document
+bibliography: references.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -16,52 +17,118 @@ knitr::opts_chunk$set(
 # mappestRisk
 
 <!-- badges: start -->
+
 [![R-CMD-check](https://github.com/EcologyR/templateRpackage/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/templateRpackage/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/EcologyR/templateRpackage/branch/master/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/templateRpackage?branch=master) `r badger::badge_lifecycle("experimental")` `r badger::badge_repostatus("WIP")` <!-- `r badger::badge_codefactor("ecologyr/templaterpackage")` -->
 
 <!-- badges: end -->
 
-The goal of templateRpackage is to ...
+The goal of mappestRisk package is to facilitate the transition from development data of pests obtained in lab-controlled conditions to understandable forecasts assessing risk of pest occurrence in a certain region.
+
+For that purpose, mappestRisk is built upon previous efforts such as `devRate` [@rebaudo2018], `rTPC` and `nls.multstart` packages [@padfield2021] and a methodology for predicting climatic suitability based on fundamental thermal niche as estimated by mechanistic, process-based approaches suggested in @taylor2019 . Therefore, mappestRisk has three different modules: *(1) model fitting & selection* using a set of the most used equations describing developmental responses to temperature under `nls.multstart` [@nls.multstart] and `nlme` [@nlme] frameworks with visualization of model fitting to help model selection by the user; (2) *thermal traits extraction:* including selection of the suitability threshold guiding the forecast (i.e. obtaining the temperatures at which estimated performance lies upon a performance higher threshold percentage); and (3) *climatic data extraction & visualization* with either exportable rasters or interactive maps with `leaflet` [@leaflet].
 
 ## Installation
 
-``` r
+``` {r}
 # install.packages("devtools")
-devtools::install_github("EcologyR/templateRpackage")
+# devtools::install_github("EcologyR/mappestRisk")
+
+#or alternatively
+# remotes::install_github("EcologyR/mappestRisk")
+
+#and load the package
+#library(mappestRisk)
+devtools::load_all() #for now, provisionally
 ```
 
-The code to create this package is available [here](https://gist.github.com/Pakillo/999e34301c56011138ef164363502465).
+If you want to clone or fork the repository or open and read some issues, you can find the code [here](https://github.com/EcologyR/mappestRisk).
 
-## Example
+## Example: mappestRisk workflow
 
-This is a basic example which shows you how to solve a common problem:
+### 1. Fit a thermal performance curve to your data:
 
-```{r example}
-# library(templateRpackage)
-## basic example code
+In this example, we'll show how to fit one to several thermal performance curves to a data set of development rate variation across temperatures[^1]. The following code provides an example as given in `fit_devmodels()` function documentation, with a data table showing the output of fitted models.
+
+[^1]: At least 4 unique temperatures are required. Fore more details, see *vignette*.
+
+```{r, message=FALSE}
+
+data("h.vitripennis_pilkington2014")
+
+fitted_tpcs_sharpshooter <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+              dev_rate = h.vitripennis_pilkington2014$rate_development,
+              model_name = c("all"), #might be a bit slow
+              variance_model = "exp") 
+print(fitted_tpcs_sharpshooter)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+### 2. Plot fitted TPCs and select the most appropriate:
 
-```{r cars}
-summary(cars)
+To help select which model might be more appropriate, the function `plot_devmodels()` draws the predicted TPCs for each adequately-converged model. This step aims to improve model selection based not only on statistical criteria (i.e. AIC and number of parameters) but also on ecological realism, since curves can be graphically checked to select realistic shapes and thermal traits --vertical cuts with x-axis such as $CT_\min$, $CT_\max$ and $T_{opt}$ .
+
+```{r, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
+               dev_rate = h.vitripennis_pilkington2014$rate_development,
+               fitted_parameters = fitted_tpcs_sharpshooter)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
+### 3. Calculate thermal suitability bounds:
 
-You can also embed plots, for example:
+Once a model have been selected under both ecological realism and statistical criteria, the user can estimate the thermal boundaries defining the suitable range of temperatures for the studied population. The `thermal_suitability_bounds()` function calculate these values given the `fitted_parameters` output from `fit_devmodels()` and the selected model name. Additionally, a value of suitability defining the quantile-upper part of the curve can be providen by the user. The output is a data.frame with the model name, the suitability threshold and the two *thermal boundaries* required for the mapping functions (as described below).
 
-```{r pressure, echo = TRUE, eval = FALSE}
-plot(pressure)
+```{r, warning=FALSE}
+thermal_boundaries_sharpshooter <- thermal_suitability_bounds(fitted_parameters = fitted_tpcs_sharpshooter,
+                           model_name = "briere1", # <- seems realistic according to `plot_devmodels()` and `fit_devmodels()` outputs
+                           suitability_threshold = 75)
+print(thermal_boundaries_sharpshooter)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+### 4. Climatic data extraction and projection
+
+[to be completed]
+
+```{r}
+# downloading data from geodata::wordlclim_global. It will takes several minutes the first time you download the data.
+risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
+                                 thermal_boundaries_sharpshooter$tval_right),
+                      path = "~/downloaded_maps", # directory to download data
+                      region = "Réunion", 
+                      verbose = TRUE)
+terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+
+#we can also save the raster with:
+# terra::writeRaster(risk_rast, filename = "inst/extdata/risk_rast.tif")
+
+# Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use it as an input of `map_risk()`
+## load it (here Luxembourg data)
+tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+## convert it into a raster-compatible file with `terra`
+tavg_rast <- terra::rast(tavg_file)
+## and apply the function
+risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
+                                        thermal_boundaries_sharpshooter$tval_right), 
+                             t_rast = tavg_rast)
+# terra::plot(risk_rast_binary[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+
+
+
+
+
+
+```
+
+### 5. Interactive map with `leaflet`
+
+[to be completed]
+
 
 ## Citation
 
 If using this package, please cite it:
 
 ```{r comment=NA}
-# citation("mappestRisk")
+#citation("mappestRisk")
 ```
 
 ## Funding
@@ -69,3 +136,5 @@ If using this package, please cite it:
 The development of this software has been funded by Fondo Europeo de Desarrollo Regional (FEDER) and Consejería de Transformación Económica, Industria, Conocimiento y Universidades of Junta de Andalucía (proyecto US-1381388 led by Francisco Rodríguez Sánchez, Universidad de Sevilla).
 
 ![](https://ecologyr.github.io/workshop/images/logos.png)
+
+## References:

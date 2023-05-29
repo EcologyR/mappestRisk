@@ -1,3 +1,5 @@
+
+
 ### script with auxiliary functions for fit_devmodels()
 model_name_translate <- function(user_model_name) {
   if (!all(user_model_name %in% c("all", dev_model_table$model_name))) {
@@ -53,7 +55,25 @@ startvals_names_translate_devrate <- function(start_vals, model_name){
 ## we use nls2::nls2() function with literature starting values given in devRate packate to iteratively calculate parameters given the input data
 ## and use them later as starting values for nonlinear regression
 
-##### TEST THIS:
+#' start_vals_devRate(): obtain starting values for TPC fitting
+#'
+#' Auxiliary function working under `fit_devmodels()`; user won't be using this function in a normal workflow of [mappestRisk] package
+#' @param model_name  one or several of the models listed in `dev_model_table` corresponding to
+#' source package [devRate] to parameterise thermal performance curves
+#' @param temperature a vector containing temperature treatments (predictor variable). It must have at least four different temperature treatments. The function works for both
+#' aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
+#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#'
+#' @param  dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
+#' The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
+#' rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#'
+#'
+#' @returns a vector with parameter estimates approximated iteratively with [nls.multstart::nls_multstart()] based on
+#' estimates compilated in [devRate::devRateEqStartVal()].
+#' @export
+#'
+#'
 start_vals_devRate <- function(model_name, temperature, dev_rate){
   mod2fit <- model_name  #avoid repeating name of available_models column `model_name`
   if (!mod2fit %in% dev_model_table$model_name) {
