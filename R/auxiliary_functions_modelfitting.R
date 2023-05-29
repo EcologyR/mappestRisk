@@ -57,15 +57,37 @@ startvals_names_translate_devrate <- function(start_vals, model_name){
 start_vals_devRate <- function(model_name, temperature, dev_rate){
   mod2fit <- model_name  #avoid repeating name of available_models column `model_name`
   if (!mod2fit %in% dev_model_table$model_name) {
-    stop("model name not available. Please check ?available_models")
+    stop("model not available. For available model names, see `dev_model_table`")
+  }
+  if(any(is.na(dev_rate))) {
+    stop("development rate data have NAs; please consider removing them or fixing them")
+  }
+  if(any(is.na(temperature))) {
+    stop("temperature data have NAs; please consider removing them or fixing them")
+  }
+  if(any(!is.numeric(temperature))) {
+    stop("temperature data is not numeric; please consider transforming it")
+  }
+  if(any(!is.numeric(dev_rate))) {
+    stop("dev_rate data is not numeric; please consider transforming it")
+  }
+  if(any(is.na(dev_rate))) {
+    stop("development rate data have NAs; please consider removing them or fixing them")
+  }
+  if(any(is.na(temperature))) {
+    stop("temperature data have NAs; please consider removing them or fixing them")
+  }
+  if(length(unique(temperature)) < 4) {
+    stop("At least four different temperature treatments in the data are required.")
   }
 if(length(temperature) != length(dev_rate)){
-  stop("lengths of temperature and dev_rate are not equal. Please check missing values or deletions")
+  stop("development rate and temperature inputs are not of same length. Please check it.")
 }
   if (mod2fit == "briere1") {
       start_vals_prev <- c(tmin = 6, tmax = 32, a = 1e-04) # devRate start values are not representative, especially the a parameter, we use them manually
       names(start_vals_prev) <- startvals_names_translate_devrate(start_vals = start_vals_prev,
                                                                   mod2fit)
+      warning("briere1 start values are uninformative; default to `c(tmin = 6, tmax = 32, a = 1e-04)`")
     } else {
       start_vals_prev <- devRate::devRateEqStartVal[[model_name_translate(mod2fit)]] # take literature start values from devRate
       names(start_vals_prev) <- startvals_names_translate_devrate(start_vals = start_vals_prev,

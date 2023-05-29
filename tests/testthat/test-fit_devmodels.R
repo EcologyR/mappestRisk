@@ -1,4 +1,3 @@
-library(rTPC)
 library(dplyr)
 
 # input test
