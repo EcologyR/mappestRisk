@@ -104,11 +104,7 @@ if(is.null(variance_model)){
   model_names <- model_names[model_names != "mod_polynomial"]
   warning("mod_polynomial model (5 parameters) needs larger data sets to converge. Model discarded.")
   }
-  if(length(temp) == 3){
-    model_names <- c("briere1", "mod_gaussian", "linear_campbell", "lactin1")
-    warning("with three temperature treatments, only models with 3 parameters or less are fitted.
-  Fitting briere1, mod_gaussian, linear_campbell and lactin1")
-  }
+
   list_param <- dplyr::tibble(param_name = NULL,
                                start_vals = NULL,
                                param_est = NULL,
