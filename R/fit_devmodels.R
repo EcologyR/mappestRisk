@@ -202,7 +202,7 @@ if(is.null(variance_model)){
 
         list_param <- list_param |>
           dplyr::bind_rows(list_param_tbl)
-        message(paste0("ERROR: model ", i, " did not converge. Please try other models listed in `dev_model_table`"))
+        message(paste0("Model ", i, " did not converge. Try other models listed in `dev_model_table` if necessary"))
     }
 
     else {

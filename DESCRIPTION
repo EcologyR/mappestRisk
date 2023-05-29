@@ -35,5 +35,5 @@ Imports:
     terra,
     tibble
 Remotes:
+    padpadpadpad/rTPC,
     rstudio/leaflet
-    rstudio/rTPC

@@ -29,7 +29,7 @@ R script with the simulation procedures in \code{clean&sim_devdata_homalodisca_v
 for \if{html}{\out{<i>}}Homalodisca vitripennis\if{html}{\out{</i>}} (Hemiptera: Cicadellidae) in California.
 Ann. Entomol. Soc. Am. 107: 424-434. \url{https://doi.org/10.1603/AN13144}}.\if{html}{\out{</br>}}
 
-Licence: \if{html}{\out{<a href="https://creativecommons.org/licenses/by-nc/3.0">}}CC BY-NC 3.0\if{html}{\out{</a>}} (modified material).}
+Licence: \if{html}{\out{<a href="https://creativecommons.org/licenses/by-nc/3.0">}}CC BY-NC 3.0\if{html}{\out{</a>}} (modified material).
 }
 \usage{
 data(h.vitripennis_pilkington2014)
