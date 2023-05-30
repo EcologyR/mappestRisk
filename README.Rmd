@@ -22,9 +22,9 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-The goal of mappestRisk package is to facilitate the transition from development data of pests obtained in lab-controlled conditions to understandable forecasts assessing risk of pest occurrence in a certain region.
+The goal of mappestRisk package is to facilitate the transition from development data of pests obtained in lab-controlled conditions to understandable forecasts assessing risk of pest occurrence in a given region.
 
-For that purpose, mappestRisk is built upon previous efforts such as `devRate` [@rebaudo2018], `rTPC` and `nls.multstart` packages [@padfield2021] and a methodology for predicting climatic suitability based on fundamental thermal niche as estimated by mechanistic, process-based approaches suggested in @taylor2019 . Therefore, mappestRisk has three different modules: *(1) model fitting & selection* using a set of the most used equations describing developmental responses to temperature under `nls.multstart` [@nls.multstart] and `nlme` [@nlme] frameworks with visualization of model fitting to help model selection by the user; (2) *thermal traits extraction:* including selection of the suitability threshold guiding the forecast (i.e. obtaining the temperatures at which estimated performance lies upon a performance higher threshold percentage); and (3) *climatic data extraction & visualization* with either exportable rasters or interactive maps with `leaflet` [@leaflet].
+For that purpose, mappestRisk is built upon previous efforts such as `devRate` [@rebaudo2018], `rTPC` and `nls.multstart` packages [@padfield2021] and a methodology for predicting climatic suitability based on fundamental thermal niche as estimated by mechanistic, process-based approaches suggested in @taylor2019 . Therefore, mappestRisk has three different modules: *(1) model fitting & selection* using a set of the most widely used equations describing developmental responses to temperature under the `nls.multstart` [@nls.multstart] and `nlme` [@nlme] frameworks, with visualization of model fitting to help model selection by the user; (2) *thermal traits extraction:* including selection of the suitability threshold guiding the forecast (i.e. obtaining the temperatures at which estimated performance lies upon a performance higher threshold percentage); and (3) *climatic data extraction & visualization* with either exportable rasters or interactive maps with `leaflet` [@leaflet].
 
 ## Installation
 
@@ -44,7 +44,7 @@ If you want to clone or fork the repository or open and read some issues, you ca
 
 ## Example: mappestRisk workflow
 
-### 1. Fit a thermal performance curve to your data:
+### 1. Fit a thermal performance curve (TPC) to your data:
 
 In this example, we'll show how to fit one to several thermal performance curves to a data set of development rate variation across temperatures[^1]. The following code provides an example as given in `fit_devmodels()` function documentation, with a data table showing the output of fitted models.
 
@@ -61,7 +61,7 @@ fitted_tpcs_sharpshooter <- fit_devmodels(temp = h.vitripennis_pilkington2014$te
 print(fitted_tpcs_sharpshooter)
 ```
 
-### 2. Plot fitted TPCs and select the most appropriate:
+### 2. Plot the fitted TPCs and select the most appropriate:
 
 To help select which model might be more appropriate, the function `plot_devmodels()` draws the predicted TPCs for each adequately-converged model. This step aims to improve model selection based not only on statistical criteria (i.e. AIC and number of parameters) but also on ecological realism, since curves can be graphically checked to select realistic shapes and thermal traits --vertical cuts with x-axis such as $CT_\min$, $CT_\max$ and $T_{opt}$ .
 
@@ -75,7 +75,7 @@ plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
 
 ### 3. Calculate thermal suitability bounds:
 
-Once a model have been selected under both ecological realism and statistical criteria, the user can estimate the thermal boundaries defining the suitable range of temperatures for the studied population. The `thermal_suitability_bounds()` function calculate these values given the `fitted_parameters` output from `fit_devmodels()` and the selected model name. Additionally, a value of suitability defining the quantile-upper part of the curve can be providen by the user. The output is a data.frame with the model name, the suitability threshold and the two *thermal boundaries* required for the mapping functions (as described below).
+Once a model have been selected under both ecological realism and statistical criteria, the user can estimate the thermal boundaries defining the suitable range of temperatures for the studied population. The `thermal_suitability_bounds()` function calculate these values given the `fitted_parameters` output from `fit_devmodels()` and the selected model name. Additionally, a value of suitability defining the quantile-upper part of the curve can be provided by the user. The output is a tibble / data.frame with the model name, the suitability threshold and the two *thermal boundaries* required for the mapping functions (as described below).
 
 ```{r, warning=FALSE}
 thermal_boundaries_sharpshooter <- thermal_suitability_bounds(fitted_parameters = fitted_tpcs_sharpshooter,
@@ -86,19 +86,19 @@ print(thermal_boundaries_sharpshooter)
 
 ### 4. Climatic data extraction and projection
 
-[to be completed]
+Using the thermal boundaries provided by the previous function and a set of raster maps of monthly temperatures for a given region (which can be provided by the user or downloaded by the function), a map can be produced showing where (and for how many months a year) thermal conditions are suitable for the development of the pest.
 
 ```{r}
-# downloading data from geodata::wordlclim_global. It will takes several minutes the first time you download the data.
+# downloading data from geodata::wordlclim_global. It will take several minutes the first time you use the function on the same 'path'.
 risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
                                  thermal_boundaries_sharpshooter$tval_right),
                       path = "~/downloaded_maps", # directory to download data
                       region = "Réunion", 
                       verbose = TRUE)
-terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the first 12 layers, the monthly binary value (1, if suitable; 0, if not suitable).
 
 #we can also save the raster with:
-# terra::writeRaster(risk_rast, filename = "inst/extdata/risk_rast.tif")
+# terra::writeRaster(risk_rast, filename = "~/output_maps/risk_rast.tif")
 
 # Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use it as an input of `map_risk()`
 ## load it (here Luxembourg data)
