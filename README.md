@@ -24,10 +24,10 @@ region.
 For that purpose, mappestRisk is built upon previous efforts such as
 `devRate` (Rebaudo, Struelens, and Dangles 2018), `rTPC` and
 `nls.multstart` packages (Padfield, O’Sullivan, and Pawar 2021) and a
-methodology for predicting climatic suitability based on fundamental
-thermal niche as estimated by mechanistic, process-based approaches
-suggested in Taylor et al. (2019) . Therefore, mappestRisk has three
-different modules: *(1) model fitting & selection* using a set of the
+methodology for predicting climatic suitability based on approximating the
+fundamental thermal niche as estimated by mechanistic, process-based approaches
+inspired by a more complex index of suitability in Taylor et al. (2019) . 
+Therefore, mappestRisk has three different modules: *(1) model fitting & selection* using a set of the
 most used equations describing developmental responses to temperature
 under `nls.multstart` (Padfield and Matheson 2020) and `nlme` (Pinheiro,
 Bates 2022) frameworks with visualization of model fitting to help model
