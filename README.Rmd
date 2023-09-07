@@ -28,7 +28,7 @@ For that purpose, mappestRisk is built upon previous efforts such as `devRate` [
 
 ## Installation
 
-``` {r}
+```{r}
 # install.packages("devtools")
 # devtools::install_github("EcologyR/mappestRisk")
 
@@ -120,8 +120,13 @@ risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_lef
 
 ### 5. Interactive map with `leaflet`
 
-[to be completed]
+```{r}
+example <- interactive_map(x = risk_rast_binary, map_type = "high",
+                path_out = paste0(tempdir(), "test_map.html"))
+#example
 
+#htmlwidgets::saveWidget(example,file = "index.html")
+```
 
 ## Citation
 

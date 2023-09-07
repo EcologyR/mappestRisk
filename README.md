@@ -18,25 +18,26 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 
 The goal of mappestRisk package is to facilitate the transition from
 development data of pests obtained in lab-controlled conditions to
-understandable forecasts assessing risk of pest occurrence in a certain
+understandable forecasts assessing risk of pest occurrence in a given
 region.
 
 For that purpose, mappestRisk is built upon previous efforts such as
 `devRate` (Rebaudo, Struelens, and Dangles 2018), `rTPC` and
 `nls.multstart` packages (Padfield, O’Sullivan, and Pawar 2021) and a
-methodology for predicting climatic suitability based on approximating the
-fundamental thermal niche as estimated by mechanistic, process-based approaches
-inspired by a more complex index of suitability in Taylor et al. (2019) . 
-Therefore, mappestRisk has three different modules: *(1) model fitting & selection* using a set of the
-most used equations describing developmental responses to temperature
-under `nls.multstart` (Padfield and Matheson 2020) and `nlme` (Pinheiro,
-Bates 2022) frameworks with visualization of model fitting to help model
-selection by the user; (2) *thermal traits extraction:* including
-selection of the suitability threshold guiding the forecast
-(i.e. obtaining the temperatures at which estimated performance lies
-upon a performance higher threshold percentage); and (3) *climatic data
-extraction & visualization* with either exportable rasters or
-interactive maps with `leaflet` (Cheng, Karambelkar, and Xie 2022).
+methodology for predicting climatic suitability based on fundamental
+thermal niche as estimated by mechanistic, process-based approaches
+suggested in Taylor et al. (2019) . Therefore, mappestRisk has three
+different modules: *(1) model fitting & selection* using a set of the
+most widely used equations describing developmental responses to
+temperature under the `nls.multstart` (Padfield and Matheson 2020) and
+`nlme` (Pinheiro, Bates 2022) frameworks, with visualization of model
+fitting to help model selection by the user; (2) *thermal traits
+extraction:* including selection of the suitability threshold guiding
+the forecast (i.e. obtaining the temperatures at which estimated
+performance lies upon a performance higher threshold percentage); and
+(3) *climatic data extraction & visualization* with either exportable
+rasters or interactive maps with `leaflet` (Cheng, Karambelkar, and Xie
+2022).
 
 ## Installation
 
@@ -51,6 +52,10 @@ interactive maps with `leaflet` (Cheng, Karambelkar, and Xie 2022).
 #library(mappestRisk)
 devtools::load_all() #for now, provisionally
 #> ℹ Loading mappestRisk
+#> The legacy packages maptools, rgdal, and rgeos, underpinning this package
+#> will retire shortly. Please refer to R-spatial evolution reports on
+#> https://r-spatial.org/r/2023/05/15/evolution4.html for details.
+#> This package is now running under evolution status 0
 #> Warning: package 'testthat' was built under R version 4.2.2
 ```
 
@@ -60,7 +65,7 @@ issues, you can find the code
 
 ## Example: mappestRisk workflow
 
-### 1. Fit a thermal performance curve to your data:
+### 1. Fit a thermal performance curve (TPC) to your data:
 
 In this example, we’ll show how to fit one to several thermal
 performance curves to a data set of development rate variation across
@@ -107,7 +112,7 @@ print(fitted_tpcs_sharpshooter)
 #> 16 slope       0.00129     1.57e-3  4.14e-5 linear_ca…    -3034. <gnls>    okay
 ```
 
-### 2. Plot fitted TPCs and select the most appropriate:
+### 2. Plot the fitted TPCs and select the most appropriate:
 
 To help select which model might be more appropriate, the function
 `plot_devmodels()` draws the predicted TPCs for each
@@ -115,12 +120,7 @@ adequately-converged model. This step aims to improve model selection
 based not only on statistical criteria (i.e. AIC and number of
 parameters) but also on ecological realism, since curves can be
 graphically checked to select realistic shapes and thermal traits
-–vertical cuts with x-axis such as
-![CT\_\min](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;CT_%5Cmin "CT_\min"),
-![CT\_\max](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;CT_%5Cmax "CT_\max")
-and
-![T\_{opt}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;T_%7Bopt%7D "T_{opt}")
-.
+–vertical cuts with x-axis such as $CT_\min$, $CT_\max$ and $T_{opt}$ .
 
 ``` r
 library(ggplot2)
@@ -151,9 +151,9 @@ defining the suitable range of temperatures for the studied population.
 The `thermal_suitability_bounds()` function calculate these values given
 the `fitted_parameters` output from `fit_devmodels()` and the selected
 model name. Additionally, a value of suitability defining the
-quantile-upper part of the curve can be providen by the user. The output
-is a data.frame with the model name, the suitability threshold and the
-two *thermal boundaries* required for the mapping functions (as
+quantile-upper part of the curve can be provided by the user. The output
+is a tibble / data.frame with the model name, the suitability threshold
+and the two *thermal boundaries* required for the mapping functions (as
 described below).
 
 ``` r
@@ -169,10 +169,14 @@ print(thermal_boundaries_sharpshooter)
 
 ### 4. Climatic data extraction and projection
 
-\[to be completed\]
+Using the thermal boundaries provided by the previous function and a set
+of raster maps of monthly temperatures for a given region (which can be
+provided by the user or downloaded by the function), a map can be
+produced showing where (and for how many months a year) thermal
+conditions are suitable for the development of the pest.
 
 ``` r
-# downloading data from geodata::wordlclim_global. It will takes several minutes the first time you download the data.
+# downloading data from geodata::wordlclim_global. It will take several minutes the first time you use the function on the same 'path'.
 risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
                                  thermal_boundaries_sharpshooter$tval_right),
                       path = "~/downloaded_maps", # directory to download data
@@ -188,7 +192,7 @@ risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
 #> Computing final summary layer...
 #> 
 #> Finished!
-terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
+terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the first 12 layers, the monthly binary value (1, if suitable; 0, if not suitable).
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
@@ -196,7 +200,7 @@ terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable mon
 ``` r
 
 #we can also save the raster with:
-# terra::writeRaster(risk_rast, filename = "inst/extdata/risk_rast.tif")
+# terra::writeRaster(risk_rast, filename = "~/output_maps/risk_rast.tif")
 
 # Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use it as an input of `map_risk()`
 ## load it (here Luxembourg data)
@@ -212,7 +216,25 @@ risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_lef
 
 ### 5. Interactive map with `leaflet`
 
-\[to be completed\]
+``` r
+example <- interactive_map(x = risk_rast_binary, map_type = "high",
+                path_out = paste0(tempdir(), "test_map.html"))
+#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj =
+#> prefer_proj): Discarded ellps WGS 84 in Proj4 definition: +proj=merc +a=6378137
+#> +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null
+#> +wktext +no_defs +type=crs
+#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj =
+#> prefer_proj): Discarded datum World Geodetic System 1984 in Proj4 definition
+#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj =
+#> prefer_proj): Discarded ellps WGS 84 in Proj4 definition: +proj=merc +a=6378137
+#> +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null
+#> +wktext +no_defs +type=crs
+#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj =
+#> prefer_proj): Discarded datum World Geodetic System 1984 in Proj4 definition
+#example
+
+#htmlwidgets::saveWidget(example,file = "index.html")
+```
 
 ## Citation
 
