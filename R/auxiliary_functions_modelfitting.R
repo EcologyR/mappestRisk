@@ -114,50 +114,50 @@ start_vals_devRate <- function(model_name, temperature, dev_rate){
   if(length(unique(temperature)) < 4) {
     stop("At least four different temperature treatments in the data are required.")
   }
-if(length(temperature) != length(dev_rate)){
-  stop("development rate and temperature inputs are not of same length. Please check it.")
-}
+  if(length(temperature) != length(dev_rate)){
+    stop("development rate and temperature inputs are not of same length. Please check it.")
+  }
   if (mod2fit == "briere1") {
-      start_vals_prev <- c(tmin = 6, tmax = 32, a = 1e-04) # devRate start values are not representative, especially the a parameter, we use them manually
-      names(start_vals_prev) <- startvals_names_translate_devrate(start_vals = start_vals_prev,
-                                                                  mod2fit)
-      warning("briere1 start values are uninformative; default to `c(tmin = 6, tmax = 32, a = 1e-04)`")
-    } else {
-      start_vals_prev <- devRate::devRateEqStartVal[[model_name_translate(mod2fit)]] # take literature start values from devRate
-      names(start_vals_prev) <- startvals_names_translate_devrate(start_vals = start_vals_prev,
-                                                                  mod2fit)
-    }
-      start_upper_vals <- purrr::map(.x = start_vals_prev,
-                                     .f = ~.x + abs(.x))
-      start_lower_vals <- purrr::map(.x = start_vals_prev,
-                                     .f = ~.x - abs(.x))
-      devdata <- dplyr::tibble(temp = temperature,
-                               rate_development = dev_rate)
-      set.seed(2023) #ensure reproducibility
-    multstart_vals_fit <- nls.multstart::nls_multstart(formula = reformulate(response = "rate_development",
-                                                                                         termlabels = dev_model_table |>
-                                                                                           dplyr::filter(model_name == mod2fit) |>
-                                                                                           dplyr::pull(formula)),
-                                                               data = devdata,
-                                                               iter = 500,
-                                                               start_lower = start_lower_vals,
-                                                               start_upper = start_upper_vals,
-                                                               supp_errors = "Y")
-    sum_start_vals_fit <- summary(multstart_vals_fit)
-    if(is.null(multstart_vals_fit)){
-      start_vals_explore <- dplyr::tibble(param_name = names(start_vals_prev),
-                                                             start_value = unlist(start_vals_prev),
-                                                             model_name = mod2fit) |>
+    start_vals_prev <- c(tmin = 6, tmax = 32, a = 1e-04) # devRate start values are not representative, especially the a parameter, we use them manually
+    names(start_vals_prev) <- startvals_names_translate_devrate(start_vals = start_vals_prev,
+                                                                mod2fit)
+    warning("briere1 start values are uninformative; default to `c(tmin = 6, tmax = 32, a = 1e-04)`")
+  } else {
+    start_vals_prev <- devRate::devRateEqStartVal[[model_name_translate(mod2fit)]] # take literature start values from devRate
+    names(start_vals_prev) <- startvals_names_translate_devrate(start_vals = start_vals_prev,
+                                                                mod2fit)
+  }
+  start_upper_vals <- purrr::map(.x = start_vals_prev,
+                                 .f = ~.x + abs(.x))
+  start_lower_vals <- purrr::map(.x = start_vals_prev,
+                                 .f = ~.x - abs(.x))
+  devdata <- dplyr::tibble(temp = temperature,
+                           rate_development = dev_rate)
+  set.seed(2023) #ensure reproducibility
+  multstart_vals_fit <- nls.multstart::nls_multstart(formula = reformulate(response = "rate_development",
+                                                                           termlabels = dev_model_table |>
+                                                                             dplyr::filter(model_name == mod2fit) |>
+                                                                             dplyr::pull(formula)),
+                                                     data = devdata,
+                                                     iter = 500,
+                                                     start_lower = start_lower_vals,
+                                                     start_upper = start_upper_vals,
+                                                     supp_errors = "Y")
+  sum_start_vals_fit <- summary(multstart_vals_fit)
+  if(is.null(multstart_vals_fit)){
+    start_vals_explore <- dplyr::tibble(param_name = names(start_vals_prev),
+                                        start_value = unlist(start_vals_prev),
+                                        model_name = mod2fit) |>
       dplyr::pull(start_value)
 
     message("generic starting values")
-    } else { start_vals_names <- extract_param_names(multstart_vals_fit)
-    start_vals <- sum_start_vals_fit$parameters[1:length(start_vals_names), 1]
-    start_vals_explore <- dplyr::tibble(param_name = start_vals_names,
-                                         start_value = start_vals,
-                                         model_name = mod2fit) |>
-      dplyr::pull(start_value)
-    }
+  } else { start_vals_names <- extract_param_names(multstart_vals_fit)
+  start_vals <- sum_start_vals_fit$parameters[1:length(start_vals_names), 1]
+  start_vals_explore <- dplyr::tibble(param_name = start_vals_names,
+                                      start_value = start_vals,
+                                      model_name = mod2fit) |>
+    dplyr::pull(start_value)
+  }
   return(start_vals_explore)
 }
 
@@ -183,8 +183,6 @@ if(length(temperature) != length(dev_rate)){
 #'  The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
 #'  rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
 #'
-#' @param species_name a character string indicating the name of the species for plot title
-#'
 #' @seealso `fit_devmodels()` for fitting Thermal Performance Curves to development rate data
 #'
 #' @returns a ggplot with the simulated thermal performance curves based on estimate and standard error of
@@ -203,14 +201,12 @@ if(length(temperature) != length(dev_rate)){
 #' sim_tpcs_uncertainty(fitted_parameters = fit_table,
 #'                      model_name = "briere1",
 #'                      temp = h.vitripennis_pilkington2014$temperature,
-#'                      dev_rate = h.vitripennis_pilkington2014$rate_development,
-#'                      species_name = "glassy-winged sharpshooter")
+#'                      dev_rate = h.vitripennis_pilkington2014$rate_development)
 
 sim_tpcs_uncertainty <- function(fitted_parameters,
-                                    model_name,
-                                    temp,
-                                    dev_rate,
-                                    species_name = NULL) {
+                                 model_name,
+                                 temp,
+                                 dev_rate) {
 
   if(any(is.na(dev_rate))) {
     stop("development rate data have NAs; please consider removing them or fixing them")
@@ -246,14 +242,12 @@ sim_tpcs_uncertainty <- function(fitted_parameters,
     No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering
     or subsetting by rows if desired.")
   }
-    fitted_tbl <- fitted_parameters |>
-      tidyr::drop_na()
+  fitted_tbl <- fitted_parameters |>
+    tidyr::drop_na()
   if(nrow(fitted_tbl) == 0){
     stop("no model has converged in your `fitted_parameters` data.frame. Is it the appropriate object coming from converged
     `fit_devmodels()`?")
   }
-  if(is.null(species_name)){
-    species_name <- " " }
   model_f <- model_name
   model_ext_list <- fitted_parameters |>
     filter(model_name == model_f) |>
@@ -336,11 +330,10 @@ sim_tpcs_uncertainty <- function(fitted_parameters,
     scale_color_identity()+
     scale_alpha_identity()+
     scale_linewidth_identity()+
-    labs(title = paste("TPC simulation:", species_name),
+    labs(title = "TPC simulation:",
          subtitle = model_f,
          x = "Temperature (ºC)",
          y = "Development Rate (1/days)")
   print("Please wait a moment for the TPC to be plotted :)")
   return(plot_all_curves)
-  }
-
+}
