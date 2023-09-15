@@ -316,24 +316,5 @@ sim_tpcs_uncertainty <- function(fitted_parameters,
   simulated_tpcs <- bind_rows(all_tpcs_sim,
                               central_tpc)
 
-  plot_all_curves <- ggplot()+
-    xlim(c(min(temp) - 9,
-           max(temp) + 9))+
-    geom_line(data = simulated_tpcs,
-              aes(x = temperature,
-                  y = pred_devrate,
-                  color = as_factor(color),
-                  linewidth = linewidth,
-                  group = n_sim,
-                  alpha = alpha))+
-    ggthemes::theme_clean()+
-    scale_color_identity()+
-    scale_alpha_identity()+
-    scale_linewidth_identity()+
-    labs(title = "TPC simulation:",
-         subtitle = model_f,
-         x = "Temperature (ºC)",
-         y = "Development Rate (1/days)")
-  print("Please wait a moment for the TPC to be plotted :)")
-  return(plot_all_curves)
+  return(simulated_tpcs)
 }

@@ -160,16 +160,75 @@ thermal_suitability_bounds <- function(fitted_parameters,
   if(any(tvals$tval_right >= 50, na.rm = TRUE))
   { warning("upper value of thermal suitability  might be non-realistic")
   }
+  dev_rate_suitable <- max(fit_vals_tbl$preds, na.rm = TRUE)*0.01*suitability_threshold
   cband_tpcs  <- sim_tpcs_uncertainty(fitted_parameters = fitted_parameters,
                                       model_name = model_name,
                                       temp = temp,
                                       dev_rate = dev_rate)
-  bounds_tpcs <- cband_tpcs+
+  n_sim <- cband_tpcs |> distinct(n_sim) |> pull(n_sim) |> length()
+
+  plot_all_curves <- ggplot()+
+    xlim(c(min(temp) - 9,
+           max(temp) + 9))+
+    geom_line(data = cband_tpcs,
+              aes(x = temperature,
+                  y = pred_devrate,
+                  color = as_factor(color),
+                  linewidth = linewidth,
+                  group = n_sim,
+                  alpha = alpha))+
+    ggthemes::theme_clean()+
+    scale_color_identity()+
+    scale_alpha_identity()+
+    scale_linewidth_identity()+
+    labs(title = paste("TPC:", model_name),
+         subtitle = paste0("Suitability Threshold: Q", suitability_threshold),
+         x = "Temperature (ºC)",
+         y = "Development Rate (1/days)")+
+  annotate(geom = "segment",
+           y = dev_rate_suitable,
+           yend = dev_rate_suitable,
+           x = tvals$tval_left,
+           xend = tvals$tval_right,
+           color = "goldenrod1",
+           linewidth = 1.2)+
     annotate(geom = "point",
-             color = "goldenrod1",
-             x = )
-  print(cband_tpcs)
-  tvals_bounds <- tvals |> mutate(plot_uncertainty = list(cband_tpcs))
+             color = "#ff006e",
+             x = tvals$tval_left,
+             y = dev_rate_suitable,
+             size = 3)+
+    annotate(geom = "point",
+             color = "#ff006e",
+             x = tvals$tval_right,
+             y = dev_rate_suitable,
+             size = 3)+
+    annotate(geom = "segment",
+             x = tvals$tval_left,
+             xend = tvals$tval_left,
+             y = 0,
+             yend = dev_rate_suitable,
+             color = "#ff006e",
+             linetype = "dashed")+
+    annotate(geom = "segment",
+             x = tvals$tval_right,
+             xend = tvals$tval_right,
+             y = 0,
+             yend = dev_rate_suitable,
+             color = "#ff006e",
+             linetype = "dashed")+
+    annotate(geom = "point",
+             color = "#ff006e",
+             x = tvals$tval_left,
+             y = 0,
+             size = 3)+
+    annotate(geom = "point",
+             color = "#ff006e",
+             x = tvals$tval_right,
+             y = 0,
+             size = 3)
+  print(plot_all_curves)
+
+  tvals_bounds <- tvals |> mutate(plot_uncertainty = list(plot_all_curves))
   return(tvals_bounds)
 
 }
