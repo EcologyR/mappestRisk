@@ -128,12 +128,16 @@ example <- interactive_map(x = risk_rast_binary, map_type = "high",
 #htmlwidgets::saveWidget(example,file = "index.html")
 ```
 
+A provisional example of the kind of output from `interactive_map()` is shown in the following animated picture:
+
+![](images/mappestRisk_interactive.gif)
+
 ## Citation
 
 If using this package, please cite it:
 
 ```{r comment=NA}
-#citation("mappestRisk")
+citation("mappestRisk")
 ```
 
 ## Funding
