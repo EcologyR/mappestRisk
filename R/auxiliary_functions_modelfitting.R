@@ -266,6 +266,7 @@ sim_tpcs_uncertainty <- function(fitted_parameters,
                       n_parameters_model == 7 ~ 3)
 
   allparams_sim_list <- list(simulations = NULL)
+  set.seed(2023)
   for(parameter_index in 1:n_parameters_model){
     param_i_est <- sum_model$tTable[parameter_index, 1]
     param_i_se <- sum_model$tTable[parameter_index, 2]

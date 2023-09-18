@@ -73,6 +73,9 @@ thermal_suitability_bounds <- function(fitted_parameters,
   if(!is.null(model_name) && any(model_name == "linear_campbell")) {
     stop("Thermal Suitability predictions require nonlinear models. Try another fitted model in your `fitted_parameters` table instead")
   }
+  if(length(model_name) > 1 || model_name == "all") {
+    stop("Only one model is allowed in `thermal_suitability_bounds()`. Please calculate thermal boundaries one by one and apply repeatedly this function as many times as desired.")
+  }
   if(any(is.na(dev_rate))) {
     stop("development rate data have NAs; please consider removing them or fixing them")
   }
@@ -96,73 +99,67 @@ thermal_suitability_bounds <- function(fitted_parameters,
   }
   fitted_parameters_nonas <- fitted_parameters
   model2fit <- model_name
-  tvals <- tibble::tibble(model_name = NULL,
-                          tval_left = NULL,
-                          tval_right = NULL,
-                          suitability = NULL)
-  for(i in model2fit){
-    model_i <- dev_model_table |>
-      dplyr::filter(model_name == i)
-    params_i <- fitted_parameters_nonas |>
-      dplyr::filter(model_name == i)  |>
-      dplyr::pull(param_est)
+  model_fit_source <- dev_model_table |>
+    dplyr::filter(model_name == model2fit)
+  params_i <- fitted_parameters_nonas |>
+    dplyr::filter(model_name == model2fit)  |>
+    dplyr::pull(param_est)
 
-    ##predict based on parameters
-    explore_preds <- dplyr::tibble(temp = seq(0,50, 0.001),
-                                   model_name = i,
-                                   preds = NULL,
-    )
-    fit_vals_tbl <- explore_preds |>
-      dplyr::mutate(formula = model_i$params_formula) |>
-      dplyr::mutate(preds = purrr::map_dbl(.x = temp,
-                                           .f = reformulate(unique(formula)))) |>
-      dplyr::filter(preds >= 0) |>
-      dplyr::select(-formula) |>
-      dplyr::mutate(preds = dplyr::case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
-                                             model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
-                                             model_name == "briere1" & temp < params_i[1] ~ NA_real_,
-                                             model_name == "briere2" & temp < params_i[1] ~ NA_real_,
-                                             TRUE ~ preds)
-      ) # to exclude biological non-sense predictions due to model mathematical properties
-    possible_error <- tryCatch(expr =
-                                 suppressWarnings({topt_pred <- fit_vals_tbl |> #the custom error message is more informative than this warning
-                                   slice_max(preds) |>
-                                   pull(temp)
-                                 devrate_max <- fit_vals_tbl |>
-                                   dplyr::slice_max(preds) |>
-                                   dplyr::pull(preds)
-                                 half_left <- fit_vals_tbl |>
-                                   dplyr::filter(temp < topt_pred)
-                                 half_right <- fit_vals_tbl |>
-                                   dplyr::filter(temp >= topt_pred)
-                                 therm_suit_left <- half_left |>
-                                   dplyr::slice(max(which(half_left$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
-                                   dplyr::pull(temp)
-                                 therm_suit_right <- half_right |>
-                                   dplyr::slice(min(which(half_right$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
-                                   dplyr::pull(temp)
-                                 }),
-                               error = function(e) e)
-    if(inherits(possible_error, "error")) {
-      therm_suit_right <- NA
-      therm_suit_left <- NA
-    }
-    if(is.na(therm_suit_right) |
-       is.na(therm_suit_left)) {
-      warning(paste("Model", i, "is not appropriate to model thermal suitability. Try another instead (use `plot_devmodel()` to see curve shapes)."))
-    }
-    tvals_i <- dplyr::tibble(model_name = i,
-                             tval_left = therm_suit_left,
-                             tval_right = therm_suit_right,
-                             suitability = paste(suitability_threshold, "%"))
-    tvals <- dplyr::bind_rows(tvals, tvals_i)
-  } # <- loop ends
+  ##predict based on parameters
+  explore_preds <- dplyr::tibble(temp = seq(0,50, 0.001),
+                                 model_name = model2fit,
+                                 preds = NULL,
+  )
+  fit_vals_tbl <- explore_preds |>
+    dplyr::mutate(formula = model_fit_source$params_formula) |>
+    dplyr::mutate(preds = purrr::map_dbl(.x = temp,
+                                         .f = reformulate(unique(formula)))) |>
+    dplyr::filter(preds >= 0) |>
+    dplyr::select(-formula) |>
+    dplyr::mutate(preds = dplyr::case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
+                                           model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
+                                           model_name == "briere1" & temp < params_i[1] ~ NA_real_,
+                                           model_name == "briere2" & temp < params_i[1] ~ NA_real_,
+                                           TRUE ~ preds)
+    ) # to exclude biological non-sense predictions due to model mathematical properties
+  possible_error <- tryCatch(expr =
+                               suppressWarnings({topt_pred <- fit_vals_tbl |> #the custom error message is more informative than this warning
+                                 slice_max(preds) |>
+                                 pull(temp)
+                               devrate_max <- fit_vals_tbl |>
+                                 dplyr::slice_max(preds) |>
+                                 dplyr::pull(preds)
+                               half_left <- fit_vals_tbl |>
+                                 dplyr::filter(temp < topt_pred)
+                               half_right <- fit_vals_tbl |>
+                                 dplyr::filter(temp >= topt_pred)
+                               therm_suit_left <- half_left |>
+                                 dplyr::slice(max(which(half_left$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
+                                 dplyr::pull(temp)
+                               therm_suit_right <- half_right |>
+                                 dplyr::slice(min(which(half_right$preds <= devrate_max*0.01*suitability_threshold), na.rm = TRUE)) |>
+                                 dplyr::pull(temp)
+                               }),
+                             error = function(e) e)
+  if(inherits(possible_error, "error")) {
+    therm_suit_right <- NA
+    therm_suit_left <- NA
+  }
+  if(is.na(therm_suit_right) |
+     is.na(therm_suit_left)) {
+    warning(paste("Model", model2fit, "is not appropriate to model thermal suitability. Try another instead (use `plot_devmodel()` to see curve shapes)."))
+  }
+  tvals <- dplyr::tibble(model_name = model2fit,
+                         tval_left = therm_suit_left,
+                         tval_right = therm_suit_right,
+                         suitability = paste(suitability_threshold, "%"))
   if(any(tvals$tval_right >= 50, na.rm = TRUE))
   { warning("upper value of thermal suitability  might be non-realistic")
   }
   dev_rate_suitable <- max(fit_vals_tbl$preds, na.rm = TRUE)*0.01*suitability_threshold
+
   cband_tpcs  <- sim_tpcs_uncertainty(fitted_parameters = fitted_parameters,
-                                      model_name = model_name,
+                                      model_name = model2fit,
                                       temp = temp,
                                       dev_rate = dev_rate)
   n_sim <- cband_tpcs |> distinct(n_sim) |> pull(n_sim) |> length()
@@ -185,13 +182,13 @@ thermal_suitability_bounds <- function(fitted_parameters,
          subtitle = paste0("Suitability Threshold: Q", suitability_threshold),
          x = "Temperature (ºC)",
          y = "Development Rate (1/days)")+
-  annotate(geom = "segment",
-           y = dev_rate_suitable,
-           yend = dev_rate_suitable,
-           x = tvals$tval_left,
-           xend = tvals$tval_right,
-           color = "goldenrod1",
-           linewidth = 1.2)+
+    annotate(geom = "segment",
+             y = dev_rate_suitable,
+             yend = dev_rate_suitable,
+             x = tvals$tval_left,
+             xend = tvals$tval_right,
+             color = "goldenrod1",
+             linewidth = 1.2)+
     annotate(geom = "point",
              color = "#ff006e",
              x = tvals$tval_left,
@@ -228,7 +225,47 @@ thermal_suitability_bounds <- function(fitted_parameters,
              size = 3)
   print(plot_all_curves)
 
-  tvals_bounds <- tvals |> mutate(plot_uncertainty = list(plot_all_curves))
+  cband_tpcs_grey <- cband_tpcs |>
+    filter(color != "darkcyan")
+  n_sim_unc <- cband_tpcs_grey |> distinct(n_sim) |> pull(n_sim) |> length()
+  ## and repeat the boundarization process for all the simulated TPCs
+  for(nsim_tpc in 1:n_sim_unc) {
+    print(paste0("calculating uncertainty boundaries:   ", nsim_tpc, "/", n_sim_unc))
+    cband_tpc_nsim <- cband_tpcs_grey |>
+      filter(n_sim == nsim_tpc)
+    possible_error <- tryCatch(expr =
+                                 suppressWarnings({topt_dev_rate_nsim <- cband_tpc_nsim |> #the custom error message is more informative than this warning
+                                   slice_max(pred_devrate ) |>
+                                   pull(temperature)
+                                 devrate_max_nsim <- cband_tpc_nsim |>
+                                   dplyr::slice_max(pred_devrate ) |>
+                                   dplyr::pull(pred_devrate )
+                                 half_left_nsim <- cband_tpc_nsim |>
+                                   dplyr::filter(temperature < topt_dev_rate_nsim)
+                                 half_right_nsim <- cband_tpc_nsim |>
+                                   dplyr::filter(temperature >= topt_dev_rate_nsim)
+                                 therm_suit_left_nsim <- half_left_nsim |>
+                                   dplyr::slice(max(which(half_left_nsim$pred_devrate  <= devrate_max_nsim*0.01*suitability_threshold), na.rm = TRUE)) |>
+                                   dplyr::pull(temperature)
+                                 therm_suit_right_nsim <- half_right_nsim |>
+                                   dplyr::slice(min(which(half_right_nsim$pred_devrate  <= devrate_max_nsim*0.01*suitability_threshold), na.rm = TRUE)) |>
+                                   dplyr::pull(temperature)
+                                 }),
+                               error = function(e) e)
+    if(inherits(possible_error, "error")) {
+      therm_suit_right_nsim <- NA
+      therm_suit_left_nsim <- NA
+      warning(paste("Simulation", nsim_tpc, "not suitable for thermal boundaries computation"))
+    }
+    tvals_nsim <- tibble::tibble(model_name = model2fit,
+                                 tval_left = therm_suit_left_nsim,
+                                 tval_right = therm_suit_right_nsim,
+                                 suitability = paste(suitability_threshold, "%"))
+    tvals <- tvals |> bind_rows(tvals_nsim)
+  } # <- loop ends
+
+  tvals_bounds <- tvals |>
+    mutate(plot_uncertainty = list(plot_all_curves))
   return(tvals_bounds)
 
 }
