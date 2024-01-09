@@ -215,7 +215,7 @@ risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_lef
 ```
 
 ### 5. Interactive map with `leaflet`
-
+Example [here](https://ecologyr.github.io/mappestRisk)
 ``` r
 example <- interactive_map(x = risk_rast_binary, map_type = "high",
                 path_out = paste0(tempdir(), "test_map.html"))
