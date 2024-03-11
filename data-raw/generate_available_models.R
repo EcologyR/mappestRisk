@@ -33,24 +33,24 @@ dev_model_table <- tibble(model_name = model_names) |>
                              model_name == "thomas" ~ "rTPC::thomas_2012(temp, a, b, c, topt)",
                              model_name == "wang" ~ "wang(temp, k, r, topt, tmin, tmax, a)",
   )) |>
-    mutate(working_formula = case_when(model_name == "beta" ~  "beta_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
-                                       model_name == "boatman" ~ "rTPC::boatman_2017(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
-                                       model_name == "briere1" ~  "briere1(.x, start_vals[1], start_vals[2], start_vals[3])",
-                                       model_name == "briere2" ~ "rTPC::briere2_1999(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                                       model_name == "joehnk" ~ "rTPC::joehnk_2008(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
-                                       model_name == "kamykowski" ~ "rTPC::kamykowski_1985(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
-                                       model_name == "lactin1" ~ "lactin1(.x, start_vals[1], start_vals[2], start_vals[3])",
-                                       model_name == "lactin2" ~ "rTPC::lactin2_1995(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                                       model_name == "mod_weibull" ~ "rTPC::weibull_1995(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                                       model_name == "mod_polynomial" ~ "mod_polynomial(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
-                                       model_name == "oneill" ~ "rTPC::oneill_1972(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                                       model_name == "pawar" ~ "rTPC::pawar_2018(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], tref = 25)",
-                                       model_name == "ratkowsky" ~ "rTPC::ratkowsky_1983(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                                       model_name == "schoolfield" ~ "rTPC::sharpeschoolfull_1981(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6], tref = 25)",
-                                       model_name == "regniere" ~ "regniere(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6])",
-                                       model_name == "thomas" ~ "rTPC::thomas_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
-                                       model_name == "wang" ~ "wang(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6])"
-    )) |>
+  mutate(working_formula = case_when(model_name == "beta" ~  "beta_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
+                                     model_name == "boatman" ~ "rTPC::boatman_2017(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
+                                     model_name == "briere1" ~  "briere1(.x, start_vals[1], start_vals[2], start_vals[3])",
+                                     model_name == "briere2" ~ "rTPC::briere2_1999(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
+                                     model_name == "joehnk" ~ "rTPC::joehnk_2008(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
+                                     model_name == "kamykowski" ~ "rTPC::kamykowski_1985(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
+                                     model_name == "lactin1" ~ "lactin1(.x, start_vals[1], start_vals[2], start_vals[3])",
+                                     model_name == "lactin2" ~ "rTPC::lactin2_1995(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
+                                     model_name == "mod_weibull" ~ "rTPC::weibull_1995(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
+                                     model_name == "mod_polynomial" ~ "mod_polynomial(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
+                                     model_name == "oneill" ~ "rTPC::oneill_1972(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
+                                     model_name == "pawar" ~ "rTPC::pawar_2018(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], tref = 25)",
+                                     model_name == "ratkowsky" ~ "rTPC::ratkowsky_1983(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
+                                     model_name == "schoolfield" ~ "rTPC::sharpeschoolfull_1981(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6], tref = 25)",
+                                     model_name == "regniere" ~ "regniere(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6])",
+                                     model_name == "thomas" ~ "rTPC::thomas_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
+                                     model_name == "wang" ~ "wang(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6])"
+  )) |>
   mutate(working_formula = case_when(model_name == "beta" ~  "beta_2012(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
                                      model_name == "boatman" ~ "rTPC::boatman_2017(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
                                      model_name == "briere1" ~  "briere1(.x, params_i[1], params_i[2], params_i[3])",
@@ -72,51 +72,3 @@ dev_model_table <- tibble(model_name = model_names) |>
 
 
 save(dev_model_table, file = here::here("data/available_models.rda"))
-
-development_rTPC_models <- c("beta_2012",
-                             "boatman_2017",
-                             "briere2_1999",
-                             "gaussian_1987",
-                             "joehnk_2008",
-                             "kamykowski_1985",
-                             "lactin2_1995",
-                             "oneill_1972",
-                             "ratkowsky_1983",
-                             "thomas_2012",
-                             "weibull_1995"
-)
-
-nls_dr_formula <- c("beta_2012(temperature, a, b, c, d, e)",
-                    "boatman_2017(temperature, rmax, tmin, tmax, a, b)",
-                    "briere2_1999(temperature, tmin, tmax, a, b)",
-                    "gaussian_1987(temperature, rmax, topt, a)",
-                    "joehnk_2008(temperature, rmax, topt, a, b, c)",
-                    "kamykowski_1985(temperature, tmin, tmax, a, b, c)",
-                    "lactin2_1995(temperature, a, b, tmax, delta_t)",
-                    "oneill_1972(temperature, rmax, ctmax, topt, q10)",
-                    "ratkowsky_1983(temperature, tmin, tmax, a, b)",
-                    "thomas_2012(temperature, a, b, c, topt)",
-                    "weibull_1995(temperature, a, topt, b, c)")
-
-nls_dr_formula_params <- c("beta_2012(.x,       params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
-                           "boatman_2017(.x,    params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
-                           "briere2_1999(.x,    params_i[1], params_i[2], params_i[3], params_i[4])",
-                           "gaussian_1987(.x,   params_i[1], params_i[2], params_i[3])",
-                           "joehnk_2008(.x,     params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
-                           "kamykowski_1985(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
-                           "lactin2_1995(.x,    params_i[1], params_i[2], params_i[3], params_i[4])",
-                           "oneill_1972(.x,     params_i[1], params_i[2], params_i[3], params_i[4])",
-                           "ratkowsky_1983(.x,  params_i[1], params_i[2], params_i[3], params_i[4])",
-                           "thomas_2012(.x,     params_i[1], params_i[2], params_i[3], params_i[4])",
-                           "weibull_1995(.x,    params_i[1], params_i[2], params_i[3], params_i[4])")
-
-
-
-
-
-
-
-
-
-
-
