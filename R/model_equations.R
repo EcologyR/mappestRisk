@@ -20,11 +20,6 @@ briere1 <- function(temp, tmin, tmax, a) {
   return(est)
 }
 
-linear_campbell <- function(temp, intercept, slope) {
-  est <- slope*temp + intercept
-  return(est)
-}
-
 lactin1 <- function(temp, a, tmax, delta_t) {
   est <- exp(a * temp) - exp(a * tmax - (tmax - temp)/delta_t)
   return(est)
@@ -36,10 +31,4 @@ regniere <- function(temp,tmin, tmax, phi, delta_b, delta_m, b) {
 return(est)
  }
 
-ssi <- function(temp, p25, a, b, c, d, e) {
-  est <- (p25 * (temp + 273.16)/298 * exp(a/1.987 * (1/298 - 1/(temp +
-          273.16))))/(1 + exp(b/1.987 * (1/c - 1/(temp + 273.16)))+
-          exp(d/1.987 * (1/e - 1/(temp + 273.16))))
-  return(est)
-}
 

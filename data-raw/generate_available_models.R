@@ -33,7 +33,7 @@ dev_model_table <- tibble(model_name = model_names) |>
                              model_name == "thomas" ~ "rTPC::thomas_2012(temp, a, b, c, topt)",
                              model_name == "wang" ~ "wang(temp, k, r, topt, tmin, tmax, a)",
   )) |>
-  mutate(working_formula = case_when(model_name == "beta" ~  "beta_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
+  mutate(working_formula = case_when(model_name == "beta" ~  "rTPC::beta_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
                                      model_name == "boatman" ~ "rTPC::boatman_2017(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
                                      model_name == "briere1" ~  "briere1(.x, start_vals[1], start_vals[2], start_vals[3])",
                                      model_name == "briere2" ~ "rTPC::briere2_1999(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
@@ -51,7 +51,7 @@ dev_model_table <- tibble(model_name = model_names) |>
                                      model_name == "thomas" ~ "rTPC::thomas_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
                                      model_name == "wang" ~ "wang(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6])"
   )) |>
-  mutate(working_formula = case_when(model_name == "beta" ~  "beta_2012(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
+  mutate(working_formula = case_when(model_name == "beta" ~  "rTPC::beta_2012(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
                                      model_name == "boatman" ~ "rTPC::boatman_2017(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
                                      model_name == "briere1" ~  "briere1(.x, params_i[1], params_i[2], params_i[3])",
                                      model_name == "briere2" ~ "rTPC::briere2_1999(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
@@ -68,7 +68,26 @@ dev_model_table <- tibble(model_name = model_names) |>
                                      model_name == "regniere" ~ "regniere(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6])",
                                      model_name == "thomas" ~ "rTPC::thomas_2012(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
                                      model_name == "wang" ~ "wang(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6])"
-  ))
+  )) |>
+  mutate(n_params = case_when(model_name == "beta" ~ 5,
+                                model_name == "boatman" ~ 5,
+                                model_name == "briere1" ~ 3,
+                                model_name == "briere2" ~ 4,
+                                model_name == "joehnk" ~ 5,
+                                model_name == "kamykowski" ~ 5,
+                                model_name == "lactin1" ~ 3,
+                                model_name == "lactin2" ~ 4,
+                                model_name == "mod_weibull" ~ 4,
+                                model_name == "mod_polynomial" ~ 5,
+                                model_name == "oneill" ~ 4,
+                                model_name == "pawar" ~ 4,
+                                model_name == "ratkowsky" ~ 4,
+                                model_name == "schoolfield" ~ 6,
+                                model_name == "regniere" ~ 6,
+                                model_name == "thomas" ~ 4,
+                                model_name == "wang" ~  6)
+         )
 
 
 save(dev_model_table, file = here::here("data/available_models.rda"))
+

@@ -45,22 +45,13 @@
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
-                          model_name = NULL,
-                          variance_model = NULL){
-varfun <- variance_model
-if(any(is.na(dev_rate))) {
+                          model_name = NULL){
+  if(any(is.na(dev_rate))) {
   stop("development rate data have NAs; please consider removing them or fixing them")
-}
-if(any(is.na(temp))) {
+  }
+  if(any(is.na(temp))) {
   stop("temperature data have NAs; please consider removing them or fixing them")
-}
-if(is.null(variance_model)){
-  varfun <- "exp"
-  warning("no variance_model input has been provided by the user. Using exp by default")
-
-} else if(!varfun %in% c("exp", "power", "constant")) {
-  stop("variance_model input not available. Use `exp`, `power` or `constant` - see ?fit_devmodels() for more information")
-}
+  }
   if(!is.numeric(temp)) {
     stop("temperature data is not numeric. Please check it.")
   }
@@ -82,7 +73,7 @@ if(is.null(variance_model)){
   if (any(dev_rate < 0) | any(dev_rate > 10)){
     warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
   if(any(temp < -10) | any(temp > 56)){
-    warning("experienced temperatures by active organisms (i.e. not in diapause) are usually between 0 and 50ºC")}
+    warning("experienced temperatures by active organisms are usually between 0 and 50ºC")}
 
   if (model_name[1] == "all") { # it will be probably the most commonly used option for user's experience
     model_names <- dev_model_table$model_name
@@ -96,168 +87,120 @@ if(is.null(variance_model)){
   model_names <- model_names[model_names != "wang"]
   warning("wang model (6 parameters) needs larger data sets to converge. Model discarded.")
   }
-  if(any(model_names == "ssi") && length(temp) < 6) {
-  model_names <- model_names[model_names != "ssi"]
-  warning("ssi model (6 parameters) needs larger data sets to converge. Model discarded.")
+  if(any(model_names == "schoolfield") && length(temp) < 6) {
+  model_names <- model_names[model_names != "schoolfield"]
+  warning("schoolfield model (6 parameters) needs larger data sets to converge. Model discarded.")
   }
   if(any(model_names == "mod_polynomial") && length(temp) < 5) {
   model_names <- model_names[model_names != "mod_polynomial"]
   warning("mod_polynomial model (5 parameters) needs larger data sets to converge. Model discarded.")
   }
-
+  if(model_name == "all") {
+    models_2fit <- dev_model_table |>
+      filter(n_params <= n_distinct(temp)) |>
+      pull(model_name)
+  } else {
+    models_2fit <- model_name
+  }
+  list_fit_models <- vector("list", length = length(models_2fit))
   list_param <- dplyr::tibble(param_name = NULL,
-                               start_vals = NULL,
-                               param_est = NULL,
-                               param_se = NULL,
-                               model_name = NULL,
-                               model_AIC = NULL)
-  list_fit_models <- vector("list", length = length(dev_model_table$model_name))
-  for (i in model_names) {
-    model_i <- dev_model_table |>
-      dplyr::filter(model_name == i)
+                              start_vals = NULL,
+                              param_est = NULL,
+                              param_se = NULL,
+                              model_name = NULL,
+                              model_AIC = NULL,
+                              model_BIC = NULL,
+                              model_fit = NULL)
 
+  for (i in models_2fit) {
     message(paste0("fitting model ", i)) # to let people know that the function is working and R is not crashing
-
+    model_i <- dev_model_table |>
+      filter(model_name == i)
     if (model_i$package == "devRate") {
-      start_vals <- start_vals_devRate(model_name = i,
+      start_vals <- start_vals_devRate(model_name_2fit = model_i,
                                        temperature = temp,
                                        dev_rate = dev_rate)
-    }
 
-    if (model_i$package == "rTPC") {
-      # start_vals <- start_vals_rtpc(model_name = i,
-      #                               temperature = temp,
-      #                               dev_rate = dev_rate)
-      start_vals <- rTPC::get_start_vals(x = temp,
-                                         y = dev_rate,
-                                         model_name = model_name_translate(i))
-    }
-
-    devdata <- dplyr::tibble(temp = temp,
-                              dev_rate = dev_rate)
-
-    ## then fit model with nlme::gnls function
-    if(varfun == "exp") {
-   possible_error <- tryCatch(expr =
-      fit_gnls <- suppressWarnings(nlme::gnls(
-        model = reformulate(response = "dev_rate",
-                            termlabels = unique(model_i$formula)),
-        data = devdata,
-        start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
-        na.action = na.exclude, #to avoid problems in the model
-        weights = nlme::varExp(form = ~temp),
-        control = nlme::gnlsControl(maxIter = 50,
-                                    nlsTol = 1e-09,
-                                    minScale = 1e-01,
-                                    returnObject = TRUE))),
-      error = function(e) e)
-    if(inherits(possible_error, "error")) {
-      fit_gnls <- NULL
-    }
-   }
-    else if(varfun == "power") {
-      possible_error <- tryCatch(expr =
-                                   fit_gnls <- suppressWarnings(nlme::gnls(
-        model = reformulate(response = "dev_rate",
-                            termlabels = unique(model_i$formula)),
-        data = devdata,
-        start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
-        na.action = na.exclude, #to avoid problems in the model
-        weights = nlme::varPower(form = ~temp),
-        control = nlme::gnlsControl(maxIter = 50,
-                                    nlsTol = 1e-09,
-                                    minScale = 1e-01,
-
-                                    returnObject = TRUE))),
-      error = function(e) e)
-    if(inherits(possible_error, "error")) {
-      fit_gnls <- NULL
-      }
-  } else if (varfun == "constant") {
-    possible_error <- tryCatch(expr =
-                                 fit_gnls <- suppressWarnings(nlme::gnls(
-        model = reformulate(response = "dev_rate",
-                            termlabels = unique(model_i$formula)),
-        data = devdata,
-        start = tidyr::replace_na(start_vals, 0), #to avoid error if start values compute a NA, probably not converging
-        na.action = na.exclude, #to avoid problems in the model
-        weights = nlme::varIdent(),
-        control = nlme::gnlsControl(maxIter = 50,
-                                    nlsTol = 1e-09,
-                                    minScale = 1e-01,
-                                    returnObject = TRUE))),
-      error = function(e) e)
-  if(inherits(possible_error, "error")) {fit_gnls <- NULL}
-    }
-
-    if (is.null(fit_gnls)){
-       list_fit_models[[which(dev_model_table$model_name == i)]] <- NA
-       list_param_tbl <- dplyr::tibble(param_name = names(start_vals),
+      possible_error <- tryCatch(expr = {
+        model_i <- dev_model_table |>
+          filter(model_name == i)
+        therm_perf_df <- tibble(temp, dev_rate)
+        start_upper_vals <- purrr::map(.x = start_vals,
+                                       .f = ~.x + abs(.x/2))
+        start_lower_vals <- purrr::map(.x = start_vals,
+                                       .f = ~.x - abs(.x/2))
+        fit_nls <- nls_multstart(formula =reformulate(response = "dev_rate",
+                                                      termlabels = unique(model_i$formula)),
+                                 data = therm_perf_df,
+                                 iter = 500,
+                                 start_lower = start_lower_vals,
+                                 start_upper = start_upper_vals,
+                                 supp_errors = "Y")
+        list_fit_models[[which(dev_model_table$model_name == i)]] <- fit_nls
+        sum_fit_nls <- summary(fit_nls)
+        list_param_tbl <- dplyr::tibble(param_name = extract_param_names(fit_nls),
                                         start_vals = tidyr::replace_na(start_vals, 0),
-                                        param_est = NA,
-                                        param_se = NA,
+                                        param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+                                        param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
                                         model_name = i,
-                                        model_AIC = NA,
-                                        model_fit = list(fit_gnls))
-
-        list_param <- list_param |>
-          dplyr::bind_rows(list_param_tbl)
-        message(paste0("Model ", i, " did not converge. Try other models listed in `dev_model_table` if necessary"))
-    }
-
-    else {
-      list_fit_models[[which(dev_model_table$model_name == i)]] <- fit_gnls
-        sum_fit_gnls <- summary(fit_gnls)
-      list_param_tbl <- dplyr::tibble(param_name = names(coef(fit_gnls)),
-                                      start_vals = tidyr::replace_na(start_vals, 0),
-                                      param_est = fit_gnls$coefficients,
-                                      param_se = sum_fit_gnls$tTable[1:length(fit_gnls$coefficients), 2],
-                                      model_name = i,
-                                      model_AIC = sum_fit_gnls$AIC,
-                                      model_fit = list(fit_gnls)
-      )
-
-      list_param <- list_param |>
-        dplyr::bind_rows(list_param_tbl)
-    }
-  } # <- loop ends
-
-  if (!is.null(fit_gnls) && nrow(list_param) == 0) {
-    stop(paste("Model(s)", model_name, "did not converge. Please try other models listed in `available_models`"))
-    ## Maybe we can keep running all the other models rather than terminating?
-  } else { list_param <- list_param |>
-    tidyr::drop_na() |>
-    dplyr::mutate(false_convergence = purrr::map2_dbl(.x = start_vals,
-                                               .y = param_est,
-                                               .f = ~dplyr::if_else(.x == .y,
-                                                             NA_real_,
-                                                             1))) |>
-    tidyr::drop_na() |>
-    dplyr::select(-false_convergence) |>
-    dplyr::mutate(fit = purrr::map2_chr(.x = param_est,
-                                         .y = param_se,
-                                         .f = ~ifelse(abs(.y) > abs(.x),
-                                                      "bad",
-                                                      "okay")))
-  }
-  if(any(list_param$fit == "bad")) {
-  message("
-  ---------------------------------------------------------------------------------------------------
-  CAUTION: where `fit = bad` in your output fitted parameters table, parameter uncertainty is very high;
-  we DO NOT recommend to select them for predictions solely based on their AIC. We strongly
-  recommend to take a look at predictions using `plot_devmodels()` function for your data.
-  ---------------------------------------------------------------------------------------------------" )
-    }
-  if(nrow(list_param) == 0 |
-     all(list_param |>
-         dplyr::group_by(model_name) |>
-         dplyr::summarise(length(unique(fit))) == 1) &&
-                            !all(list_param$fit == "okay")) {
-      stop("no model converged adequately for fitting your data")
-    } else {
-      return(list_param |>
-               dplyr::arrange(model_AIC))
+                                        model_AIC = AIC(fit_nls),
+                                        model_BIC = BIC(fit_nls),
+                                        model_fit = list(fit_nls))
+      }, # <- inside tryCatch
+      error = function(e) e)
+      if(inherits(possible_error, "error")) {
+        fit_nls <- NULL
       }
-}
+      if(is.null(fit_nls)) {
+        list_param <- list_param
+      } else {list_param <- list_param |>
+        dplyr::bind_rows(list_param_tbl)}
+    } else {
+      possible_error <- tryCatch(expr = {start_vals <- rTPC::get_start_vals(x = temp,
+                                           y = dev_rate,
+                                           model_name = model_name_translate(i))
+        model_i <- dev_model_table |>
+          filter(model_name == i)
+        therm_perf_df <- tibble(temp, dev_rate)
+        start_upper_vals <- purrr::map(.x = start_vals,
+                                       .f = ~.x + abs(.x/2))
+        start_lower_vals <- purrr::map(.x = start_vals,
+                                       .f = ~.x - abs(.x/2))
+        fit_nls <- nls_multstart(formula =reformulate(response = "dev_rate",
+                                                      termlabels = unique(model_i$formula)),
+                                 data = therm_perf_df,
+                                 iter = 500,
+                                 start_lower = start_lower_vals,
+                                 start_upper = start_upper_vals,
+                                 lower = get_lower_lims(therm_perf_df$temp,
+                                                        therm_perf_df$dev_rate,
+                                                        model_name = model_name_translate(i)),
+                                 upper = get_upper_lims(therm_perf_df$temp,
+                                                        therm_perf_df$dev_rate,
+                                                        model_name = model_name_translate(i)),
+                                 supp_errors = "Y")
+        list_fit_models[[which(dev_model_table$model_name == i)]] <- fit_nls
+        sum_fit_nls <- summary(fit_nls)
+        list_param_tbl <- dplyr::tibble(param_name = extract_param_names(fit_nls),
+                                        start_vals = tidyr::replace_na(start_vals, 0),
+                                        param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+                                        param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+                                        model_name = i,
+                                        model_AIC = AIC(fit_nls),
+                                        model_BIC = BIC(fit_nls),
+                                        model_fit = list(fit_nls))
+      }, # <- inside tryCatch
+      error = function(e) e)
+      if(inherits(possible_error, "error")) {
+        fit_nls <- NULL
+      }
+      if(is.null(fit_nls)) {
+        list_param <- list_param
+      } else {list_param <- list_param |>
+        dplyr::bind_rows(list_param_tbl)}
+      } # <- if else ends
 
+    } # <- loop ends
+    return(list_param)
+  }
 
