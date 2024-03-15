@@ -78,23 +78,6 @@ fit_devmodels <- function(temp = NULL,
   if (model_name[1] == "all") { # it will be probably the most commonly used option for user's experience
     model_names <- dev_model_table$model_name
   } else {model_names <- model_name}
-
-  if(any(model_names == "regniere") && length(temp) < 6) {
-  model_names <- model_names[model_names != "regniere"]
-  warning("regniere model (6 parameters) needs larger data sets to converge. Model.")
-  }
-  if(any(model_names == "wang") && length(temp) < 6) {
-  model_names <- model_names[model_names != "wang"]
-  warning("wang model (6 parameters) needs larger data sets to converge. Model discarded.")
-  }
-  if(any(model_names == "schoolfield") && length(temp) < 6) {
-  model_names <- model_names[model_names != "schoolfield"]
-  warning("schoolfield model (6 parameters) needs larger data sets to converge. Model discarded.")
-  }
-  if(any(model_names == "mod_polynomial") && length(temp) < 5) {
-  model_names <- model_names[model_names != "mod_polynomial"]
-  warning("mod_polynomial model (5 parameters) needs larger data sets to converge. Model discarded.")
-  }
   if(model_name == "all") {
     models_2fit <- dev_model_table |>
       filter(n_params <= n_distinct(temp)) |>
@@ -102,7 +85,8 @@ fit_devmodels <- function(temp = NULL,
   } else {
     models_2fit <- model_name
   }
-  list_fit_models <- vector("list", length = length(models_2fit))
+
+    list_fit_models <- vector("list", length = length(models_2fit))
   list_param <- dplyr::tibble(param_name = NULL,
                               start_vals = NULL,
                               param_est = NULL,
