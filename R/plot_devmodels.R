@@ -140,13 +140,15 @@ plot_devmodels <- function(temp, dev_rate, fitted_parameters,
   }
   my_title <- substitute(italic(paste(especie)), list(especie = species))
   ggplot_models <- ggplot()+
-    geom_point(data = devdata, aes(x = temperature,
-                                   y = development_rate),
-               color = "gray62", alpha = .4)+
     geom_line(data = predict2fill |>
                 filter(preds < (1.5*max(devdata$development_rate))),
               aes(x = temp, y = preds, color = model_name),
               linewidth = 1.3)+
+    geom_point(data = devdata, aes(x = temperature,
+                                   y = development_rate),
+               color = "darkslategray",
+               alpha = .8,
+               size = 1.5)+
     facet_wrap(~factor(model_name, levels = aic_order))+
     theme_bw()+
     theme(legend.position = "none")+

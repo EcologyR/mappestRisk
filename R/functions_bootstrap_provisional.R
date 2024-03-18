@@ -1,62 +1,17 @@
-# load packages
+library(tidyverse)
 library(boot)
 library(car)
-library(minpack.lm)
-library(here)
-library(rTPC)
 library(nls.multstart)
-library(tidyverse)
-# load data on intrinsic rates
-
-## ex1
-rate_temp <- readxl::read_xlsx("~/GitHub/tracing_thermal_niches/data/data_source/therm_ecology_dataset.xlsx") |>
-  filter(species == "Chloridea virescens" &
-           life_stage == "pupa" &
-           rate_type == "development days") |>
-  mutate(devrate = 1/rate_value) |>
-  select(temperature, devrate) |>
-  rename(temp = temperature,
-         dev_rate = devrate)
-
-##ex 2 fewer temperature points
-rate_temp <- readxl::read_xlsx("~/GitHub/tracing_thermal_niches/data/data_source/therm_ecology_dataset.xlsx") |>
-  filter(species == "Neoleucinodes elegantalis" &
-           life_stage == "larva V" &
-           rate_type == "development days") |>
-  mutate(devrate = 1/rate_value) |>
-  select(temperature, devrate) |>
-  rename(temp = temperature,
-         dev_rate = devrate) |>
-  drop_na()
-
-##
-# dev_model_table
-
-fit_table <- fit_devmodels(temp = rate_temp$temp,
-                           dev_rate = rate_temp$dev_rate,
-                           model_name = "all")
-
-plot_devmodels(temp = rate_temp$temp,
-               dev_rate = rate_temp$dev_rate,
-               fitted_parameters = fit_table,
-               species = "Neoleucinodes elegantalis",
-               life_stage = "Larva V")
-
+library(rTPC)
+library(devRate)
 
 bootstrap_uncertainties <- function(temp,
-                                dev_rate,
-                                fitted_parameters,
-                                model_name,
-                                n_boots_samples) {
-  ###
-  temp = rate_temp$temp
-  dev_rate = rate_temp$dev_rate
-  fitted_parameters = fit_table
-  model_name = c("lactin1", "lactin2")
-  n_boots_samples = 100
-  ###
+                                    dev_rate,
+                                    fitted_parameters,
+                                    model_name_2boot,
+                                    n_boots_samples) {
 
-  devdata <- tibble(temp,
+ devdata <- tibble(temp,
                     dev_rate)
   fitted_tbl <- fitted_parameters
   predict2fill <- tibble(temp = NULL,
@@ -64,7 +19,7 @@ bootstrap_uncertainties <- function(temp,
                          model_name = NULL,
                          model_fit = NULL,
                          model_AIC = NULL)
-  model_name_2boot <- model_name
+
 
   for(model_name_i in model_name_2boot){
     fitted_tbl_i <- fitted_tbl |>
@@ -75,7 +30,8 @@ bootstrap_uncertainties <- function(temp,
       pull(model_fit)
     params_i <- fitted_tbl_i |>
       pull(param_est)
-    formula_i <- dev_model_table |> filter(model_name == model_name_i) |>
+    formula_i <- dev_model_table |>
+      filter(model_name == model_name_i) |>
       pull(working_formula)
     ##predict based on parameters
     explore_preds <- tibble(temp = seq(min(devdata$temp)-20,
@@ -115,19 +71,29 @@ bootstrap_uncertainties <- function(temp,
   for(model_i in model_name_2boot){
     predict_model_i <- predict2fill_complete |>
       filter(model_name == model_i)
-    temp_data <- predict_model_i$data[[1]]
-    model_template_i <- dev_model_table |>
-      filter(model_name == model_i)
-    possible_error <- tryCatch(expr = {temp_fit <- minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
-                                                                                           termlabels = unique(model_template_i$formula)),
-                                                                     data = temp_data,
-                                                                     start = predict_model_i$coefs[[1]],
-                                                                     control = minpack.lm::nls.lm.control(maxiter = 100)
-    )
-    set.seed(2024)
-    boot <- Boot(temp_fit, method = 'residual', R = n_boots_samples)
-    boot_2fill_i <- predict_model_i |>
-      mutate(bootstrap = list(boot))
+    coefs_i <- as_vector(unique(predict_model_i$coefs))
+    temp_data_i <- devdata
+    formula_i <- dev_model_table |>
+      filter(model_name == model_i) |>
+      pull(formula)
+
+    ## avoid errors when wrapping Boot
+    assign("model_i", model_i, envir=parent.frame())
+    assign("predict_model_i", predict_model_i, envir=parent.frame())
+    assign("coefs_i", coefs_i, envir=parent.frame())
+    assign("temp_data_i", temp_data_i, envir=parent.frame())
+    assign("formula_i", formula_i, envir=parent.frame())
+    possible_error <- tryCatch(expr = {
+      temp_fit <- minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
+                                                          termlabels = formula_i),
+                                    data = temp_data_i,
+                                    na.action = na.exclude,
+                                    start = coefs_i)
+      set.seed(2024)
+      assign("temp_fit", temp_fit, envir=parent.frame())
+      boot <- Boot(temp_fit, method = 'residual', R = n_boots_samples)
+      boot_2fill_i <- predict_model_i |>
+        mutate(bootstrap = list(boot))
     }, # <- inside tryCatch
     error = function(e) e)
     if(inherits(possible_error, "error")) {
@@ -138,7 +104,7 @@ bootstrap_uncertainties <- function(temp,
     }
     boot_2fill <- bind_rows(boot_2fill, boot_2fill_i)
   }
-
+  rm("model_i", "predict_model_i", "coefs_i", "temp_data_i", "formula_i", "temp_fit", "boot")
   boot_2fill_clean <- boot_2fill |>
     filter(!is.na(bootstrap))
 
@@ -147,11 +113,11 @@ bootstrap_uncertainties <- function(temp,
     group_by(model_name) |>
     mutate(output_boot = map(bootstrap,
                              function(x) x$t))
-
   bootstrap_tpcs_all <- tibble(model_name = NULL,
                                iter = NULL,
                                temp = NULL,
-                               pred = NULL)
+                               pred = NULL,
+                               curvetype = NULL)
   #preds boot with a for loop
 
   for(temp_model_i in 1:length(tpc_fits_boot$output_boot)){
@@ -170,7 +136,8 @@ bootstrap_uncertainties <- function(temp,
     tpc_bootpreds <- tibble(model_name = NULL,
                             iter = NULL,
                             temp = NULL,
-                            pred = NULL)
+                            pred = NULL,
+                            curvetype = NULL)
     for(boot_iter in 1:nrow(output_boot_df)){
       params_i <- output_boot_df[boot_iter, 1:boot_preds_i$n_params] |>
         as_vector()
@@ -178,13 +145,20 @@ bootstrap_uncertainties <- function(temp,
                                    iter = boot_iter,
                                    temp = boot_preds_i$temp,
                                    pred = map_dbl(.x = temp,
-                                                  .f = reformulate(formula_i)))
+                                                  .f = reformulate(formula_i)),
+                                   curvetype = "uncertainty")
       tpc_bootpreds <- bind_rows(tpc_bootpreds, tpc_boot_iter_temp)
     }
     bootstrap_tpcs_all <- bind_rows(bootstrap_tpcs_all, tpc_bootpreds) |>
       filter(pred >= 0)
-    }
-    return(bootstrap_tpcs_all)
+    central_curve <- tpc_fits_boot |>
+      select(temp, preds, model_name) |>
+      rename(pred = preds) |>
+      mutate(curvetype = "estimate")
+    central_and_bootstrap_tpcs <- bootstrap_tpcs_all |>
+      bind_rows(central_curve)
+  }
+    return(central_and_bootstrap_tpcs)
 }
 
 
@@ -194,19 +168,28 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
                                dev_rate,
                                species,
                                life_stage) {
+
   devdata <- tibble(temp,
                     dev_rate)
+  central_curve <- bootstrap_uncertainties_tpcs |>
+    filter(curvetype == "estimate")
+  uncertainty_curves <- bootstrap_uncertainties_tpcs |>
+    filter(curvetype == "uncertainty")
+
  my_title <- substitute(italic(paste(x)), list(x = species))
  plot_boot_tpcs <- ggplot() +
-    geom_line(data = bootstrap_uncertainties_tpcs,
+    geom_line(data = uncertainty_curves,
               aes(x = temp,
                   y = pred,
                   group = iter),
-              col = '#586A64',
-              alpha = 0.05) +
-    geom_line(data = tpc_fits_boot,
+              col = "#0E4D62", #'#586A64',
+              alpha = 0.08,
+              linewidth = 0.32) +
+    geom_line(data = central_curve,
               aes(x = temp,
-                  y = preds), col = '#B1492E', linewidth = 1.2) +
+                  y = pred),
+              col = "#CF8143", #'#B1492E',
+              linewidth = .85) +
     geom_point(data = devdata,
                aes(temp, dev_rate),
                size = 2) +
@@ -222,20 +205,3 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
     )
  return(plot_boot_tpcs)
 }
-
-boots_neoleucinodes <- bootstrap_uncertainties(temp = rate_temp$temp,
-                                               dev_rate = rate_temp$dev_rate,
-                                               fitted_parameters = fit_table,
-                                               model_name = c("lactin1", "lactin2"),
-                                               n_boots_samples = 100)
-
-plot_uncertainties(bootstrap_uncertainties_tpcs = boots_neoleucinodes,
-                   temp = rate_temp$temp,
-                   dev_rate = rate_temp$dev_rate,
-                   species = "Neoleucinodes elegantalis",
-                   life_stage = "Larva V"
-                   )
-
-ggsave(here("boots_lactins_example.png"), height = 15, width = 24, units = "cm", dpi = 300)
-
-

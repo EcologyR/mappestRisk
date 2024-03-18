@@ -10,11 +10,6 @@ mod_polynomial <- function(temp, a_0, a_1, a_2, a_3, a_4){
   return(est)
 }
 
-janisch <- function(temp, topt, dmin, a, b){
-  est <- ((dmin/2 * (exp(a * (temp - topt)) + exp(-b * (temp - topt))))^(-1))
-  return(est)
-}
-
 briere1 <- function(temp, tmin, tmax, a) {
   est <- a * temp * (temp - tmin) * (tmax - temp)^(1/2)
   return(est)
