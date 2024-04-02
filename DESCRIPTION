@@ -24,7 +24,6 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
-    devRate,
     dplyr,
     ggplot2,
     htmlwidgets,
@@ -33,7 +32,10 @@ Imports:
     leaflet.opacity,
     raster,
     terra,
-    tibble
+    tibble,
+    car,
+    nls.multstart,
+    rTPC
+    devRate
 Remotes:
-    padpadpadpad/rTPC,
     rstudio/leaflet
