@@ -146,8 +146,3 @@ thermal_suitability_bounds <- function(pred_tbl,
   return(tvals)
 }
 
-
-example_therm_bounds <- thermal_suitability_bounds(pred_tbl = boots_thrips,
-                                                   model_name <- "lactin1",
-                                                   suitability_threshold = 80) |>
-  drop_na()

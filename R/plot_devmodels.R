@@ -24,17 +24,7 @@
 #' @export
 #'
 #' @examples
-#'
-#' data("h.vitripennis_pilkington2014")
-#' homalodisca_fitted <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
-#'                                     dev_rate = h.vitripennis_pilkington2014$rate_development,
-#'                                     model_name = c("all"),
-#'                                     variance_model = "exp") #might be a bit slow
-#'
-#' plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
-#'                dev_rate = h.vitripennis_pilkington2014$rate_development,
-#'                fitted_parameters = homalodisca_fitted)
-#'
+
 
 plot_devmodels <- function(temp, dev_rate, fitted_parameters,
                            species = NULL,

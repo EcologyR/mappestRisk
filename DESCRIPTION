@@ -35,7 +35,7 @@ Imports:
     tibble,
     car,
     nls.multstart,
-    rTPC
+    rTPC,
     devRate
 Remotes:
     rstudio/leaflet
