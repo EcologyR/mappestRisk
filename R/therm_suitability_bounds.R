@@ -35,7 +35,7 @@
 #'                            suitability_threshold = 75)
 #'
 
-thermal_suitability_bounds <- function(pred_tbl,
+therm_suitability_bounds <- function(pred_tbl,
                                        model_name,
                                        suitability_threshold = NULL) {
 

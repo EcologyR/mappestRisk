@@ -1,4 +1,25 @@
+## ex1
+rate_temp <- readxl::read_xlsx("~/GitHub/tracing_thermal_niches/data/data_source/therm_ecology_dataset.xlsx") |>
+  filter(species == "Chloridea virescens" &
+           life_stage == "pupa" &
+           rate_type == "development days") |>
+  mutate(devrate = 1/rate_value) |>
+  select(temperature, devrate) |>
+  rename(temp = temperature,
+         dev_rate = devrate)
 
+##ex 2 fewer temperature points
+rate_temp <- readxl::read_xlsx("~/GitHub/tracing_thermal_niches/data/data_source/therm_ecology_dataset.xlsx") |>
+  filter(species == "Neoleucinodes elegantalis" &
+           life_stage == "larva V" &
+           rate_type == "development days") |>
+  mutate(devrate = 1/rate_value) |>
+  select(temperature, devrate) |>
+  rename(temp = temperature,
+         dev_rate = devrate) |>
+  drop_na()
+
+##
 bootstrap_uncertainties <- function(temp,
                                     dev_rate,
                                     fitted_parameters,

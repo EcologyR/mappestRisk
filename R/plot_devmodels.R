@@ -3,27 +3,40 @@
 #' The function`plot_devmodels()` displays a faceted plot of fitted TPCs
 #' to help the user to select an appropriate model based both on statistical and ecological criteria.
 #'
-#' @param temp a vector containing temperature treatments (predictor variable),
-#'  must have at least three different temperature treatments. The function works for both
-#'  aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
-#'  rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#' @param temp a vector containing temperature treatments (predictor variable).
+#' It must have at least four different temperature treatments. It must be numeric
+#' and not containing NAs.
 #'
-#' @param dev_rate a vector containing development rate estimates (1/days of development); must be of same length than temp.
-#'  The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
-#'  rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)
+#' @param dev_rate a vector containing development rate estimates, calculated as
+#' the reciprocal of days of development at each temperature (i.e., 1/days of development).
+#' It must be numeric and of same length as `temp`.
 #'
 #' @param fitted_parameters a `tibble` obtained with `fit_devmodels()` function including parameter names,
-#'  estimates, se, AICs and gnls objects (i.e. fitted_models) from `fit_devmodels()`.
+#'  estimates, se, AICs and <nls> objects (i.e. fitted_models) from `fit_devmodels()` under [nls.multstart::nls_multstart()] approach.
 #'
-#' @returns takes the fitted parameters table from `fit_devmodels()` and returns a plot with the predicted values -i.e. development rate-
-#' across temperatures each for the models that adequately converged. Facets of the resulting plots are automatically sorted by lowest AIC values in descending order
-#' and more information such as number of parameters are displayed.
+#' @returns takes the fitted parameters table from `fit_devmodels()` and returns a plot
+#' with the predicted values -i.e. development rate- across temperatures each for the
+#' models that adequately converged. Facets of the resulting plots are automatically
+#' sorted by lowest AIC values in descending order and additional information such
+#' as number of parameters is displayed. Being a <ggplot> object, it can be asigned to a user-
+#' defined object.
 #'
 #' @seealso `fit_devmodels()` for fitting Thermal Performance Curves to development rate data
 #'
 #' @export
 #'
 #' @examples
+#' data("b.swartzi_satar2002")
+#'
+#' fitted_tpcs_bswartzi <- fit_devmodels(temp = b.swartzi_satar2002$temperature,
+#'                                       dev_rate = b.swartzi_satar2002$rate_value,
+#'                                       model_name = "all")
+#'
+#' plot_devmodels(temp = b.swartzi_satar2002$temperature,
+#'                dev_rate = b.swartzi_satar2002$rate_value,
+#'                fitted_parameters = fitted_tpcs_bswartzi,
+#'                species = "Brachycaudus swartzi",
+#'                life_stage = "Nymphs")
 
 
 plot_devmodels <- function(temp, dev_rate, fitted_parameters,

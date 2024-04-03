@@ -1,3 +1,48 @@
+#' Fit nonlinear regression models to development rate data across temperatures
+#' (i.e. Thermal Performance Curves)
+#'
+#' @param temp a vector containing temperature treatments (predictor variable).
+#' It must have at least four different temperature treatments. It must be numeric
+#' and not containing NAs.
+#'
+#' @param dev_rate a vector containing development rate estimates, calculated as
+#' the reciprocal of days of development at each temperature (i.e., 1/days of development).
+#' It must be numeric and of same length as `temp`.
+#'
+#' @param model_name "all" or, alternatively, one or several of the models listed in `?available_models`
+#' to parameterise thermal performance curves. All these curves share a common unimodal,
+#' left-skewed shape.
+#'
+#' @returns `fit_devmodels()` returns a [tibble()] with estimate and standard error
+#' for each parameter of the models from the user call that have adequately converged
+#' to the data, sorting from lowest to highest AIC values, which are also shown.
+#' A comment on those models whose parameter uncertainty is high (`fit = "bad"` in the tibble)
+#' is advised. Fitted models are included in list format, and can be accessed
+#' via `your_parameters_tbl$fit[[x]]` with `x` being the desired row in the table.
+#' For model selection, also ecological criteria should be followed by the user.
+#' To help that purpose, we recommend using `plot_devmodels()` and look into
+#'  the literature rather than focusing only on statistical information.
+#'
+#' @seealso
+#'  [nls.multstart::nls_multstart()] for structure of model fitting approach
+
+#'  [devRate::devRateEqList()] for information on several equations
+
+#'  `browseVignettes("rTPC")` for model names, start values searching workflows and
+#'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
+#'
+#'
+#' @export
+#'
+#'
+#' @examples
+#' data("b.swartzi_satar2002")
+#'
+#' fitted_tpcs_bswartzi <- fit_devmodels(temp = b.swartzi_satar2002$temperature,
+#'                                       dev_rate = b.swartzi_satar2002$rate_value,
+#'                                       model_name = "all")
+#' print(fitted_tpcs_bswartzi)
+
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
