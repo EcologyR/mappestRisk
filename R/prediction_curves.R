@@ -82,10 +82,10 @@ prediction_curves <- function(temp,
   if(length(temp) != length(dev_rate)) {
     stop("development rate and temperature inputs are not of same length. Please check it.")
   }
-  if(!is.character(model_name)){
-    stop("model_name must be a string in ?available_models")}
+  if(!is.character(model_name_2boot)){
+    stop("model_name_2boot must be a string in ?available_models")}
 
-  if (!all(model_name %in% c("all", dev_model_table$model_name))) {
+  if (!all(model_name_2boot %in% c("all", dev_model_table$model_name))) {
     stop("model not available. For available model names, see `dev_model_table`")
   }
   if (any(dev_rate < 0) | any(dev_rate > 10)){
@@ -99,7 +99,7 @@ prediction_curves <- function(temp,
   if(n_boots_samples < 100){
     warning("100 iterations might be desirable. Consider increasing `n_boots_samples` if possible")
   }
-  if(!is.numeric(n_bots_samples)){
+  if(!is.numeric(n_boots_samples)){
     stop("`n_boots_samples` must be numeric. Please change it within 1 and 5000 (Default 100)")
   }
   if(!is.logical(propagate_uncertainty)) {
@@ -152,12 +152,13 @@ prediction_curves <- function(temp,
                        .f = coef))
 
   if(propagate_uncertainty == FALSE) {
-    tpc_bootpreds <- predict2fill_complete |>
-      mutate(iter = "none",
-             curvetype = "estimate") |>
-      rename(pred = dev_rate) |>
-      relocate(model_name, iter, temp, pred, curvetype)
-    return(tpc_bootpreds)
+    tpc_estimate <- tibble(model_name = predict2fill_complete$model_name,
+                           iter = rep("none", nrow(predict2fill_complete)),
+                           temp = predict2fill_complete$temp,
+                           pred = predict2fill_complete$preds,
+                           curvetype = rep("estimate", nrow(predict2fill_complete))
+                           )
+    return(tpc_estimate)
 
   } else {
     boot_2fill <- tibble(temp = NULL,
