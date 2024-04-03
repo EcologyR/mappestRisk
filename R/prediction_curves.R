@@ -49,7 +49,7 @@
 #'                life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
 #'
 #' #3. Obtain prediction TPCs with bootstraps for propagating uncertainty:
-#' tpc_preds_boots_bschwartzi <- bootstrap_uncertainties(temp = b.swartzi_satar2002$temperature,
+#' tpc_preds_boots_bschwartzi <- prediction_curves(temp = b.swartzi_satar2002$temperature,
 #'                                                       dev_rate = b.swartzi_satar2002$rate_value,
 #'                                                       fitted_parameters = fitted_tpcs_bswartzi,
 #'                                                       model_name_2boot = c("briere2", "thomas", "lactin2"),
