@@ -35,22 +35,22 @@
 #'                            suitability_threshold = 75)
 #'
 
-therm_suitability_bounds <- function(pred_tbl,
-                                       model_name,
-                                       suitability_threshold = NULL) {
+therm_suitability_bounds <- function(preds_tbl,
+                                     model_name,
+                                     suitability_threshold = NULL,
+                                     propagate_uncertainty = TRUE) {
 
-  #  if (!is.data.frame(fitted_parameters) |
-  #      suppressWarnings(any(!c("param_name", "start_vals",
-  #                              "param_est", "param_se",
-  #                              "model_name", "model_AIC",
-  #                              "model_fit", "fit") %in% colnames(fitted_parameters)))) {
-  #    stop("`fitted_parameters` must be a  data.frame inherited   from the output of `mappestRisk::fit_devmodels()` function.
-  #  No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filter(ing
-  #  or subsetting by rows if desired.")
-  #  }
-  #  if (nrow(fitted_parameters) == 0) {
-  #    stop("The fitted_parameters table is NULL; use `fit_devmodels()` to check that at least one model converged.")
-  #  }
+  if (!is.data.frame(preds_tbl) |
+       suppressWarnings(any(!c("model_name", "iter",
+                               "temp", "pred",
+                               "curvetype") %in% colnames(boots_tbl)))) {
+     stop("`boots_tbl` must be a  data.frame inherited   from the output of `mappestRisk::bootstrap_uncertainties()` function.
+   No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filter(ing
+   or subsetting by rows if desired.")
+   }
+   if (nrow(boots_tbl) == 0) {
+     stop("The `boots_tbl` table is NULL; try again to fit models and bootstrap them to check that at least one model converged.")
+    }
   #  if(is.data.frame(fitted_parameters) && is.null(suitability_threshold)){
   #    suitability_threshold <- 50
   #    message("No suitability_threshold value input. Using by default suitability_threshold = 50%")

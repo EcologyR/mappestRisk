@@ -36,12 +36,12 @@
 #'
 #'
 #' @examples
-#' data("b.swartzi_satar2002")
+#' data("b.schwartzi_satar2002")
 #'
-#' fitted_tpcs_bswartzi <- fit_devmodels(temp = b.swartzi_satar2002$temperature,
-#'                                       dev_rate = b.swartzi_satar2002$rate_value,
+#' fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
+#'                                       dev_rate = b.schwartzi_satar2002$rate_value,
 #'                                       model_name = "all")
-#' print(fitted_tpcs_bswartzi)
+#' print(fitted_tpcs_bschwartzi)
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,

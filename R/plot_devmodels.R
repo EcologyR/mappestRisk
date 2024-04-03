@@ -12,7 +12,8 @@
 #' It must be numeric and of same length as `temp`.
 #'
 #' @param fitted_parameters a `tibble` obtained with `fit_devmodels()` function including parameter names,
-#'  estimates, se, AICs and <nls> objects (i.e. fitted_models) from `fit_devmodels()` under [nls.multstart::nls_multstart()] approach.
+#'  estimates, se, AICs and <nls> objects (i.e. fitted_models) from `fit_devmodels()`
+#'  under [nls.multstart::nls_multstart()] approach.
 #'
 #' @returns takes the fitted parameters table from `fit_devmodels()` and returns a plot
 #' with the predicted values -i.e. development rate- across temperatures each for the
@@ -26,15 +27,15 @@
 #' @export
 #'
 #' @examples
-#' data("b.swartzi_satar2002")
+#' data("b.schwartzi_satar2002")
 #'
-#' fitted_tpcs_bswartzi <- fit_devmodels(temp = b.swartzi_satar2002$temperature,
-#'                                       dev_rate = b.swartzi_satar2002$rate_value,
+#' fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
+#'                                       dev_rate = b.schwartzi_satar2002$rate_value,
 #'                                       model_name = "all")
 #'
-#' plot_devmodels(temp = b.swartzi_satar2002$temperature,
-#'                dev_rate = b.swartzi_satar2002$rate_value,
-#'                fitted_parameters = fitted_tpcs_bswartzi,
+#' plot_devmodels(temp = b.schwartzi_satar2002$temperature,
+#'                dev_rate = b.schwartzi_satar2002$rate_value,
+#'                fitted_parameters = fitted_tpcs_bschwartzi,
 #'                species = "Brachycaudus swartzi",
 #'                life_stage = "Nymphs")
 
