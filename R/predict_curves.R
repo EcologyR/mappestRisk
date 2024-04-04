@@ -13,7 +13,7 @@
 #'  under [nls.multstart::nls_multstart()] approach.
 #'
 #' @param model_name_2boot one or several TPC models of those fitted in `fit_devmodels()`.
-#'  `model_name = "all"` is not allowed in this function, as bootstrapping procedure is quite slow.
+#'  `model_name_2boot = "all"` is not allowed in this function, as bootstrapping procedure is quite slow.
 #'  We recommend to apply this function only to a small pre-selection of models (e.g., one to four) based on statistical and ecological
 #'  criteria with help from `plot_devmodels()` function.
 #'
