@@ -2,55 +2,64 @@
 % Please edit documentation in R/fit_devmodels.R
 \name{fit_devmodels}
 \alias{fit_devmodels}
-\title{Fit nonlinear regression models to development rate data across temperatures (i.e. Thermal Performance Curves)}
+\title{Fits nonlinear regression models to data representing how development rate changes
+with temperature (known as Thermal Performance Curves).}
+\source{
+Data set for the example was originally published with licence CC-BY-NC in Satar & Yokomi, (2022).
+}
 \usage{
-fit_devmodels(
-  temp = NULL,
-  dev_rate = NULL,
-  model_name = NULL,
-  variance_model = NULL
-)
+fit_devmodels(temp = NULL, dev_rate = NULL, model_name = NULL)
 }
 \arguments{
-\item{temp}{a vector containing temperature treatments (predictor variable). It must have at least four different temperature treatments. The function works for both
-aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
-rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)}
+\item{temp}{a vector of temperatures used in the experiment.
+It should have at least four different temperatures and must contain only numbers
+without any missing values.}
 
-\item{dev_rate}{a vector containing development rate estimates (1/days of development); must be of same length than temp.
-The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representive of the cohort average development
-rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)}
+\item{dev_rate}{a vector of estimated development rates corresponding to each temperature.
+These rates are calculated as the inverse of the number of days to complete the transition
+from the beginning of a certain life stage to the beginning of the following at each temperature.
+It must be numeric and of the same length as \code{temp}.}
 
-\item{model_name}{"all" or alternatively one or several of the models listed in \code{?available_models}
-to parameterise thermal performance curves.}
-
-\item{variance_model}{argument to pass to \code{\link[nlme:gnls]{nlme::gnls()}} in \code{weights} argument
-to take into account heterogeneity of variance. Due to higher mortalities and variability at
-high temperatures, variance usually increases along temperature, so an exponential or power function
-with \code{exp} (default) or \code{power} are recommended. Alternatively, a constant function
-may be used if the user defines this argument as \code{constant}.}
+\item{model_name}{a string or a vector that specifies the model(s) to use for
+fitting the Thermal Performance Curves. Options include "all" or specific
+models listed in \link{available_models}. These models typically exhibit a common unimodal, left-skewed shape.}
 }
 \value{
-\code{fit_devmodels()} returns a \code{\link[=tibble]{tibble()}} with estimate and standard error for each parameter of the models from the user call
-that have adequately converged to the data, sorting from lowest to highest AIC values, which are also shown. A comment on those models whose parameter uncertainty
-is high (\code{fit = "bad"} in the tibble) is advised. Fitted models are included in list format, and can be accessed
-via \code{your_parameters_tbl$fit[[x]]} with \code{x} being the desired row in the table.
-For model selection, also ecological criteria should be followed by the user. To help that purpose,
-we recommend using \code{plot_devmodels()} and look into the literature rather than focusing only on statistical information.
+returns a table in \code{tibble} format with estimates and
+standard errors for each parameter of the models specified by the user that have adequately
+converged. Models are sorted based on their Akaike Information Criterion (AIC) values,
+with the best fitting models shown first. Fitted models are also provided in list format and
+can be accessed using \code{your_parameters_tbl$fit[[x]]} with \code{x} refers to the desired row in the table.
+It's important to consider ecological criteria alongside statistical information. For additional help in model selection,
+we recommend using \code{\link[=plot_devmodels]{plot_devmodels()}} and consulting relevant literature.
 }
 \description{
-Fit nonlinear regression models to development rate data across temperatures (i.e. Thermal Performance Curves)
+Fits nonlinear regression models (or Thermal Performance Curves) based on \code{nls.multstart} approach to development rate data across
+temperatures. The fitting procedure is built upon previous packages for starting vlaues estimation, namely \code{rTPC} and \code{devRate}.
 }
 \examples{
-data("h.vitripennis_pilkington2014")
+data("b.schwartzi_satar2002")
 
-fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
-              dev_rate = h.vitripennis_pilkington2014$rate_development,
-              model_name = c("all"),
-              variance_model = "exp") #might be a bit slow
+fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
+                                        dev_rate = b.schwartzi_satar2002$rate_value,
+                                        model_name = "all")
+print(fitted_tpcs_bschwartzi)
+}
+\references{
+Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
+(for reading on model selection in TPC framework)
 
+Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}: A new pipeline to fit thermal performance curves in R. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 00: 1-6
+
+Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The \code{devRate} package for R. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
+
+Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae). \if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
 }
 \seealso{
-\code{\link[nlme:varClasses]{nlme::varClasses()}} for more information on variance structure modelling under \code{gnls} approaches.
+\code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} for structure of model fitting approach
+
 \code{\link[devRate:devRateEqList]{devRate::devRateEqList()}} for information on several equations
-\code{browseVignettes("rTPC")} for model names and functioning of start values searching workflows using \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}
+
+\code{browseVignettes("rTPC")} for model names, start values searching workflows and
+bootstrapping procedures using both \code{rTPC} and \code{nls.multstart} packages.
 }

@@ -4,13 +4,7 @@
 \alias{sim_tpcs_uncertainty}
 \title{Plot predictions of fitted thermal performance curves to your data propagating parameter uncertainty}
 \usage{
-sim_tpcs_uncertainty(
-  fitted_parameters,
-  model_name,
-  temp,
-  dev_rate,
-  species_name = NULL
-)
+sim_tpcs_uncertainty(fitted_parameters, model_name, temp, dev_rate)
 }
 \arguments{
 \item{fitted_parameters}{a \code{tibble} obtained with \code{fit_devmodels()} function including parameter names,
@@ -27,8 +21,6 @@ rate) or individual data (i.e. one observation of development rate for each indi
 \item{dev_rate}{a vector containing development rate estimates (1/days of development); must be of same length than temp.
 The function works for both aggregated data (i.e. one development rate value for each temperature treatment, which is representative of the cohort average development
 rate) or individual data (i.e. one observation of development rate for each individual in the experiment at each temperature)}
-
-\item{species_name}{a character string indicating the name of the species for plot title}
 }
 \value{
 a ggplot with the simulated thermal performance curves based on estimate and standard error of
@@ -49,8 +41,7 @@ homalodisca_fitted <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperat
 sim_tpcs_uncertainty(fitted_parameters = fit_table,
                      model_name = "briere1",
                      temp = h.vitripennis_pilkington2014$temperature,
-                     dev_rate = h.vitripennis_pilkington2014$rate_development,
-                     species_name = "glassy-winged sharpshooter")
+                     dev_rate = h.vitripennis_pilkington2014$rate_development)
 }
 \seealso{
 \code{fit_devmodels()} for fitting Thermal Performance Curves to development rate data

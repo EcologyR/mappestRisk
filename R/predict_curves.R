@@ -1,40 +1,57 @@
 #' Propagate parameter uncertainty of TPC fits using bootstrap with residual resampling
 #'
-#' @param temp a vector containing temperature treatments (predictor variable).
-#' It must have at least four different temperature treatments. It must be numeric
-#' and not containing NAs.
+#' @param temp a vector of temperatures used in the experiment.
+#' It should have at least four different temperatures and must contain only numbers
+#' without any missing values.
 #'
-#' @param dev_rate a vector containing development rate estimates, calculated as
-#' the reciprocal of days of development at each temperature (i.e., 1/days of development).
-#' It must be numeric and of same length as `temp`.
+#' @param dev_rate a vector of estimated development rates corresponding to each temperature.
+#' These rates are calculated as the inverse of the number of days to complete the transition
+#' from the beginning of a certain life stage to the beginning of the following at each temperature.
+#' It must be numeric and of the same length as `temp`.
 #'
-#' @param fitted_parameters a `tibble` obtained with `fit_devmodels()` function including parameter names,
-#'  estimates, se, AICs and <nls> objects (i.e. fitted_models) from `fit_devmodels()`
-#'  under [nls.multstart::nls_multstart()] approach.
 #'
-#' @param model_name_2boot one or several TPC models of those fitted in `fit_devmodels()`.
-#'  `model_name_2boot = "all"` is not allowed in this function, as bootstrapping procedure is quite slow.
-#'  We recommend to apply this function only to a small pre-selection of models (e.g., one to four) based on statistical and ecological
-#'  criteria with help from `plot_devmodels()` function.
+#' @param fitted_parameters a `tibble` obtained with [fit_devmodels()] function, including parameter names,
+#'  estimates, standard errors, AICs, and <nls> objects (fitted_models) using the [nls.multstart::nls_multstart()] approach.
+
+#' @param model_name_2boot A vector of strings including one or several TPC models fitted by [fit_devmodels()]. Contrarily to that function,
+#' `model_name_2boot = "all"` is not allowed in this function due to the slow bootstrapping procedure.
+#' We recommend applying this function only to a small pre-selection of models (e.g., one to four) based on statistical
+#' and ecological criteria with the help of [plot_devmodels()] function.
 #'
-#' @param propagate_uncertainty Whether to propagate parameter uncertainty by bootstrap with residual resampling or not.
-#' If `FALSE`, the function will return the predictions from the fitted TPCs for the chosen models. If `TRUE`, bootstrap is applied
-#' using residual resampling to obtain multiple TPCs using [car::Boot()] as detailed in vignettes of `rTPC` package.
-#' Default to `TRUE`.
 #'
-#' @param n_boots_samples number of bootstrap resampling iterations (def. 100). A larger number
-#' of iterations makes the resampling procedure more robust, but 100 is usually
-#' enough for propagating parameter uncertainty, as increasing `n_boots_samples` will increase
-#' computation time for predicting resampled TPCs.
+#' @param propagate_uncertainty A logical argument that specifies whether to propagate parameter uncertainty by bootstrap with residual resampling.
+#' If `FALSE`, the function returns predictions from the fitted TPCs for the selected model(s). If `TRUE`, bootstrap is applied
+#' using residual resampling to obtain multiple TPCs using [car::Boot()] as detailed in vignettes of the `rTPC` package.
+#' Defaults to `TRUE`.
 #'
-#' @returns a `tibble` object with as many curves -TPCs- as the number of iterations provided
-#' in `n_boots_samples` argument if `propagate_uncertainty = TRUE`. Otherwise, it will return just one prediction TPC
-#' from model fit estimates. Each resampled TPC will consist of a collection of predictions for
-#' a set of temperatures from `temp - 20` to `temp + 15` with a resolution of 0.1ºC and a unique identifier
-#' called `iter`. In addition to the uncertainty TPCs, the estimate TPC is also explicit in the output tibble.
+#' @param n_boots_samples Number of bootstrap resampling iterations (default is 100). A larger number
+#' of iterations makes the resampling procedure more robust, but typically 100 is sufficient for propagating parameter
+#' uncertainty, as increasing `n_boots_samples` will increase computation time for predicting resampled TPCs.
 #'
-#' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows and
+#'
+#' @returns A tibble object with as many curves (TPCs) as the number of iterations provided
+#' in the `n_boots_samples` argument if `propagate_uncertainty = TRUE`. Otherwise, it returns just one prediction TPC
+#' from model fit estimates. Each resampled TPC consists of a collection of predictions for
+#' a set of temperatures from `temp - 20` to `temp + 15` with a resolution of 0.1°C and a unique identifier
+#' called `iter`. In addition to the uncertainty TPCs, the estimated TPC is also explicit in the output tibble.
+#'
+#' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows, and
 #'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
+#'
+#'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
+#'
+#'@references
+#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
+#'  (for reading on model selection in TPC framework)
+#'
+#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
+#'
+#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
+#'
+#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
+#'
+#' @source
+#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
 #'
 #' @export
 #'
@@ -53,11 +70,11 @@
 #'
 #' #3. Obtain prediction TPCs with bootstraps for propagating uncertainty:
 #' tpc_preds_boots_bschwartzi <- predict_curves(temp = b.swartzi_satar2002$temperature,
-#'                                                       dev_rate = b.swartzi_satar2002$rate_value,
-#'                                                       fitted_parameters = fitted_tpcs_bswartzi,
-#'                                                       model_name_2boot = c("briere2", "thomas", "lactin2"),
-#'                                                       propagate_uncertainty = TRUE,
-#'                                                       n_boots_samples = 100)
+#'                                              dev_rate = b.swartzi_satar2002$rate_value,
+#'                                              fitted_parameters = fitted_tpcs_bswartzi,
+#'                                              model_name_2boot = c("briere2", "thomas", "lactin2"),
+#'                                              propagate_uncertainty = TRUE,
+#'                                              n_boots_samples = 100)
 #'
 #'
 #' head(tpc_preds_boots_bschwartzi)

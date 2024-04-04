@@ -1,36 +1,51 @@
-#' Fit nonlinear regression models to development rate data across temperatures
-#' (i.e. Thermal Performance Curves)
+#' Fits nonlinear regression models to data representing how development rate changes
+#' with temperature (known as Thermal Performance Curves).
 #'
-#' @param temp a vector containing temperature treatments (predictor variable).
-#' It must have at least four different temperature treatments. It must be numeric
-#' and not containing NAs.
+#' @description
+#' Fits nonlinear regression models (or Thermal Performance Curves) based on `nls.multstart` approach to development rate data across
+#' temperatures. The fitting procedure is built upon previous packages for starting values estimation, namely `rTPC` and `devRate`.
 #'
-#' @param dev_rate a vector containing development rate estimates, calculated as
-#' the reciprocal of days of development at each temperature (i.e., 1/days of development).
-#' It must be numeric and of same length as `temp`.
+#' @param temp a vector of temperatures used in the experiment.
+#' It should have at least four different temperatures and must contain only numbers
+#' without any missing values.
 #'
-#' @param model_name "all" or, alternatively, one or several of the models listed in `?available_models`
-#' to parameterise thermal performance curves. All these curves share a common unimodal,
-#' left-skewed shape.
+#' @param dev_rate a vector of estimated development rates corresponding to each temperature.
+#' These rates are calculated as the inverse of the number of days to complete the transition
+#' from the beginning of a certain life stage to the beginning of the following at each temperature.
+#' It must be numeric and of the same length as `temp`.
 #'
-#' @returns `fit_devmodels()` returns a [tibble()] with estimate and standard error
-#' for each parameter of the models from the user call that have adequately converged
-#' to the data, sorting from lowest to highest AIC values, which are also shown.
-#' A comment on those models whose parameter uncertainty is high (`fit = "bad"` in the tibble)
-#' is advised. Fitted models are included in list format, and can be accessed
-#' via `your_parameters_tbl$fit[[x]]` with `x` being the desired row in the table.
-#' For model selection, also ecological criteria should be followed by the user.
-#' To help that purpose, we recommend using `plot_devmodels()` and look into
-#'  the literature rather than focusing only on statistical information.
+#' @param model_name a string or a vector that specifies the model(s) to use for
+#' fitting the Thermal Performance Curves. Options include "all" or specific
+#' models listed in [available_models]. These models typically exhibit a common unimodal, left-skewed shape.
+#'
+#' @returns returns a table in `tibble` format with estimates and
+#' standard errors for each parameter of the models specified by the user that have adequately
+#' converged. Models are sorted based on their Akaike Information Criterion (AIC) values,
+#' with the best fitting models shown first. Fitted models are also provided in list format and
+#' can be accessed using `your_parameters_tbl$fit[[x]]` with `x` refers to the desired row in the table.
+#' It's important to consider ecological criteria alongside statistical information. For additional help in model selection,
+#' we recommend using [plot_devmodels()] and consulting relevant literature.
+#'
+#' @source
+#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
 #'
 #' @seealso
 #'  [nls.multstart::nls_multstart()] for structure of model fitting approach
-
-#'  [devRate::devRateEqList()] for information on several equations
-
-#'  `browseVignettes("rTPC")` for model names, start values searching workflows and
-#'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
 #'
+#'  [devRate::devRateEqList()] for information on several equations
+#'
+#'  `browseVignettes("rTPC")` for model names, start values searching workflows and
+#'  bootstrapping procedures using both `rTPC` and `nls.multstart` packages.
+#'
+#' @references
+#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
+#'  (for reading on model selection in TPC framework)
+#'
+#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
+#'
+#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
+#'
+#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
 #'
 #' @export
 #'
@@ -39,8 +54,8 @@
 #' data("b.schwartzi_satar2002")
 #'
 #' fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-#'                                       dev_rate = b.schwartzi_satar2002$rate_value,
-#'                                       model_name = "all")
+#'                                         dev_rate = b.schwartzi_satar2002$rate_value,
+#'                                         model_name = "all")
 #' print(fitted_tpcs_bschwartzi)
 
 fit_devmodels <- function(temp = NULL,

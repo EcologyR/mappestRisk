@@ -1,28 +1,40 @@
 #' Plot predictions of fitted thermal performance curves to your data
 #'
-#' The function`plot_devmodels()` displays a faceted plot of fitted TPCs
-#' to help the user to select an appropriate model based both on statistical and ecological criteria.
+#' This function creates a plot showing the predicted development rates across temperatures
+#' based on fitted Thermal Performance Curves (TPCs) for one or several models displayed in facets.
 #'
-#' @param temp a vector containing temperature treatments (predictor variable).
-#' It must have at least four different temperature treatments. It must be numeric
-#' and not containing NAs.
 #'
-#' @param dev_rate a vector containing development rate estimates, calculated as
-#' the reciprocal of days of development at each temperature (i.e., 1/days of development).
-#' It must be numeric and of same length as `temp`.
+#' @param temp a vector of temperatures used in the experiment.
+#' It should have at least four different temperatures and must contain only numbers
+#' without any missing values.
 #'
-#' @param fitted_parameters a `tibble` obtained with `fit_devmodels()` function including parameter names,
-#'  estimates, se, AICs and <nls> objects (i.e. fitted_models) from `fit_devmodels()`
-#'  under [nls.multstart::nls_multstart()] approach.
+#' @param dev_rate a vector of estimated development rates corresponding to each temperature.
+#' These rates are calculated as the inverse of the number of days to complete the transition
+#' from the beginning of a certain life stage to the beginning of the following at each temperature.
+#' It must be numeric and of the same length as `temp`.
 #'
-#' @returns takes the fitted parameters table from `fit_devmodels()` and returns a plot
-#' with the predicted values -i.e. development rate- across temperatures each for the
-#' models that adequately converged. Facets of the resulting plots are automatically
-#' sorted by lowest AIC values in descending order and additional information such
-#' as number of parameters is displayed. Being a <ggplot> object, it can be asigned to a user-
-#' defined object.
+#' @param fitted_parameters a `tibble` obtained with [fit_devmodels()] function, including parameter names,
+#'  estimates, standard errors, AICs, and <nls> objects (fitted_models) using the [nls.multstart::nls_multstart()] approach.
 #'
-#' @seealso `fit_devmodels()` for fitting Thermal Performance Curves to development rate data
+#' @returns A plot with predicted values (development rate) across temperatures for models that have adequately converged
+#' using [fit_devmodels()] function. The facets of the resulting plots are automatically sorted by lowest
+#' AIC values in descending order, and additional information such as the number of
+#'  parameters is displayed. It's a <ggplot> object, which can be assigned to a user-defined object.
+#'
+#' @seealso [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()]..
+#'
+#' @references
+#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
+#'  (for reading on model selection in TPC framework)
+#'
+#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
+#'
+#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
+#'
+#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
+#'
+#' @source
+#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
 #'
 #' @export
 #'
