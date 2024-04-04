@@ -68,8 +68,8 @@ head(tpc_preds_boots_bschwartzi)
 # Plot bootstrapped curves:
 
 plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_bschwartzi,
-                   temp = b.swartzi_satar2002$temperature,
-                   dev_rate = b.swartzi_satar2002$rate_value,
+                   temp = b.schwartzi_satar2002$temperature,
+                   dev_rate = b.schwartzi_satar2002$rate_value,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
 }

@@ -8,7 +8,7 @@
 \format{
 \subsection{\code{dev_model_table}}{
 
-A data.frame/tibble with 13 rows and 6 columns. This package contains the equation names of the models that are
+A data.frame/tibble with 13 rows and 6 columns. This package contain the equation names of the models that are
 able to be fitted with \code{\link[=fit_devmodels]{fit_devmodels()}} and the equivalent names in their respective
 source packages underlying the start value exploration function and formulas used in-code to fit models.
 These models come from two packages that are already published:
@@ -20,8 +20,8 @@ These models come from two packages that are already published:
 When the package is \if{html}{\out{<a href="https://github.com/padpadpadpad/rTPC">}}rTPC package\if{html}{\out{</a>}}, start values are
 automatically computed with \code{\link[rTPC:get_start_vals]{rTPC::get_start_vals()}}, which in turn relies on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}. When the package is  \if{html}{\out{<a href="https://github.com/frareb/devRate">}}devRate package\if{html}{\out{</a>}},
 iterative starting values are computed using \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}, using the parameters published in
-\code{\link[devRate:devRateEqStartVal]{devRate::devRateEqStartVal()}} as first attempts to iterate. As a exception, if \code{model_name = "briere1"},
-generic starting values are providen and advised to the user due to unrealistic value of some parameters in the
+\code{\link[devRate:devRateEqStartVal]{devRate::devRateEqStartVal()}} as first attempts to iterate. As an exception, if \code{model_name == "briere1"},
+generic starting values are provided and advised to the user due to unrealistic value of some parameters in the
 \link{devRate} data set.}
 \item{source_model_name}{function name in source packages used in the background of this package}
 \item{formula, working formula, params_formula}{formulas allowing automation of model fitting, with no information of interest for the user}
@@ -36,7 +36,7 @@ arthropods: The \code{devRate} package for r. Methods Ecol Evol. 9: 1144-1150. \
 performance curves in r. Methods Ecol Evol. 12: 1138-1143 \url{https://doi.org/10.1111/2041-210X.13585}}.\if{html}{\out{</br>}}
 }
 \usage{
-data(available_models)
+data("available_models")
 }
 \description{
 This data.frame, called \code{dev_model_table} in your environment once the package is loaded,

@@ -67,9 +67,9 @@ plot_devmodels(temp = b.schwartzi_satar2002$temperature,
                life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
 
 # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-tpc_preds_boots_bschwartzi <- predict_curves(temp = b.swartzi_satar2002$temperature,
-                                             dev_rate = b.swartzi_satar2002$rate_value,
-                                             fitted_parameters = fitted_tpcs_bswartzi,
+tpc_preds_boots_bschwartzi <- predict_curves(temp = b.schwartzi_satar2002$temperature,
+                                             dev_rate = b.schwartzi_satar2002$rate_value,
+                                             fitted_parameters = fitted_tpcs_bschwartzi,
                                              model_name_2boot = c("briere2", "thomas", "lactin2"),
                                              propagate_uncertainty = TRUE,
                                              n_boots_samples = 100)
