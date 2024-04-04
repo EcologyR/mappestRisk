@@ -19,7 +19,7 @@
 #'
 #' @param propagate_uncertainty Whether to propagate parameter uncertainty by bootstrap with residual resampling or not.
 #' If `FALSE`, the function will return the predictions from the fitted TPCs for the chosen models. If `TRUE`, bootstrap is applied
-#' using residual resampling to obtain multiple TPCs using [car::Boot()] as detailed in vignettes of `rTPC` package (`browseVignettes("rTPC")`).
+#' using residual resampling to obtain multiple TPCs using [car::Boot()] as detailed in vignettes of `rTPC` package.
 #' Default to `TRUE`.
 #'
 #' @param n_boots_samples number of bootstrap resampling iterations (def. 100). A larger number
@@ -32,6 +32,9 @@
 #' from model fit estimates. Each resampled TPC will consist of a collection of predictions for
 #' a set of temperatures from `temp - 20` to `temp + 15` with a resolution of 0.1ºC and a unique identifier
 #' called `iter`. In addition to the uncertainty TPCs, the estimate TPC is also explicit in the output tibble.
+#'
+#' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows and
+#'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
 #'
 #' @export
 #'
@@ -49,7 +52,7 @@
 #'                life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
 #'
 #' #3. Obtain prediction TPCs with bootstraps for propagating uncertainty:
-#' tpc_preds_boots_bschwartzi <- prediction_curves(temp = b.swartzi_satar2002$temperature,
+#' tpc_preds_boots_bschwartzi <- predict_curves(temp = b.swartzi_satar2002$temperature,
 #'                                                       dev_rate = b.swartzi_satar2002$rate_value,
 #'                                                       fitted_parameters = fitted_tpcs_bswartzi,
 #'                                                       model_name_2boot = c("briere2", "thomas", "lactin2"),
@@ -60,7 +63,7 @@
 #' head(tpc_preds_boots_bschwartzi)
 #'
 
-prediction_curves <- function(temp,
+predict_curves <- function(temp,
                               dev_rate,
                               fitted_parameters,
                               model_name_2boot,
