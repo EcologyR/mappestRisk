@@ -9,7 +9,7 @@
 #' @format ## `b.schwartzi_satar2002`
 #' A data frame with 7 rows and 5 columns.
 #'    The workflow is reproducible and available in `/data-raw` folder of the <a href="https://github.com/EcologyR/mappestRisk">mappestRisk GitHub repository</a>,
-#'    which includes both the original summarized data set -`homalodisca_vitripennis_pilkington2014.xlsx`- and the
+#'    which includes both the original summarized data set -`satar_data.xlsx`- and the
 #'    R script with the dev. days to dev. rate conversion in `prepare_b.schwartzi_satar2002.R`.
 #'
 #'
