@@ -1,45 +1,58 @@
-#' Calculate thermal boundaries delimiting the optimal region of the fitted TPC.
+#' Determine Thermal Boundaries for Optimal Performance Level
+#'
+#' This function calculates thermal boundaries that define the suitable region of a Thermal Performance Curve (TPC) corresponding to a user-defined optimal performance level.
 #'
 #' @param preds_tbl a `tibble` object inherited from [mappestRisk::predict_curves()]
-#' with as many curves -TPCs- as the number of iterations provided in `n_boots_samples` argument
-#' therein whenever `propagate_uncertainty` was set to `TRUE`, or alternatively simply the
+#' containing as many thermal performance curves as the number of iterations provided in `n_boots_samples` argument
+#' therein and whenever `propagate_uncertainty` was set to `TRUE`; or alternatively the
 #' estimated TPC predictions if `propagate_uncertainty` was set to `FALSE`.
-#' Each TPC in this `tibble`  consist of a collection of predictions for a set
-#' of temperatures from `temp - 20` to `temp + 15` with a resolution of 0.1ºC and a unique identifier called `iter`.
-#' In addition to the uncertainty TPCs, the estimate TPC is also explicit in the output tibble.
+#' Each TPC consists of predictions for temperatures ranging from `temp - 20` to `temp + 15`
+#' with a resolution of 0.1°C.
 #'
 #' @param model_name a string with one or several TPC models of those fitted first in `fit_devmodels()` and predicted
 #' next in `predict_curves()`. Setting `model_name = "all"` is not allowed in this function. If the user wants to
 #' calculate thermal boundaries for several models predicted and/or bootstrapped in `predict_curves()`, typing manually
 #' all desired model names within a vector will be required.
 #'
-#' @param suitability_threshold a numeric value from 50 to 100 representing the quantile of
-#' the curve that provides the user-defined optimal performance. For example, by setting `suitability_threshold` to
-#' 80, the function will give the thermal boundaries determining the  top 20% (or quartile 80) of the maximum
-#' values of the development rate predicted by the chosen TPC model. If `suitability_threshold` equals 100, the function returns
-#' the optimum temperature for development rate.
+#' @param suitability_threshold A numeric value from 50 to 100 representing the quantile of the curve that provides the user-defined optimal performance.
+#' For instance, setting `suitability_threshold` to 80 identifies the top 20% (or quartile 80) of the maximum values of the development rate predicted by the chosen TPC model.
+#' If `suitability_threshold` equals 100, the function returns the optimum temperature for development rate.
 #'
+#' @returns A tibble with six columns:
+#'  - `model_name`: A string indicating the selected TPC model used for projections.
+#'  - `suitability`: A string indicating the suitability threshold in percentage (see `suitability_threshold`).
+#'  - `tval_left`: A number representing the lower thermal boundary delimiting the suitable region of the TPC.
+#'  - `tval_right`: A number representing the upper thermal boundary delimiting the suitable region of the TPC.
+#'  - `pred_suit`: A number corresponding to the predicted development rate value determining the chosen quantile threshold of the maximum rate (i.e., suitability percentage of maximum rate).
+#'  - `iter`: A factor determining the TPC identity from the bootstrapping procedure in [predict_curves()] function, or `estimate` when it represents the estimated TPC fitted in [fit_devmodels()].
 #'
-#' @returns a `tibble` with six columns:
-#'  - `model_name`: a string indicating the selected TPC model to make projections
-#'  - `suitability`: a string indicating the suitability threshold in percentage (see `suitability_threshold`)
-#'  - `tval_left`:a number representing the lower thermal boundary delimiting suitable region of the TPC
-#'  - `tval_right`: a number representing the upper thermal boundary delimiting the suitable region of the TPC
-#'  - `pred_suit`: a number corresponding to the predicted development rate value determining que chosen quantile threshold
-#'  of the maximum rate (i.e., suitability percentage of maximum rate)
-#'  - `iter`:  a factor determining the TPC identity from bootstrapping procedure in
-#'  `predict_curves()` function, or `estimate` when it represents the estimated TPC fitted in
-#'  `fit_devmodels()`.
+#' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows, and
+#'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
+#'
+#'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
+#'  [predict_curves()] for bootstrapping procedure based on the above-mentioned `rTPC` vignettes.
+#'
+#' @references
+#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
+#'  (for reading on model selection in TPC framework)
+#'
+#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
+#'
+#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
+#'
+#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
+#'
+#' @source
+#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
 #'
 #' @export
 #'
 #' @examples
-#'
 #' data("b.schwartzi_satar2002")
 #'
 #' fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-#'                                       dev_rate = b.schwartzi_satar2002$rate_value,
-#'                                       model_name = "all")
+#'                                         dev_rate = b.schwartzi_satar2002$rate_value,
+#'                                         model_name = "all")
 #'
 #' plot_devmodels(temp = b.schwartzi_satar2002$temperature,
 #'                dev_rate = b.schwartzi_satar2002$rate_value,
@@ -47,24 +60,23 @@
 #'                species = "Brachycaudus swartzi",
 #'                life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
 #'
-#' #3. Obtain prediction TPCs with bootstraps for propagating uncertainty:
-#' tpc_preds_boots_bschwartzi <- predict_curves(temp = b.swartzi_satar2002$temperature,
-#'                                              dev_rate = b.swartzi_satar2002$rate_value,
-#'                                              fitted_parameters = fitted_tpcs_bswartzi,
+#' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
+#' tpc_preds_boots_bschwartzi <- predict_curves(temp = b.schwartzi_satar2002$temperature,
+#'                                              dev_rate = b.schwartzi_satar2002$rate_value,
+#'                                              fitted_parameters = fitted_tpcs_bschwartzi,
 #'                                              model_name_2boot = c("briere2", "thomas", "lactin2"),
 #'                                              propagate_uncertainty = TRUE,
 #'                                              n_boots_samples = 100)
 #'
-#'
 #' head(tpc_preds_boots_bschwartzi)
 #'
-#' #4. Plot bootstrapped curves:
+#' # Plot bootstrapped curves:
 #'
 #' plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_bschwartzi,
-#'                    temp = b.swartzi_satar2002$temperature,
-#'                    dev_rate = b.swartzi_satar2002$rate_value,
+#'                    temp = b.schwartzi_satar2002$temperature,
+#'                    dev_rate = b.schwartzi_satar2002$rate_value,
 #'                    species = "Brachycaudus schwartzi",
-#'                    life stage = "Nymphs")
+#'                    life_stage = "Nymphs")
 #'
 #' #5. Calculate Q80 thermal bounds
 #'
@@ -72,7 +84,6 @@
 #'                                                   model_name = "lactin2",
 #'                                                   suitability_threshold = 80)
 #' head(boundaries_bschwartzi)
-#'
 therm_suit_bounds <- function(preds_tbl,
                               model_name,
                               suitability_threshold = 75) {
@@ -184,5 +195,4 @@ therm_suit_bounds <- function(preds_tbl,
   }
   return(tvals)
 }
-
 

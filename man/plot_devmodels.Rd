@@ -3,6 +3,9 @@
 \name{plot_devmodels}
 \alias{plot_devmodels}
 \title{Plot predictions of fitted thermal performance curves to your data}
+\source{
+The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+}
 \usage{
 plot_devmodels(
   temp,
@@ -13,29 +16,27 @@ plot_devmodels(
 )
 }
 \arguments{
-\item{temp}{a vector containing temperature treatments (predictor variable).
-It must have at least four different temperature treatments. It must be numeric
-and not containing NAs.}
+\item{temp}{a vector of temperatures used in the experiment.
+It should have at least four different temperatures and must contain only numbers
+without any missing values.}
 
-\item{dev_rate}{a vector containing development rate estimates, calculated as
-the reciprocal of days of development at each temperature (i.e., 1/days of development).
-It must be numeric and of same length as \code{temp}.}
+\item{dev_rate}{a vector of estimated development rates corresponding to each temperature.
+These rates are calculated as the inverse of the number of days to complete the transition
+from the beginning of a certain life stage to the beginning of the following at each temperature.
+It must be numeric and of the same length as \code{temp}.}
 
-\item{fitted_parameters}{a \code{tibble} obtained with \code{fit_devmodels()} function including parameter names,
-estimates, se, AICs and \if{html}{\out{<nls>}} objects (i.e. fitted_models) from \code{fit_devmodels()}
-under \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach.}
+\item{fitted_parameters}{a \code{tibble} obtained with \code{\link[=fit_devmodels]{fit_devmodels()}} function, including parameter names,
+estimates, standard errors, AICs, and \if{html}{\out{<nls>}} objects (fitted_models) using the \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach.}
 }
 \value{
-takes the fitted parameters table from \code{fit_devmodels()} and returns a plot
-with the predicted values -i.e. development rate- across temperatures each for the
-models that adequately converged. Facets of the resulting plots are automatically
-sorted by lowest AIC values in descending order and additional information such
-as number of parameters is displayed. Being a \if{html}{\out{<ggplot>}} object, it can be asigned to a user-
-defined object.
+A plot with predicted values (development rate) across temperatures for models that have adequately converged
+using \code{\link[=fit_devmodels]{fit_devmodels()}} function. The facets of the resulting plots are automatically sorted by lowest
+AIC values in descending order, and additional information such as the number of
+parameters is displayed. It's a \if{html}{\out{<ggplot>}} object, which can be assigned to a user-defined object.
 }
 \description{
-The function\code{plot_devmodels()} displays a faceted plot of fitted TPCs
-to help the user to select an appropriate model based both on statistical and ecological criteria.
+This function creates a plot showing the predicted development rates across temperatures
+based on fitted Thermal Performance Curves (TPCs) for one or several models displayed in facets.
 }
 \examples{
 data("b.schwartzi_satar2002")
@@ -50,6 +51,16 @@ plot_devmodels(temp = b.schwartzi_satar2002$temperature,
                species = "Brachycaudus swartzi",
                life_stage = "Nymphs")
 }
+\references{
+Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
+(for reading on model selection in TPC framework)
+
+Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}: A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 00: 1-6
+
+Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The \code{devRate} package for \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
+
+Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae). \if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
+}
 \seealso{
-\code{fit_devmodels()} for fitting Thermal Performance Curves to development rate data
+\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data, which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}..
 }

@@ -40,7 +40,7 @@
 #'
 #'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
 #'
-#'@references
+#' @references
 #'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
 #'  (for reading on model selection in TPC framework)
 #'
@@ -59,8 +59,8 @@
 #' data("b.schwartzi_satar2002")
 #'
 #' fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-#'                                       dev_rate = b.schwartzi_satar2002$rate_value,
-#'                                       model_name = "all")
+#'                                         dev_rate = b.schwartzi_satar2002$rate_value,
+#'                                         model_name = "all")
 #'
 #' plot_devmodels(temp = b.schwartzi_satar2002$temperature,
 #'                dev_rate = b.schwartzi_satar2002$rate_value,
@@ -68,17 +68,15 @@
 #'                species = "Brachycaudus swartzi",
 #'                life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
 #'
-#' #3. Obtain prediction TPCs with bootstraps for propagating uncertainty:
-#' tpc_preds_boots_bschwartzi <- predict_curves(temp = b.swartzi_satar2002$temperature,
-#'                                              dev_rate = b.swartzi_satar2002$rate_value,
-#'                                              fitted_parameters = fitted_tpcs_bswartzi,
+#' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
+#' tpc_preds_boots_bschwartzi <- predict_curves(temp = b.schwartzi_satar2002$temperature,
+#'                                              dev_rate = b.schwartzi_satar2002$rate_value,
+#'                                              fitted_parameters = fitted_tpcs_bschwartzi,
 #'                                              model_name_2boot = c("briere2", "thomas", "lactin2"),
 #'                                              propagate_uncertainty = TRUE,
 #'                                              n_boots_samples = 100)
 #'
-#'
 #' head(tpc_preds_boots_bschwartzi)
-#'
 
 predict_curves <- function(temp,
                               dev_rate,
@@ -168,7 +166,7 @@ predict_curves <- function(temp,
 
   if(propagate_uncertainty == FALSE) {
     tpc_estimate <- tibble(model_name = predict2fill_complete$model_name,
-                           iter = rep("none", nrow(predict2fill_complete)),
+                           iter = rep(NA, nrow(predict2fill_complete)),
                            temp = predict2fill_complete$temp,
                            pred = predict2fill_complete$preds,
                            curvetype = rep("estimate", nrow(predict2fill_complete))
@@ -272,7 +270,7 @@ predict_curves <- function(temp,
       filter(pred >= 0)
     central_curve <- tpc_fits_boot |>
       select(temp, preds, model_name) |>
-      mutate(iter = "none") |>
+      mutate(iter = NA) |>
       rename(pred = preds) |>
       mutate(curvetype = "estimate")
     central_and_bootstrap_tpcs <- bootstrap_tpcs_all |>

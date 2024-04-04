@@ -1,29 +1,46 @@
-#' Draw bootstrapped TPCs to visualize uncertainty bands in parameter estimation of TPC fitting
+#' Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty bands in parameter estimation of TPC fitting
 #'
-#' @param bootstrap_uncertainties_tpcs a `tibble` object output by [mappestRisk::predict_curves()]
-#' with as many curves -TPCs- as the number of iterations provided in `n_boots_samples` argument
-#' therein whenever `propagate_uncertainty` was `TRUE`. Each TPC in this `tibble`  consist of
-#' a collection of predictions for a set of temperatures from `temp - 20` to `temp + 15` with a
-#' resolution of 0.1ºC and a unique identifier called `iter`.
-#' In addition to the uncertainty TPCs, the estimate TPC is also explicit in the output tibble.
+#' @param bootstrap_uncertainties_tpcs a `tibble` A tibble object output by [predict_curves()], containing TPCs
+#' with uncertainty bands. Each TPC consists of predictions for temperatures ranging from `temp - 20` to `temp + 15`
+#' with a resolution of 0.1°C. The tibble also includes an estimate TPC.
 #'
-#' @param temp a vector containing temperature treatments (predictor variable).
-#' It must have at least four different temperature treatments. It must be numeric
-#' and not containing NAs.
+#' @param temp a vector of temperatures used in the experiment.
+#' It should have at least four different temperatures and must contain only numbers
+#' without any missing values.
 #'
-#' @param dev_rate a vector containing development rate estimates, calculated as
-#' the reciprocal of days of development at each temperature (i.e., 1/days of development).
-#' It must be numeric and of same length as `temp`.
+#' @param dev_rate a vector of estimated development rates corresponding to each temperature.
+#' These rates are calculated as the inverse of the number of days to complete the transition
+#' from the beginning of a certain life stage to the beginning of the following at each temperature.
+#' It must be numeric and of the same length as `temp`.
 #'
-#' @param species a string containing the name of the species in the study. The function
-#' converts the string to a title in the <ggplot> object in italics.
+#' @param species A string containing the name of the species in the study. The function converts the string to a title
+#' in the ggplot object in italics.
 #'
-#' @param life_stage a string containing the life stage studied for this rate-temperature
-#' relationship. The function converts the string to a subtitle in the <ggplot> object.
+#' @param life_stage A string containing the life stage studied for this rate-temperature relationship. The function
+#' converts the string to a subtitle in the ggplot object.
 #'
-#' @returns a <ggplot> object containing the visual representation of the estimate TPC and the
-#' bootstrapped uncertainty curves as a ribbon. Each model is represented in a facet, and data points
-#' are also explicit.
+#' @returns A ggplot object containing the visual representation of the estimate TPC and the bootstrapped uncertainty
+#' curves as a ribbon. Each model is represented in a facet, and data points are also explicit.
+#'
+#' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows, and
+#'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
+#'
+#'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
+#'  [predict_curves()] for bootstrapping procedure based on the above-mentioned `rTPC` vignettes.
+#'
+#' @references
+#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
+#'  (for reading on model selection in TPC framework)
+#'
+#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
+#'
+#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
+#'
+#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
+#'
+#' @source
+#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+#'
 #'
 #' @export
 #'
@@ -31,8 +48,8 @@
 #' data("b.schwartzi_satar2002")
 #'
 #' fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-#'                                       dev_rate = b.schwartzi_satar2002$rate_value,
-#'                                       model_name = "all")
+#'                                         dev_rate = b.schwartzi_satar2002$rate_value,
+#'                                         model_name = "all")
 #'
 #' plot_devmodels(temp = b.schwartzi_satar2002$temperature,
 #'                dev_rate = b.schwartzi_satar2002$rate_value,
@@ -40,7 +57,7 @@
 #'                species = "Brachycaudus swartzi",
 #'                life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
 #'
-#' #3. Obtain prediction TPCs with bootstraps for propagating uncertainty:
+#' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
 #' tpc_preds_boots_bschwartzi <- predict_curves(temp = b.swartzi_satar2002$temperature,
 #'                                              dev_rate = b.swartzi_satar2002$rate_value,
 #'                                              fitted_parameters = fitted_tpcs_bswartzi,
@@ -48,17 +65,15 @@
 #'                                              propagate_uncertainty = TRUE,
 #'                                              n_boots_samples = 100)
 #'
-#'
 #' head(tpc_preds_boots_bschwartzi)
 #'
-#' #4. Plot bootstrapped curves:
+#' # Plot bootstrapped curves:
 #'
 #' plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_bschwartzi,
-#'                    temp = b.swartzi_satar2002$temperature,
-#'                    dev_rate = b.swartzi_satar2002$rate_value,
+#'                    temp = b.schwartzi_satar2002$temperature,
+#'                    dev_rate = b.schwartzi_satar2002$rate_value,
 #'                    species = "Brachycaudus schwartzi",
-#'                    life stage = "Nymphs")
-#'
+#'                    life_stage = "Nymphs")
 
 plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
                                temp,

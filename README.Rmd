@@ -48,40 +48,76 @@ If you want to clone or fork the repository or open and read some issues, you ca
 
 In this example, we'll show how to fit one to several thermal performance curves to a data set of development rate variation across temperatures[^1]. The following code provides an example as given in `fit_devmodels()` function documentation, with a data table showing the output of fitted models.
 
-[^1]: At least 4 unique temperatures are required. Fore more details, see *vignette*.
+[^1]: At least 4 unique temperatures are required. Fore more details, see documentation and vignettes.
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
+data("b.schwartzi_satar2002")
 
-data("h.vitripennis_pilkington2014")
-
-fitted_tpcs_sharpshooter <- fit_devmodels(temp = h.vitripennis_pilkington2014$temperature,
-              dev_rate = h.vitripennis_pilkington2014$rate_development,
-              model_name = c("all"), #might be a bit slow
-              variance_model = "exp") 
-print(fitted_tpcs_sharpshooter)
+fitted_tpcs_aphid <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
+                                   dev_rate = b.schwartzi_satar2002$rate_value,
+                                   model_name = "all")
+print(fitted_tpcs_aphid)
 ```
 
 ### 2. Plot the fitted TPCs and select the most appropriate:
 
-To help select which model might be more appropriate, the function `plot_devmodels()` draws the predicted TPCs for each adequately-converged model. This step aims to improve model selection based not only on statistical criteria (i.e. AIC and number of parameters) but also on ecological realism, since curves can be graphically checked to select realistic shapes and thermal traits --vertical cuts with x-axis such as $CT_\min$, $CT_\max$ and $T_{opt}$ .
+To help select which model might be more appropriate, the function `plot_devmodels()` draws the predicted TPCs for each adequately-converged model. This step aims to improve model selection based not only on statistical criteria (i.e. AIC and number of parameters) but also on ecological realism, since curves can be graphically checked to select realistic shapes and thermal traits --vertical cuts with x-axis such as $CT_\min$, $CT_\max$ and $T_\text{opt}$ .
 
 ```{r, warning=FALSE}
 library(ggplot2)
 library(dplyr)
-plot_devmodels(temp = h.vitripennis_pilkington2014$temperature,
-               dev_rate = h.vitripennis_pilkington2014$rate_development,
-               fitted_parameters = fitted_tpcs_sharpshooter)
+
+plot_devmodels(temp = b.schwartzi_satar2002$temperature,
+               dev_rate = b.schwartzi_satar2002$rate_value,
+               fitted_parameters = fitted_tpcs_aphid,
+               species = "Brachycaudus swartzi",
+               life_stage = "Nymphs")
 ```
 
-### 3. Calculate thermal suitability bounds:
+### 3. Calculate predictions and bootstrap 100 TPCs for propagating parameter uncertainty
 
-Once a model have been selected under both ecological realism and statistical criteria, the user can estimate the thermal boundaries defining the suitable range of temperatures for the studied population. The `thermal_suitability_bounds()` function calculate these values given the `fitted_parameters` output from `fit_devmodels()` and the selected model name. Additionally, a value of suitability defining the quantile-upper part of the curve can be provided by the user. The output is a tibble / data.frame with the model name, the suitability threshold and the two *thermal boundaries* required for the mapping functions (as described below).
+After careful examination of fitted TPCs in `plot_devmodels()`, the predictions of the selected models must be allocated in a `data.frame` in order to continue the package workflow towards climatic projection for pest risk analysis. Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures following vignettes in @padfield2021. This can be done with the function `predict_curves()` by setting the argument `propagate_uncertainty` to be `TRUE` and by providing a number of bootstrap sampling iterations in the argument `n_boots_samples`.
+
+This function requires some time to compute bootstraps and predictions of the multiple TPCs it generates. Hence, it is important to use only one or few TPC models in the argument `model_name_2boot` based on visual examination from `plot_devmodels()` with reasonable selection. We discourage to bootstrap all TPC models for computational and time consuming reasons.
+
+In our example, we choose three models that performed similarly and, unlike others with similar or even higher AICs, had a markedly higher left-skewness, e.g., *briere2, thomas* and *lactin2.* After a few minutes, we obtain the `data.frame`:
 
 ```{r, warning=FALSE}
-thermal_boundaries_sharpshooter <- thermal_suitability_bounds(fitted_parameters = fitted_tpcs_sharpshooter,
-                           model_name = "briere1", # <- seems realistic according to `plot_devmodels()` and `fit_devmodels()` outputs
-                           suitability_threshold = 75)
-print(thermal_boundaries_sharpshooter)
+library(boot)
+library(car)
+
+
+preds_boots_aphid <-predict_curves(temp = b.schwartzi_satar2002$temperature,
+                                   dev_rate = b.schwartzi_satar2002$rate_value,
+                                   fitted_parameters = fitted_tpcs_aphid,
+                                   model_name_2boot = c("briere2",
+                                                        "thomas",
+                                                        "lactin2"),
+                                   propagate_uncertainty = TRUE,
+                                   n_boots_samples = 100)
+```
+
+### 4. Plot uncertainty TPCs:
+
+The bootstrapped uncertainty curves can be plotted easily with the `plot_uncertainties()` function.
+
+```{r}
+plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
+                   temp = b.schwartzi_satar2002$temperature,
+                   dev_rate = b.schwartzi_satar2002$rate_value,
+                   species = "Brachycaudus schwartzi",
+                   life_stage = "Nymphs")
+```
+
+### 5. Calculate thermal suitability bounds:
+
+Once a model have been selected under both ecological realism and statistical criteria, the user can estimate the thermal boundaries defining the suitable range of temperatures for the studied population. The `thermal_suitability_bounds()` function calculate these values given the `tibble` output from `predict_curves()` function and the selected model name (note that only one model is allowed each time for this function). Additionally, a value of suitability defining the quantile-upper part of the curve can be provided by the user ($\text{Q}_{75}$ by default). If the user has propagated uncertainty in `predict_curves()` function, this function inherits the bootstrapped TPCs to calculate thermal suitability boundaries for each bootstrapped curved in addition to the estimated curve.
+
+```{r, warning=FALSE}
+boundaries_aphid <- therm_suitability_bounds(preds_tbl = preds_boots_aphid,
+                                             model_name = "lactin2",
+                                             suitability_threshold = 80)
+head(boundaries_aphid)
 ```
 
 ### 4. Climatic data extraction and projection
