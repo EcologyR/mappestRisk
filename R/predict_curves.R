@@ -91,11 +91,6 @@ predict_curves <- function(temp,
   if (!all(model_name_2boot %in% c("all", dev_model_table$model_name))) {
     stop("model not available. For available model names, see `dev_model_table`")
   }
-  if (any(dev_rate < 0) | any(dev_rate > 10)){
-    warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
-  if(any(temp < -10) | any(temp > 56)){
-    warning("experienced temperatures by active organisms are usually between 0 and 50ºC")}
-
   if(n_boots_samples > 5000) {
     stop("computation time will be extremely high. Please adjust `n_boots_samples` to be < 5000")
   }
