@@ -107,7 +107,7 @@ therm_suit_bounds <- function(preds_tbl,
   if (!is.null(model_name) && any(!model_name %in% dev_model_table$model_name)) {
     stop("Model name not available. For available model names, see `dev_model_table`.")
   }
-  if(!is.null(model_name) && any(!model_name %in% preds_tbl)) {
+  if(!is.null(model_name) && any(!model_name %in% preds_tbl$model_name)) {
     stop(paste("Model", model_name, "did not fitted well to your data. Try using another fitted model in your table instead"))
   }
   if(length(model_name) > 1 || model_name == "all") {
@@ -119,27 +119,7 @@ therm_suit_bounds <- function(preds_tbl,
             We strongly recommend to propagate uncertainty by setting the `predict_curves()`
             arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
   }
-  if(any(is.na(dev_rate))) {
-    stop("development rate data have NAs; please consider removing them or fixing them")
-  }
-  if (any(is.na(temp))) {
-    stop("temperature data have NAs; please consider removing them or fixing them")
-  }
-  if (!is.numeric(temp)) {
-    stop("temperature data is not numeric. Please check it.")
-  }
-  if (!is.numeric(dev_rate)) {
-    stop("development rate data is not numeric. Please check it.")
-  }
-  if (length(temp) != length(dev_rate)) {
-    stop("development rate and temperature inputs are not of same length. Please check it.")
-  }
-  if (any(dev_rate < 0) | any(dev_rate > 10)){
-    warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")
-  }
-  if(any(temp < -10) | any(temp > 56)) {
-    warning("experienced temperatures by active organisms (i.e. not in diapause) are usually between 0 and 50ºC")
-  }
+
       tvals <- dplyr::tibble(model_name = model_name,
                          tval_left = NULL,
                          tval_right = NULL,

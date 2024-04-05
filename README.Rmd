@@ -38,6 +38,14 @@ For that purpose, mappestRisk is built upon previous efforts such as `devRate` [
 #and load the package
 #library(mappestRisk)
 devtools::load_all() #for now, provisionally
+
+library(ggplot2)
+library(dplyr)
+library(nls.multstart)
+library(rTPC)
+library(devRate)
+library(tidyr)
+library(purrr)
 ```
 
 If you want to clone or fork the repository or open and read some issues, you can find the code [here](https://github.com/EcologyR/mappestRisk).
@@ -64,13 +72,10 @@ print(fitted_tpcs_aphid)
 To help select which model might be more appropriate, the function `plot_devmodels()` draws the predicted TPCs for each adequately-converged model. This step aims to improve model selection based not only on statistical criteria (i.e. AIC and number of parameters) but also on ecological realism, since curves can be graphically checked to select realistic shapes and thermal traits --vertical cuts with x-axis such as $CT_\min$, $CT_\max$ and $T_\text{opt}$ .
 
 ```{r, warning=FALSE}
-library(ggplot2)
-library(dplyr)
-
 plot_devmodels(temp = b.schwartzi_satar2002$temperature,
                dev_rate = b.schwartzi_satar2002$rate_value,
                fitted_parameters = fitted_tpcs_aphid,
-               species = "Brachycaudus swartzi",
+               species = "Brachycaudus schwartzi",
                life_stage = "Nymphs")
 ```
 
@@ -101,7 +106,7 @@ preds_boots_aphid <-predict_curves(temp = b.schwartzi_satar2002$temperature,
 
 The bootstrapped uncertainty curves can be plotted easily with the `plot_uncertainties()` function.
 
-```{r}
+```{r, message=FALSE}
 plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
                    temp = b.schwartzi_satar2002$temperature,
                    dev_rate = b.schwartzi_satar2002$rate_value,
@@ -114,10 +119,10 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
 Once a model have been selected under both ecological realism and statistical criteria, the user can estimate the thermal boundaries defining the suitable range of temperatures for the studied population. The `thermal_suitability_bounds()` function calculate these values given the `tibble` output from `predict_curves()` function and the selected model name (note that only one model is allowed each time for this function). Additionally, a value of suitability defining the quantile-upper part of the curve can be provided by the user ($\text{Q}_{75}$ by default). If the user has propagated uncertainty in `predict_curves()` function, this function inherits the bootstrapped TPCs to calculate thermal suitability boundaries for each bootstrapped curved in addition to the estimated curve.
 
 ```{r, warning=FALSE}
-boundaries_aphid <- therm_suitability_bounds(preds_tbl = preds_boots_aphid,
-                                             model_name = "lactin2",
-                                             suitability_threshold = 80)
-head(boundaries_aphid)
+boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
+                                      model_name = "lactin2",
+                                      suitability_threshold = 80)
+print(boundaries_aphid)
 ```
 
 ### 4. Climatic data extraction and projection
@@ -126,25 +131,25 @@ Using the thermal boundaries provided by the previous function and a set of rast
 
 ```{r}
 # downloading data from geodata::wordlclim_global. It will take several minutes the first time you use the function on the same 'path'.
-risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
-                                 thermal_boundaries_sharpshooter$tval_right),
-                      path = "~/downloaded_maps", # directory to download data
-                      region = "Réunion", 
-                      verbose = TRUE)
-terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the first 12 layers, the monthly binary value (1, if suitable; 0, if not suitable).
+#   risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
+#                                    thermal_boundaries_sharpshooter$tval_right),
+#                         path = "~/downloaded_maps", # directory to download data
+#                         region = "Réunion", 
+#                         verbose = TRUE)
+# terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the first 12 layers, the monthly binary value (1, if suitable; 0, if not suitable).
 
 #we can also save the raster with:
 # terra::writeRaster(risk_rast, filename = "~/output_maps/risk_rast.tif")
 
 # Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use it as an input of `map_risk()`
 ## load it (here Luxembourg data)
-tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
-## convert it into a raster-compatible file with `terra`
-tavg_rast <- terra::rast(tavg_file)
-## and apply the function
-risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
-                                        thermal_boundaries_sharpshooter$tval_right), 
-                             t_rast = tavg_rast)
+#tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+### convert it into a raster-compatible file with `terra`
+#tavg_rast <- terra::rast(tavg_file)
+### and apply the function
+#risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
+#                                        thermal_boundaries_sharpshooter$tval_right#), 
+#                             t_rast = tavg_rast)
 # terra::plot(risk_rast_binary[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
 
 
@@ -157,8 +162,8 @@ risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_lef
 ### 5. Interactive map with `leaflet`
 
 ```{r}
-example <- interactive_map(x = risk_rast_binary, map_type = "high",
-                path_out = paste0(tempdir(), "test_map.html"))
+#example <- interactive_map(x = risk_rast_binary, map_type = "high",
+ #               path_out = paste0(tempdir(), "test_map.html"))
 #example
 
 #htmlwidgets::saveWidget(example,file = "index.html")
