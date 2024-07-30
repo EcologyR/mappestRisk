@@ -64,38 +64,13 @@ fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
 
-  if (any(is.na(dev_rate))) {
-  stop("development rate data have NAs; please consider removing them or fixing them")
-  }
-  if (any(is.na(temp))) {
-  stop("temperature data have NAs; please consider removing them or fixing them")
-  }
-  if (!is.numeric(temp)) {
-    stop("temperature data is not numeric. Please check it.")
-  }
-  if (length(unique(temp)) < 4) {
-    stop("At least four different temperature treatments in the data are required.")
-  }
-  if (!is.numeric(dev_rate)) {
-    stop("development rate data is not numeric. Please check it.")
-  }
-  if (length(temp) != length(dev_rate)) {
-    stop("development rate and temperature inputs are not of same length. Please check it.")
-  }
+  check_data(temp, dev_rate)
+
   if (!is.character(model_name)){
     stop("model_name must be a string in ?available_models")}
 
   if (!all(model_name %in% c("all", available_models$model_name))) {
     stop("model not available. For available model names, see `available_models`")
-  }
-  if (any(dev_rate < 0)) {
-    stop("Negative dev_rate development rate data found. Please check it.")
-  }
-  if (any(dev_rate > 10)){
-    warning("Extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
-
-  if (any(temp < -10) | any(temp > 56)) {
-    warning("experienced temperatures by active organisms are usually between 0 and 50ºC")
   }
 
   if (model_name == "all") {
@@ -127,14 +102,14 @@ fit_devmodels <- function(temp = NULL,
                                        dev_rate = dev_rate)
 
       possible_error <- tryCatch(expr = {
-        therm_perf_df <- dplyr::tibble(temp, dev_rate)
+        devdata <- dplyr::tibble(temp, dev_rate)
         start_upper_vals <- purrr::map(.x = start_vals,
                                        .f = ~.x + abs(.x/2))
         start_lower_vals <- purrr::map(.x = start_vals,
                                        .f = ~.x - abs(.x/2))
         fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
                                                       termlabels = unique(model_i$formula)),
-                                 data = therm_perf_df,
+                                 data = devdata,
                                  iter = 500,
                                  start_lower = start_lower_vals,
                                  start_upper = start_upper_vals,
@@ -167,22 +142,22 @@ fit_devmodels <- function(temp = NULL,
       possible_error <- tryCatch(expr = {start_vals <- rTPC::get_start_vals(x = temp,
                                            y = dev_rate,
                                            model_name = model_name_translate(i))
-        therm_perf_df <- dplyr::tibble(temp, dev_rate)
+        devdata <- dplyr::tibble(temp, dev_rate)
         start_upper_vals <- purrr::map(.x = start_vals,
                                        .f = ~.x + abs(.x/2))
         start_lower_vals <- purrr::map(.x = start_vals,
                                        .f = ~.x - abs(.x/2))
         fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
                                                       termlabels = unique(model_i$formula)),
-                                 data = therm_perf_df,
+                                 data = devdata,
                                  iter = 500,
                                  start_lower = start_lower_vals,
                                  start_upper = start_upper_vals,
-                                 lower = get_lower_lims(therm_perf_df$temp,
-                                                        therm_perf_df$dev_rate,
+                                 lower = get_lower_lims(devdata$temp,
+                                                        devdata$dev_rate,
                                                         model_name = model_name_translate(i)),
-                                 upper = get_upper_lims(therm_perf_df$temp,
-                                                        therm_perf_df$dev_rate,
+                                 upper = get_upper_lims(devdata$temp,
+                                                        devdata$dev_rate,
                                                         model_name = model_name_translate(i)),
                                  supp_errors = "Y")
         list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
