@@ -127,42 +127,37 @@ print(boundaries_aphid)
 
 ### 4. Climatic data extraction and projection
 
-Using the thermal boundaries provided by the previous function and a set of raster maps of monthly temperatures for a given region (which can be provided by the user or downloaded by the function), a map can be produced showing where (and for how many months a year) thermal conditions are suitable for the development of the pest.
+Using the thermal boundaries provided by the previous function and a set of raster maps of monthly temperatures for a given region (which can be provided by the user or downloaded by the function), a map can be produced showing where and for how many months a year (on average across simulations) thermal conditions are suitable for the development of the pest.
 
 ```{r}
-# downloading data from geodata::wordlclim_global. It will take several minutes the first time you use the function on the same 'path'.
-#   risk_rast <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
-#                                    thermal_boundaries_sharpshooter$tval_right),
-#                         path = "~/downloaded_maps", # directory to download data
-#                         region = "Réunion", 
-#                         verbose = TRUE)
-# terra::plot(risk_rast[[13]]) # the last layer represents the sum of suitable months within a year; the first 12 layers, the monthly binary value (1, if suitable; 0, if not suitable).
+# Downloading temperature data with geodata::wordlclim_global().
+# May take time the first time you use the function on the same 'path'.
+  risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")],
+                        path = "~/downloaded_maps", # directory to download data
+                        region = "Réunion",
+                        verbose = TRUE)
+terra::plot(risk_rast)
 
-#we can also save the raster with:
+# We can also save the raster with:
 # terra::writeRaster(risk_rast, filename = "~/output_maps/risk_rast.tif")
 
-# Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use it as an input of `map_risk()`
+
+# Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use that as input:
 ## load it (here Luxembourg data)
-#tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
-### convert it into a raster-compatible file with `terra`
-#tavg_rast <- terra::rast(tavg_file)
-### and apply the function
-#risk_rast_binary <- map_risk(t_vals = c(thermal_boundaries_sharpshooter$tval_left,
-#                                        thermal_boundaries_sharpshooter$tval_right#), 
-#                             t_rast = tavg_rast)
-# terra::plot(risk_rast_binary[[13]]) # the last layer represents the sum of suitable months within a year; the 12-th previous ones, the monthly binary value (1, if suitable; 0, if not suitable).
-
-
-
-
-
-
+tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+## import it with `terra`
+tavg_rast <- terra::rast(tavg_file)
+## and apply the function
+risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")], t_rast = tavg_rast)
+terra::plot(risk_rast)
+# the 1st layer shows the mean number of suitable months per year
+# the 2nd layer is the standard deviation (measure of uncertainty)
 ```
 
 ### 5. Interactive map with `leaflet`
 
 ```{r}
-#example <- interactive_map(x = risk_rast_binary, map_type = "high",
+#example <- interactive_map(x = risk_rast[[1]], map_type = "high",
  #               path_out = paste0(tempdir(), "test_map.html"))
 #example
 
