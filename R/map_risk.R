@@ -1,17 +1,18 @@
 #' Map pest risk
 #'
-#' @param t_vals Numeric vector of length 2 specifying the left (minimum) and
-#' right (maximum) temperature bounds for optimal performance of the target
-#' species.
+#' @param t_vals Data frame or tibble with 2 columns specifying,
+#' respectively, the left (minimum) and right (maximum) temperature bounds for
+#' optimal performance of the target species.
 #' @param t_rast Optional 12-layer [terra::SpatRaster] with monthly mean
 #' temperatures for (at least) the target 'region'. If not provided, global
 #' WorldClim raster layers will be (down)loaded and cropped to 'region'. Note
 #' that the download can be slow the first time you use the function in a new
-#' working directory. If you get an error, consider running e.g.
+#' working directory. If you get a download error, consider running e.g.
 #' [options(timeout = 500)] (or more).
 #' @param region Optional object specifying the region to map. Must overlap the
 #' extent of 't_rast' if both are provided. Can be a [terra::SpatVector] polygon #' map (obtained with [terra::vect()]); or a character vector of country name(s)
-#' in English, in which case a countries map will be downloaded and subsetted to #' those countries; or a [terra::SpatExtent] object (obtained with
+#' in English, in which case a countries map will be downloaded and subset to
+#' those countries; or a [terra::SpatExtent] object (obtained with
 #' [terra::ext()]); or a numeric vector of length 4 specifying the region
 #' coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
 #' unprojected coordinates (WGS84, EPSG:4326). If NULL, the output maps will
@@ -44,7 +45,7 @@
 #' terra:::plot(tavg_rast)
 #'
 #' risk_rast_binary <- map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast)
-#' # note that 't_vals' should be an output of `thermal_suitability_bounds()`
+#' # note that 't_vals' should be an output of `therm_suit_bounds()`
 #'
 #' terra::plot(risk_rast_binary)
 #'
@@ -80,9 +81,9 @@ map_risk <- function(t_vals = NULL,
                      verbose = FALSE
 ) {
 
-  stopifnot(is.numeric(t_vals),
-            length(t_vals) == 2  #,
-            # t_vals[2] > t_vals[1]  # not necessary
+  stopifnot(inherits(t_vals, "data.frame"),
+            ncol(t_vals) == 2,
+            all(na.omit(t_vals)[ , 2] >= na.omit(t_vals)[ , 1])
   )
 
   if (!is.null(t_rast)) {
@@ -115,7 +116,7 @@ map_risk <- function(t_vals = NULL,
 
   if (is.numeric(region)) {
     if (length(region) != 4) {
-      stop("When provided as a numeric vector, 'region' must have length 4 (xmin, xmax, ymin, ymax) in unprojected geographic coordinates.")
+      stop("When provided as a numeric vector, 'region' must have length 4 (xmin, xmax, ymin, ymax) in unprojected geographic coordinates (EPSG:4326).")
     }
     region <- terra::ext(region)
   }
@@ -134,7 +135,7 @@ map_risk <- function(t_vals = NULL,
 
   if (is(region, "SpatExtent")) {
     mask <- FALSE  # pointless otherwise
-    region <- terra::vect(region, crs = "epsg:4326")  # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
+    region <- terra::vect(region, crs = "EPSG:4326")  # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
   }
 
   if (isFALSE(terra::same.crs(t_rast, region))) {
@@ -161,13 +162,37 @@ map_risk <- function(t_vals = NULL,
   }
 
   # delete values outside thermal optimum zones:
-  outside <- t_rast < min(t_vals) | t_rast > max(t_vals)
-  if (output == "binary") {
-    t_rast[outside] <- 0
-    t_rast[!outside] <- 1
-  } else {
-    t_rast[outside] <- NA_real_
+  # outside <- t_rast < min(t_vals) | t_rast > max(t_vals)  # (before bootstrap)
+  if (verbose) cat("\nComputing summary layers...\n")
+  t_rast_out <- vector("list", nrow(t_vals))
+  require(terra)  # for below SpatRaster operations
+  for (r in 1:nrow(t_vals)) {
+    tvals <- unlist(t_vals[r, ])
+    trast <- t_rast  # t_rast is the 12-month input, trast the reclassified output
+    if (!all(is.finite(tvals))) next
+    outside <- t_rast < tvals[1] | t_rast > tvals[2]
+    if (output == "binary") {
+      trast[outside] <- 0
+      trast[!outside] <- 1
+    } else {
+      trast[outside] <- NA_real_
+    }
+    # add 13th raster layer with summary stat across months:
+    fun <- ifelse(output == "binary", "sum", "mean")
+    # if (verbose) cat("\nComputing summary layer...\n")
+    layer13 <- terra::app(trast, fun, na.rm = TRUE)
+    trast <- c(trast, layer13)
+
+    # t_rast_out[[r]] <- trast
+    t_rast_out[[r]] <- layer13
   }
+
+  t_rast_out <- t_rast_out[-which(sapply(t_rast_out, is.null))]
+  t_rast_out <- terra::rast(t_rast_out)  # converts list to multilayer raster
+
+  mean_out <- terra::app(t_rast_out, "mean")
+  sd_out <- terra::app(t_rast_out, "sd")
+  out <- c(mean_out, sd_out)
 
   # outside <- terra::app(t_rast, function(x) x < min(t_vals) | x > max(t_vals))
   # if (output == "binary") {
@@ -176,13 +201,8 @@ map_risk <- function(t_vals = NULL,
   #   t_rast[outside] <- NA_real_
   # }
 
-  # add 13th raster layer with summary stat across months:
-  fun <- ifelse(output == "binary", "sum", "mean")
-  if (verbose) cat("\nComputing final summary layer...\n")
-  layer13 <- terra::app(t_rast, fun, na.rm = TRUE)
-  t_rast <- c(t_rast, layer13)
-
   if (verbose) cat("\nFinished!\n")
-  return(t_rast)
+  # return(t_rast)
+  return(out)
 }
 
