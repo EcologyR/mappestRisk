@@ -2,8 +2,10 @@
 #' with temperature (known as Thermal Performance Curves).
 #'
 #' @description
-#' Fits nonlinear regression models (or Thermal Performance Curves) based on `nls.multstart` approach to development rate data across
-#' temperatures. The fitting procedure is built upon previous packages for starting values estimation, namely `rTPC` and `devRate`.
+#' Fits nonlinear regression models (or Thermal Performance Curves) based on
+#' [nls.multstart::nls_multstart()] approach to development rate data across temperatures.
+#' The fitting procedure is built upon previous packages for starting values estimation,
+#' namely `rTPC` and `devRate`.
 #'
 #' @param temp a vector of temperatures used in the experiment.
 #' It should have at least four different temperatures and must contain only numbers
@@ -51,57 +53,60 @@
 #'
 #'
 #' @examples
-#' data("b.schwartzi_satar2002")
+#' data("aphid")
 #'
-#' fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-#'                                         dev_rate = b.schwartzi_satar2002$rate_value,
+#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
+#'                                         dev_rate = aphid$rate_value,
 #'                                         model_name = "all")
-#' print(fitted_tpcs_bschwartzi)
+#' print(fitted_tpcs_aphid)
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
-  if(any(is.na(dev_rate))) {
+
+  if (any(is.na(dev_rate))) {
   stop("development rate data have NAs; please consider removing them or fixing them")
   }
-  if(any(is.na(temp))) {
+  if (any(is.na(temp))) {
   stop("temperature data have NAs; please consider removing them or fixing them")
   }
-  if(!is.numeric(temp)) {
+  if (!is.numeric(temp)) {
     stop("temperature data is not numeric. Please check it.")
   }
-  if(length(unique(temp)) < 4) {
+  if (length(unique(temp)) < 4) {
     stop("At least four different temperature treatments in the data are required.")
   }
-  if(!is.numeric(dev_rate)) {
+  if (!is.numeric(dev_rate)) {
     stop("development rate data is not numeric. Please check it.")
   }
-  if(length(temp) != length(dev_rate)) {
+  if (length(temp) != length(dev_rate)) {
     stop("development rate and temperature inputs are not of same length. Please check it.")
   }
-  if(!is.character(model_name)){
+  if (!is.character(model_name)){
     stop("model_name must be a string in ?available_models")}
 
-  if (!all(model_name %in% c("all", dev_model_table$model_name))) {
-    stop("model not available. For available model names, see `dev_model_table`")
+  if (!all(model_name %in% c("all", available_models$model_name))) {
+    stop("model not available. For available model names, see `available_models`")
   }
-  if (any(dev_rate < 0) | any(dev_rate > 10)){
-    warning("negative or extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
-  if(any(temp < -10) | any(temp > 56)){
-    warning("experienced temperatures by active organisms are usually between 0 and 50ºC")}
+  if (any(dev_rate < 0)) {
+    stop("Negative dev_rate development rate data found. Please check it.")
+  }
+  if (any(dev_rate > 10)){
+    warning("Extremely high values of dev_rate development rate data might contain a typo error. Please check it.")}
 
-  if (model_name[1] == "all") { # it will be probably the most commonly used option for user's experience
-    model_names <- dev_model_table$model_name
-  } else {model_names <- model_name}
-  if(model_name == "all") {
-    models_2fit <- dev_model_table |>
-      filter(n_params <= n_distinct(temp)) |>
-      pull(model_name)
+  if (any(temp < -10) | any(temp > 56)) {
+    warning("experienced temperatures by active organisms are usually between 0 and 50ºC")
+  }
+
+  if (model_name == "all") {
+    models_2fit <- available_models |>
+      dplyr::filter(n_params <= dplyr::n_distinct(temp)) |>
+      dplyr::pull(model_name)
   } else {
     models_2fit <- model_name
   }
 
-    list_fit_models <- vector("list", length = length(models_2fit))
+  list_fit_models <- vector("list", length = length(models_2fit))
   list_param <- dplyr::tibble(param_name = NULL,
                               start_vals = NULL,
                               param_est = NULL,
@@ -113,29 +118,28 @@ fit_devmodels <- function(temp = NULL,
 
   for (i in models_2fit) {
     message(paste0("fitting model ", i)) # to let people know that the function is working and R is not crashing
-    model_i <- dev_model_table |>
-      filter(model_name == i)
-    if (model_i$package == "devRate") {
+    model_i <- available_models |>
+      dplyr::filter(model_name == i)
+
+    if (available_models$package[available_models$model_name == i] == "devRate") {
       start_vals <- start_vals_devRate(model_name_2fit = model_i,
                                        temperature = temp,
                                        dev_rate = dev_rate)
 
       possible_error <- tryCatch(expr = {
-        model_i <- dev_model_table |>
-          filter(model_name == i)
-        therm_perf_df <- tibble(temp, dev_rate)
+        therm_perf_df <- dplyr::tibble(temp, dev_rate)
         start_upper_vals <- purrr::map(.x = start_vals,
                                        .f = ~.x + abs(.x/2))
         start_lower_vals <- purrr::map(.x = start_vals,
                                        .f = ~.x - abs(.x/2))
-        fit_nls <- nls_multstart(formula =reformulate(response = "dev_rate",
+        fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
                                                       termlabels = unique(model_i$formula)),
                                  data = therm_perf_df,
                                  iter = 500,
                                  start_lower = start_lower_vals,
                                  start_upper = start_upper_vals,
                                  supp_errors = "Y")
-        list_fit_models[[which(dev_model_table$model_name == i)]] <- fit_nls
+        list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
         sum_fit_nls <- summary(fit_nls)
         list_param_tbl <- dplyr::tibble(param_name = extract_param_names(fit_nls),
                                         start_vals = tidyr::replace_na(start_vals, 0),
@@ -147,25 +151,28 @@ fit_devmodels <- function(temp = NULL,
                                         model_fit = list(fit_nls))
       }, # <- inside tryCatch
       error = function(e) e)
-      if(inherits(possible_error, "error")) {
+      if (inherits(possible_error, "error")) {
         fit_nls <- NULL
       }
-      if(is.null(fit_nls)) {
+      if (is.null(fit_nls)) {
         list_param <- list_param
-      } else {list_param <- list_param |>
-        dplyr::bind_rows(list_param_tbl)}
-    } else {
+      } else {
+        list_param <- list_param |>
+        dplyr::bind_rows(list_param_tbl)
+        }
+    }
+    ## end of devRate
+
+    if (available_models$package[available_models$model_name == i] == "rTPC") {
       possible_error <- tryCatch(expr = {start_vals <- rTPC::get_start_vals(x = temp,
                                            y = dev_rate,
                                            model_name = model_name_translate(i))
-        model_i <- dev_model_table |>
-          filter(model_name == i)
-        therm_perf_df <- tibble(temp, dev_rate)
+        therm_perf_df <- dplyr::tibble(temp, dev_rate)
         start_upper_vals <- purrr::map(.x = start_vals,
                                        .f = ~.x + abs(.x/2))
         start_lower_vals <- purrr::map(.x = start_vals,
                                        .f = ~.x - abs(.x/2))
-        fit_nls <- nls_multstart(formula =reformulate(response = "dev_rate",
+        fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
                                                       termlabels = unique(model_i$formula)),
                                  data = therm_perf_df,
                                  iter = 500,
@@ -178,7 +185,7 @@ fit_devmodels <- function(temp = NULL,
                                                         therm_perf_df$dev_rate,
                                                         model_name = model_name_translate(i)),
                                  supp_errors = "Y")
-        list_fit_models[[which(dev_model_table$model_name == i)]] <- fit_nls
+        list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
         sum_fit_nls <- summary(fit_nls)
         list_param_tbl <- dplyr::tibble(param_name = extract_param_names(fit_nls),
                                         start_vals = tidyr::replace_na(start_vals, 0),
@@ -190,14 +197,15 @@ fit_devmodels <- function(temp = NULL,
                                         model_fit = list(fit_nls))
       }, # <- inside tryCatch
       error = function(e) e)
-      if(inherits(possible_error, "error")) {
+      if (inherits(possible_error, "error")) {
         fit_nls <- NULL
       }
-      if(is.null(fit_nls)) {
+      if (is.null(fit_nls)) {
         list_param <- list_param
       } else {list_param <- list_param |>
         dplyr::bind_rows(list_param_tbl)}
-      } # <- if else ends
+    }
+    # end of rTPC processing
 
     } # <- loop ends
     return(list_param)
