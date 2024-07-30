@@ -1,8 +1,8 @@
 #' Map pest risk
 #'
-#' @param t_vals Data frame or tibble with 2 columns specifying,
-#' respectively, the left (minimum) and right (maximum) temperature bounds for
-#' optimal performance of the target species.
+#' @param t_vals Numeric vector of length 2 or data frame with 2 columns
+#' specifying, respectively, the left (minimum) and right (maximum)
+#' temperature bounds for the development of the target species.
 #' @param t_rast Optional 12-layer [terra::SpatRaster] with monthly mean
 #' temperatures for (at least) the target 'region'. If not provided, global
 #' WorldClim raster layers will be (down)loaded and cropped to 'region'. Note
@@ -15,8 +15,9 @@
 #' those countries; or a [terra::SpatExtent] object (obtained with
 #' [terra::ext()]); or a numeric vector of length 4 specifying the region
 #' coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
-#' unprojected coordinates (WGS84, EPSG:4326). If NULL, the output maps will
-#' cover the entire `t_rast` if provided, or the entire world otherwise.
+#' in the same CRS as `t_rast` if `t_rast` is provided, or in unprojected lon-lat
+#' coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will cover
+#' the entire `t_rast` if provided, or the entire world otherwise.
 #' @param res Argument to pass to [geodata::worldclim_global()] specifying
 #' the spatial resolution for the raster maps to download, if 't_rast' is not
 #' provided. The default is 2.5 arc-minutes.
@@ -27,59 +28,54 @@
 #' output raster maps should be masked with the borders of the target 'region',
 #' if this is a polygon map or a vector of country names. The default is TRUE.
 #' If FALSE, the entire rectangular extent of 'region' will be used.
-#' @param output Character value specifying the type of values in the output
-#' map pixels. Can be "binary" (the default), to identify pixels within (1)
-#' and outside (0) the bounds of the input 't_vals'; or "value", to assign
-#' to pixels the temperature values where these are within the bounds of the
-#' input 't_vals', and NA where they are not.
 #' @param verbose Logical value specifying whether to display messages about
 #' what the function is doing at possibly slow steps. The default is FALSE.
 #' Setting it to TRUE can be useful for checking progress when maps are large.
-#' @return This function returns a [terra::SpatRaster] object with 13 layers:
-#' one for each month, and a final summary layer with the sum (if output
-#' ="binary") or the mean (if output="value") across months.
+#' @return This function returns a [terra::SpatRaster] with up to 2 layers:
+#' the ([mean]) number of months with temperature within the species' thermal
+#' bounds; and (if `t_vals` has >1 rows) the standard deviation ([sd]) around
+#' that mean.
+#' @import terra
 #' @export
 #' @examples
+#' # if you have temperature rasters for your region:
 #' tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 #' tavg_rast <- terra::rast(tavg_file)
 #' terra:::plot(tavg_rast)
 #'
-#' risk_rast_binary <- map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast)
-#' # note that 't_vals' should be an output of `therm_suit_bounds()`
+#' therm_bounds <- data.frame(tval_left = c(12.5, 12.1, 13.2),
+#'                            tval_right = c(21.4, 21.2,  22.0))
+#' therm_bounds  # normally you would use the output of `therm_suit_bounds()`
 #'
-#' terra::plot(risk_rast_binary)
+#' risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast)
 #'
-#' terra::plot(risk_rast_binary[[13]])
-#'
-#'
-#' risk_rast_value <- map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast,
-#' output = "value")
-#'
-#' terra::plot(risk_rast_value)
-#'
-#' terra::plot(risk_rast_value[[13]])
+#' terra::plot(risk_rast)
 #'
 #' \dontrun{
 #' # if you don't have temperature rasters for your region:
-#' risk_rast <- map_risk(t_vals = c(12.5, 21.4), path = "downloaded_maps",
+#' risk_rast <- map_risk(t_vals = therm_bounds, path = "downloaded_maps",
 #' region = c("Portugal", "Spain"), verbose = TRUE)
 
-#' terra::plot(risk_rast[[13]])
+#' terra::plot(risk_rast)
 
-#' # if you want to save some output map(s) to disk:
-#' terra::writeRaster(risk_rast[[13]], "risk_map.tif")  # exported maps can
+#' # if you want to save output map(s) to disk:
+#' terra::writeRaster(risk_rast, "risk_map.tif")  # exported maps can
 #' be seen with GIS software
 #' }
 #'
+
 map_risk <- function(t_vals = NULL,
                      t_rast = NULL,
                      region = NULL,
                      res = 2.5,
                      path = NULL,
                      mask = TRUE,
-                     output = "binary",
                      verbose = FALSE
 ) {
+
+  if (is.atomic(t_vals) && length(t_vals) == 2) {
+    t_vals <- t(data.frame(t_vals))
+  }
 
   stopifnot(inherits(t_vals, "data.frame"),
             ncol(t_vals) == 2,
@@ -109,7 +105,7 @@ map_risk <- function(t_vals = NULL,
     if (verbose) cat("\n(Down)loading countries map...\n")
     wrld <- geodata::world(path = path)
     region <- wrld[wrld$NAME_0 %in% region, ]
-    if (mask == FALSE) {
+    if (isFALSE(mask)) {
       region <- terra::ext(region)
     }
   }
@@ -161,48 +157,28 @@ map_risk <- function(t_vals = NULL,
                           mask = mask)
   }
 
-  # delete values outside thermal optimum zones:
-  # outside <- t_rast < min(t_vals) | t_rast > max(t_vals)  # (before bootstrap)
   if (verbose) cat("\nComputing summary layers...\n")
-  t_rast_out <- vector("list", nrow(t_vals))
-  require(terra)  # for below SpatRaster operations
+  t_rast_sum <- terra::rast(t_rast, nlyrs = nrow(t_vals))
   for (r in 1:nrow(t_vals)) {
     tvals <- unlist(t_vals[r, ])
-    trast <- t_rast  # t_rast is the 12-month input, trast the reclassified output
     if (!all(is.finite(tvals))) next
     outside <- t_rast < tvals[1] | t_rast > tvals[2]
-    if (output == "binary") {
-      trast[outside] <- 0
-      trast[!outside] <- 1
-    } else {
-      trast[outside] <- NA_real_
-    }
-    # add 13th raster layer with summary stat across months:
-    fun <- ifelse(output == "binary", "sum", "mean")
-    # if (verbose) cat("\nComputing summary layer...\n")
-    layer13 <- terra::app(trast, fun, na.rm = TRUE)
-    trast <- c(trast, layer13)
-
-    # t_rast_out[[r]] <- trast
-    t_rast_out[[r]] <- layer13
+    t_rast_binary <- t_rast
+    t_rast_binary[outside] <- 0
+    t_rast_binary[!outside] <- 1
+    t_rast_sum[[r]] <- terra::app(t_rast_binary, "sum", na.rm = TRUE)
   }
 
-  t_rast_out <- t_rast_out[-which(sapply(t_rast_out, is.null))]
-  t_rast_out <- terra::rast(t_rast_out)  # converts list to multilayer raster
+  # nulls <- which(sapply(t_rast_sum, is.null))
+  # if (length(nulls) > 0)  t_rast_sum <- t_rast_sum[-nulls]
 
-  mean_out <- terra::app(t_rast_out, "mean")
-  sd_out <- terra::app(t_rast_out, "sd")
-  out <- c(mean_out, sd_out)
-
-  # outside <- terra::app(t_rast, function(x) x < min(t_vals) | x > max(t_vals))
-  # if (output == "binary") {
-  #   t_rast <- !outside
-  # } else {
-  #   t_rast[outside] <- NA_real_
-  # }
+  if (nrow(t_vals) > 1) {  # same as if(terra::nlyr(t_rast_sum) > 1)
+    out <- c(terra::app(t_rast_sum, "mean", na.rm = TRUE),
+             terra::app(t_rast_sum, "sd", na.rm = TRUE))
+  } else {
+    out <- t_rast_sum
+  }
 
   if (verbose) cat("\nFinished!\n")
-  # return(t_rast)
   return(out)
 }
-
