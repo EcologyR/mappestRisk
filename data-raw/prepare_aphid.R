@@ -4,10 +4,10 @@
 #
 
 
-b.schwartzi_satar2002 <- readxl::read_xlsx("data-raw/satar_data.xlsx") |>
+aphid <- readxl::read_xlsx("data-raw/satar_data.xlsx") |>
   mutate(rate_value =  1/dev_days)
 
-usethis::use_data(b.schwartzi_satar2002,
+usethis::use_data(aphid,
                   overwrite = TRUE
                   )
 

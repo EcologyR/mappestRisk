@@ -84,8 +84,8 @@
 #'                                                   model_name = "lactin2",
 #'                                                   suitability_threshold = 80)
 #' head(boundaries_bschwartzi)
-therm_suit_bounds <- function(preds_tbl,
-                              model_name,
+therm_suit_bounds <- function(preds_tbl = NULL,
+                              model_name = NULL,
                               suitability_threshold = 75) {
 
   if (!is.data.frame(preds_tbl) |

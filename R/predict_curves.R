@@ -56,92 +56,82 @@
 #' @export
 #'
 #' @examples
-#' data("b.schwartzi_satar2002")
+#' data("aphid")
 #'
-#' fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-#'                                         dev_rate = b.schwartzi_satar2002$rate_value,
-#'                                         model_name = "all")
+#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
+#'                                       dev_rate = aphid$rate_value,
+#'                                       model_name = "all")
 #'
-#' plot_devmodels(temp = b.schwartzi_satar2002$temperature,
-#'                dev_rate = b.schwartzi_satar2002$rate_value,
-#'                fitted_parameters = fitted_tpcs_bschwartzi,
-#'                species = "Brachycaudus swartzi",
-#'                life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
+#' plot_devmodels(temp = aphid$temperature,
+#'                dev_rate = aphid$rate_value,
+#'                fitted_parameters = fitted_tpcs_aphid,
+#'                species = "Brachycaudus schwartzi",
+#'                life_stage = "Nymphs")
 #'
 #' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-#' tpc_preds_boots_bschwartzi <- predict_curves(temp = b.schwartzi_satar2002$temperature,
-#'                                              dev_rate = b.schwartzi_satar2002$rate_value,
-#'                                              fitted_parameters = fitted_tpcs_bschwartzi,
-#'                                              model_name_2boot = c("briere2", "thomas", "lactin2"),
+#' tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
+#'                                              dev_rate = aphid$rate_value,
+#'                                              fitted_parameters = fitted_tpcs_aphid,
+#'                                              model_name_2boot = c("lactin1"),
 #'                                              propagate_uncertainty = TRUE,
-#'                                              n_boots_samples = 100)
+#'                                              n_boots_samples = 10)
 #'
-#' head(tpc_preds_boots_bschwartzi)
+#' head(tpc_preds_boots_aphid)
 
-predict_curves <- function(temp,
-                              dev_rate,
-                              fitted_parameters,
-                              model_name_2boot,
+predict_curves <- function(temp = NULL,
+                              dev_rate = NULL,
+                              fitted_parameters = NULL,
+                              model_name_2boot = NULL,
                               propagate_uncertainty = TRUE,
                               n_boots_samples = 100) {
 
-  if(any(is.na(dev_rate))) {
-    stop("development rate data have NAs; please consider removing them or fixing them")
-  }
-  if(any(is.na(temp))) {
-    stop("temperature data have NAs; please consider removing them or fixing them")
-  }
-  if(!is.numeric(temp)) {
-    stop("temperature data is not numeric. Please check it.")
-  }
-  if(!is.numeric(dev_rate)) {
-    stop("development rate data is not numeric. Please check it.")
-  }
-  if(length(temp) != length(dev_rate)) {
-    stop("development rate and temperature inputs are not of same length. Please check it.")
-  }
-  if(!is.character(model_name_2boot)){
-    stop("model_name_2boot must be a string in ?available_models")}
+  check_data(temp, dev_rate)
 
-  if (!all(model_name_2boot %in% c("all", dev_model_table$model_name))) {
-    stop("model not available. For available model names, see `dev_model_table`")
+  if (any(! model_name_2boot %in% fitted_parameters$model_name)) {
+    stop("model not available. Models available for bootstrapping: ",
+         paste0(unique(fitted_parameters$model_name), collapse = ", "))
   }
-  if(n_boots_samples > 5000) {
-    stop("computation time will be extremely high. Please adjust `n_boots_samples` to be < 5000")
-  }
-  if(n_boots_samples < 100){
-    warning("100 iterations might be desirable. Consider increasing `n_boots_samples` if possible")
-  }
-  if(!is.numeric(n_boots_samples)){
+
+
+  if (!is.numeric(n_boots_samples)){
     stop("`n_boots_samples` must be numeric. Please change it within 1 and 5000 (Default 100)")
   }
-  if(!is.logical(propagate_uncertainty)) {
+
+  if (n_boots_samples > 5000) {
+    stop("computation time will be extremely high. Please adjust `n_boots_samples` to be < 5000")
+  }
+
+  if (n_boots_samples < 100){
+    warning("100 iterations might be desirable. Consider increasing `n_boots_samples` if possible")
+  }
+
+  if (!is.logical(propagate_uncertainty)) {
     stop("`propagate_uncertainty` must be `TRUE` or `FALSE` (def. `TRUE`)")
   }
-  devdata <- tibble(temp,
+
+  devdata <- dplyr::tibble(temp,
                     dev_rate)
-  fitted_tbl <- fitted_parameters
-  predict2fill <- tibble(temp = NULL,
+  predict2fill <- dplyr::tibble(temp = NULL,
                          dev_rate = NULL,
                          model_name = NULL,
                          model_fit = NULL,
                          model_AIC = NULL)
 
-  for(model_name_i in model_name_2boot){
-    fitted_tbl_i <- fitted_tbl |>
-      filter(model_name == model_name_i)
-    model_AIC_i <-fitted_tbl_i |>
-      pull(model_AIC)
-    model_fit_i <- fitted_tbl_i |>
-      pull(model_fit)
-    params_i <- fitted_tbl_i |>
-      pull(param_est)
-    formula_i <- dev_model_table |>
-      filter(model_name == model_name_i) |>
-      pull(working_formula)
+  for (model_name_i in model_name_2boot){
+    fitted_parameters_i <- fitted_parameters |>
+      dplyr::filter(model_name == model_name_i)
+    model_AIC_i <- fitted_parameters_i |>
+      dplyr::pull(model_AIC)
+    model_fit_i <- fitted_parameters_i |>
+      dplyr::pull(model_fit)
+    params_i <- fitted_parameters_i |>
+      dplyr::pull(param_est)
+    formula_i <- available_models |>
+      dplyr::filter(model_name == model_name_i) |>
+      dplyr::pull(working_formula)
     ##predict based on parameters
-    explore_preds <- tibble(temp = seq(min(devdata$temp)-20,
-                                       max(devdata$temp) +15,
+    explore_preds <- dplyr::tibble(temp = seq(min(devdata$temp) - 20,
+                                       max(devdata$temp) + 15,
                                        .1),
                             model_name = model_name_i,
                             model_fit = model_fit_i[1],
@@ -150,22 +140,22 @@ predict_curves <- function(temp,
                             n_params = length(params_i))
     fit_vals_tbl <- explore_preds |>
       dplyr::select(temp, model_name, model_AIC, n_params, model_fit) |>
-      mutate(formula = formula_i) |>
-      mutate(preds = purrr::map_dbl(.x = temp,
-                                    .f = reformulate(unique(formula_i)))) |>
-      filter(preds >= -0.2) |>
+      dplyr::mutate(formula = formula_i) |>
+      dplyr::mutate(preds = purrr::map_dbl(.x = temp,
+                                    .f = stats::reformulate(unique(formula_i)))) |>
+      dplyr::filter(preds >= -0.2) |>
       dplyr::select(-formula)
     # to exclude biological non-sense predictions due to model mathematical properties
     predict2fill <- predict2fill |>
-      bind_rows(fit_vals_tbl)
+      dplyr::bind_rows(fit_vals_tbl)
   }
   predict2fill_complete <- predict2fill |>
-    mutate(nest(devdata)) |>
-    mutate(coefs = map(.x = model_fit,
+    dplyr::mutate(tidyr::nest(devdata)) |>
+    dplyr::mutate(coefs = purrr::map(.x = model_fit,
                        .f = coef))
 
-  if(propagate_uncertainty == FALSE) {
-    tpc_estimate <- tibble(model_name = predict2fill_complete$model_name,
+  if (propagate_uncertainty == FALSE) {
+    tpc_estimate <- dplyr::tibble(model_name = predict2fill_complete$model_name,
                            iter = rep(NA, nrow(predict2fill_complete)),
                            temp = predict2fill_complete$temp,
                            pred = predict2fill_complete$preds,
@@ -174,7 +164,7 @@ predict_curves <- function(temp,
     return(tpc_estimate)
 
   } else {
-    boot_2fill <- tibble(temp = NULL,
+    boot_2fill <- dplyr::tibble(temp = NULL,
                        model_name = NULL,
                        model_AIC = NULL,
                        n_params = NULL,
@@ -184,14 +174,14 @@ predict_curves <- function(temp,
                        coefs = NULL,
                        bootstrap = NULL)
 
-  for(model_i in model_name_2boot){
+  for (model_i in model_name_2boot){
     predict_model_i <- predict2fill_complete |>
-      filter(model_name == model_i)
-    coefs_i <- as_vector(unique(predict_model_i$coefs))
+      dplyr::filter(model_name == model_i)
+    coefs_i <- purrr::as_vector(unique(predict_model_i$coefs))
     temp_data_i <- devdata
-    formula_i <- dev_model_table |>
-      filter(model_name == model_i) |>
-      pull(formula)
+    formula_i <- available_models |>
+      dplyr::filter(model_name == model_i) |>
+      dplyr::pull(formula)
 
     ## avoid errors when wrapping Boot
     assign("model_i", model_i, envir=parent.frame())
@@ -200,81 +190,79 @@ predict_curves <- function(temp,
     assign("temp_data_i", temp_data_i, envir=parent.frame())
     assign("formula_i", formula_i, envir=parent.frame())
     possible_error <- tryCatch(expr = {
-      temp_fit <- minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
+      temp_fit <- minpack.lm::nlsLM(formula = stats::reformulate(response = "dev_rate",
                                                           termlabels = formula_i),
                                     data = temp_data_i,
                                     na.action = na.exclude,
                                     start = coefs_i)
-      set.seed(2024)
       assign("temp_fit", temp_fit, envir=parent.frame())
-      boot <- Boot(temp_fit, method = 'residual', R = n_boots_samples)
+      boot <- car::Boot(temp_fit, method = 'residual', R = n_boots_samples)
       boot_2fill_i <- predict_model_i |>
-        mutate(bootstrap = list(boot))
+        dplyr::mutate(bootstrap = list(boot))
     }, # <- inside tryCatch
     error = function(e) e)
-    if(inherits(possible_error, "error")) {
+    if (inherits(possible_error, "error")) {
       temp_fit <- NULL
       boot <- NA
       boot_2fill_i <- predict_model_i |>
-        mutate(bootstrap = list(boot))
+        dplyr::mutate(bootstrap = list(boot))
     }
-    boot_2fill <- bind_rows(boot_2fill, boot_2fill_i)
+    boot_2fill <- dplyr::bind_rows(boot_2fill, boot_2fill_i)
   }
   rm("model_i", "predict_model_i", "coefs_i", "temp_data_i", "formula_i", "temp_fit", "boot")
   boot_2fill_clean <- boot_2fill |>
-    filter(!is.na(bootstrap))
+    dplyr::filter(!is.na(bootstrap))
 
   #get the raw values of each bootstrap (the code pipes from here to next object was copied from `rTPC` vignette on bootstrapping curves)
   tpc_fits_boot <- boot_2fill_clean |>
-    group_by(model_name) |>
-    mutate(output_boot = map(bootstrap,
-                             function(x) x$t))
+    dplyr::group_by(model_name) |>
+    dplyr::mutate(output_boot = purrr::map(bootstrap, function(x) x$t))
 
-  bootstrap_tpcs_all <- tibble(model_name = NULL,
+  bootstrap_tpcs_all <- dplyr::tibble(model_name = NULL,
                                iter = NULL,
                                temp = NULL,
                                pred = NULL,
                                curvetype = NULL)
   #preds boot with a for loop
 
-  for(temp_model_i in 1:length(tpc_fits_boot$output_boot)){
+  for (temp_model_i in 1:length(tpc_fits_boot$output_boot)){
     boot_preds_i <- tpc_fits_boot[temp_model_i,]
     print(paste("Predicting bootstrapped TPCs", round(100*temp_model_i/length(tpc_fits_boot$output_boot), 1), "%"))
     model_name_boot_i <- boot_preds_i$model_name
     boot_coefs_i <- boot_preds_i |>
-      unnest_wider(col = coefs)
-    formula_i <- dev_model_table |>
-      filter(model_name == model_name_boot_i) |>
-      pull(working_formula)
+      tidyr::unnest_wider(col = coefs)
+    formula_i <- available_models |>
+      dplyr::filter(model_name == model_name_boot_i) |>
+      dplyr::pull(working_formula)
     output_boot_df <- as.data.frame(boot_preds_i$output_boot) |>
-      mutate(iter = 1:n()) |>
-      tibble()
+      dplyr::mutate(iter = 1:dplyr::n()) |>
+      dplyr::tibble()
 
-    tpc_bootpreds <- tibble(model_name = NULL,
+    tpc_bootpreds <- dplyr::tibble(model_name = NULL,
                             iter = NULL,
                             temp = NULL,
                             pred = NULL,
                             curvetype = NULL)
-    for(boot_iter in 1:nrow(output_boot_df)){
+    for (boot_iter in 1:nrow(output_boot_df)){
       params_i <- output_boot_df[boot_iter, 1:boot_preds_i$n_params] |>
-        as_vector()
-      tpc_boot_iter_temp <- tibble(model_name = model_name_boot_i,
+        purrr::as_vector()
+      tpc_boot_iter_temp <- dplyr::tibble(model_name = model_name_boot_i,
                                    iter = boot_iter,
                                    temp = boot_preds_i$temp,
-                                   pred = map_dbl(.x = temp,
-                                                  .f = reformulate(formula_i)),
+                                   pred = purrr::map_dbl(.x = temp,
+                                                  .f = stats::reformulate(formula_i)),
                                    curvetype = "uncertainty")
-      tpc_bootpreds <- bind_rows(tpc_bootpreds, tpc_boot_iter_temp)
+      tpc_bootpreds <- dplyr::bind_rows(tpc_bootpreds, tpc_boot_iter_temp)
     }
-    bootstrap_tpcs_all <- bind_rows(bootstrap_tpcs_all, tpc_bootpreds) |>
-      filter(pred >= 0)
+    bootstrap_tpcs_all <- dplyr::bind_rows(bootstrap_tpcs_all, tpc_bootpreds) |>
+      dplyr::filter(pred >= 0)
     central_curve <- tpc_fits_boot |>
-      select(temp, preds, model_name) |>
-      mutate(iter = NA) |>
-      rename(pred = preds) |>
-      mutate(curvetype = "estimate")
+      dplyr::select(temp, preds, model_name) |>
+      dplyr::mutate(iter = NA) |>
+      dplyr::rename(pred = preds) |>
+      dplyr::mutate(curvetype = "estimate")
     central_and_bootstrap_tpcs <- bootstrap_tpcs_all |>
-      bind_rows(central_curve)
+      dplyr::bind_rows(central_curve)
   }
 }
       return(central_and_bootstrap_tpcs)
