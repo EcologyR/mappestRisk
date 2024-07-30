@@ -2,11 +2,11 @@
 
 #### a) working functions ----
 model_name_translate <- function(user_model_name) {
-  if (!all(user_model_name %in% c("all", dev_model_table$model_name))) {
+  if (!all(user_model_name %in% c("all", available_models$model_name))) {
     stop("model name not available. Please check ?available_models")
   }
 
-  model_eq <- dev_model_table |>
+  model_eq <- available_models |>
     dplyr::filter(model_name == user_model_name) |>
     dplyr::select(source_model_name) |>
     dplyr::pull()
@@ -50,7 +50,7 @@ startvals_names_translate_devrate <- function(start_vals, model_name){
 sim_tpc_gridparams <- function(grid_parameters, temperature, model_name){
   params_i <- grid_parameters
   model_i <- model_name
-  model_eq <- dev_model_table |>
+  model_eq <- available_models |>
     filter(model_name == model_i)
   tpc_sim_i <- purrr::map(.x = temperature,
                           .f = reformulate(termlabels = unique(model_eq$params_formula))

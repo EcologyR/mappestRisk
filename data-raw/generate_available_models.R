@@ -8,7 +8,7 @@ pkg_model_names <- c("beta_2012","boatman_2017", "briere1_99", "briere2_1999",
                      "weibull_1995", "poly4", "oneill_1972", "pawar_2018",
                      "ratkowsky_1983", "sharpeschoolfull_1981", "regniere_12","thomas_2012", "wang_82")
 
-dev_model_table <- tibble(model_name = model_names) |>
+available_models <- tibble(model_name = model_names) |>
   mutate(package = if_else(model_name %in% c("briere1",  "lactin1",  # <- lactin 2 has convergence problems with rTPC
                                              "wang", "regniere",
                                              "mod_polynomial"),
@@ -89,5 +89,5 @@ dev_model_table <- tibble(model_name = model_names) |>
          )
 
 
-save(dev_model_table, file = here::here("data/available_models.rda"))
+save(available_models, file = here::here("data/available_models.rda"))
 

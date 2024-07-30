@@ -70,14 +70,14 @@
 #'
 #' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
 #' tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-#'                                              dev_rate = aphid$rate_value,
-#'                                              fitted_parameters = fitted_tpcs_aphid,
-#'                                              model_name_2boot = c("lactin1"),
-#'                                              propagate_uncertainty = TRUE,
-#'                                              n_boots_samples = 10)
+#'                                         dev_rate = aphid$rate_value,
+#'                                         fitted_parameters = fitted_tpcs_aphid,
+#'                                         model_name_2boot = "lactin2",
+#'                                         propagate_uncertainty = TRUE,
+#'                                         n_boots_samples = 10)
 #'
 #' head(tpc_preds_boots_aphid)
-
+View(tpc_preds_boots_aphid)
 predict_curves <- function(temp = NULL,
                               dev_rate = NULL,
                               fitted_parameters = NULL,
@@ -86,7 +86,6 @@ predict_curves <- function(temp = NULL,
                               n_boots_samples = 100) {
 
   check_data(temp, dev_rate)
-
   if (any(! model_name_2boot %in% fitted_parameters$model_name)) {
     stop("model not available. Models available for bootstrapping: ",
          paste0(unique(fitted_parameters$model_name), collapse = ", "))
@@ -110,7 +109,7 @@ predict_curves <- function(temp = NULL,
   }
 
   devdata <- dplyr::tibble(temp,
-                    dev_rate)
+                           dev_rate)
   predict2fill <- dplyr::tibble(temp = NULL,
                          dev_rate = NULL,
                          model_name = NULL,
@@ -152,7 +151,7 @@ predict_curves <- function(temp = NULL,
   predict2fill_complete <- predict2fill |>
     dplyr::mutate(tidyr::nest(devdata)) |>
     dplyr::mutate(coefs = purrr::map(.x = model_fit,
-                       .f = coef))
+                                     .f = coef))
 
   if (propagate_uncertainty == FALSE) {
     tpc_estimate <- dplyr::tibble(model_name = predict2fill_complete$model_name,
@@ -190,13 +189,15 @@ predict_curves <- function(temp = NULL,
     assign("temp_data_i", temp_data_i, envir=parent.frame())
     assign("formula_i", formula_i, envir=parent.frame())
     possible_error <- tryCatch(expr = {
-      temp_fit <- minpack.lm::nlsLM(formula = stats::reformulate(response = "dev_rate",
-                                                          termlabels = formula_i),
-                                    data = temp_data_i,
-                                    na.action = na.exclude,
-                                    start = coefs_i)
+        temp_fit <- minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
+                                                            termlabels = formula_i),
+                                      data = temp_data_i,
+                                      na.action = na.exclude,
+                                      start = coefs_i)
       assign("temp_fit", temp_fit, envir=parent.frame())
-      boot <- car::Boot(temp_fit, method = 'residual', R = n_boots_samples)
+      boot <- car::Boot(temp_fit,
+                   method = 'residual',
+                   R = n_boots_samples)
       boot_2fill_i <- predict_model_i |>
         dplyr::mutate(bootstrap = list(boot))
     }, # <- inside tryCatch

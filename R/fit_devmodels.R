@@ -153,12 +153,12 @@ fit_devmodels <- function(temp = NULL,
                                  iter = 500,
                                  start_lower = start_lower_vals,
                                  start_upper = start_upper_vals,
-                                 lower = get_lower_lims(devdata$temp,
-                                                        devdata$dev_rate,
-                                                        model_name = model_name_translate(i)),
-                                 upper = get_upper_lims(devdata$temp,
-                                                        devdata$dev_rate,
-                                                        model_name = model_name_translate(i)),
+                                 lower = rTPC::get_lower_lims(devdata$temp,
+                                                              devdata$dev_rate,
+                                                              model_name = model_name_translate(i)),
+                                 upper = rTPC::get_upper_lims(devdata$temp,
+                                                              devdata$dev_rate,
+                                                              model_name = model_name_translate(i)),
                                  supp_errors = "Y")
         list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
         sum_fit_nls <- summary(fit_nls)
