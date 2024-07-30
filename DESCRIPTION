@@ -11,7 +11,12 @@ Authors@R:
     person("Francisco", "Rodríguez-Sánchez", , "f.rodriguez.sanc@gmail.com", role = c("aut"),
            comment = c(ORCID = "0000-0002-7981-1599"))
            )
-Description: The package provides maps that forecast crop pest risk of occurrence in response to experienced temperature. It takes as input development data parameterised in controlled conditions (i.e. constant or fluctuating temperatures) for different life stages of a species.  The output map or raster represent the predicted incidence of the pest measured as number of months with optimal temperature for its devleopment.
+Description: The package provides maps that forecast crop pest risk of occurrence 
+    in response to experienced temperature. It takes as input development data 
+    parameterised in controlled conditions (i.e. constant or fluctuating temperatures) 
+    for different life stages of a species.  The output map or raster represent 
+    the predicted incidence of the pest measured as number of months with optimal 
+    temperature for its devleopment.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
