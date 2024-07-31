@@ -77,7 +77,7 @@
 #'                                         n_boots_samples = 10)
 #'
 #' head(tpc_preds_boots_aphid)
-tpc_preds_boots_aphid
+
 predict_curves <- function(temp = NULL,
                               dev_rate = NULL,
                               fitted_parameters = NULL,
