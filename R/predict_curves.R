@@ -225,7 +225,7 @@ predict_curves <- function(temp = NULL,
                                pred = NULL,
                                curvetype = NULL)
   #preds boot with a for loop
-
+  print("ADVISE: the botostrapping procedure takes some time. Await patiently or reduce your `n_boots_samples`")
   for (temp_model_i in 1:length(tpc_fits_boot$output_boot)){
     boot_preds_i <- tpc_fits_boot[temp_model_i,]
     print(paste("Predicting bootstrapped TPCs", round(100*temp_model_i/length(tpc_fits_boot$output_boot), 1), "%"))
@@ -265,7 +265,11 @@ predict_curves <- function(temp = NULL,
     central_and_bootstrap_tpcs <- bootstrap_tpcs_all |>
       dplyr::bind_rows(central_curve)
   }
-}
+  }
+  if(!any(central_and_bootstrap_tpcs$curvetype) == "uncertainty"){
+    warning("No bootstrap was accomplished. Your model might not be suitable for bootstrapping
+due to convergence problems")
+  }
       return(central_and_bootstrap_tpcs)
 }
 
