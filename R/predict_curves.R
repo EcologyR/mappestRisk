@@ -77,7 +77,7 @@
 #'                                         n_boots_samples = 10)
 #'
 #' head(tpc_preds_boots_aphid)
-View(tpc_preds_boots_aphid)
+tpc_preds_boots_aphid
 predict_curves <- function(temp = NULL,
                               dev_rate = NULL,
                               fitted_parameters = NULL,
@@ -107,7 +107,7 @@ predict_curves <- function(temp = NULL,
   if (!is.logical(propagate_uncertainty)) {
     stop("`propagate_uncertainty` must be `TRUE` or `FALSE` (def. `TRUE`)")
   }
-
+  require(car, quietly = TRUE) # <- since car::Boot() needs to be set manually to work
   devdata <- dplyr::tibble(temp,
                            dev_rate)
   predict2fill <- dplyr::tibble(temp = NULL,
