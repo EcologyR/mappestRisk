@@ -109,7 +109,7 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
     warning("No bootstrapped predictions were obtained. Please check `bootstrap_uncertainties_tpcs`")
   }
   devdata <- dplyr::tibble(temp,
-                    dev_rate)
+                           dev_rate)
   central_curve <- bootstrap_uncertainties_tpcs |>
     dplyr::filter(curvetype == "estimate")
   uncertainty_curves <- bootstrap_uncertainties_tpcs |>
@@ -119,28 +119,28 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
   plot_boot_tpcs <- ggplot2::ggplot() +
     ggplot2::geom_line(data = uncertainty_curves,
                        ggplot2::aes(x = temp,
-                  y = pred,
-                  group = iter),
-              col = "#0E4D62", #'#586A64',
-              alpha = 0.08,
-              linewidth = 0.32) +
+                                    y = pred,
+                                    group = iter),
+                       col = "#0E4D62", #'#586A64',
+                       alpha = 0.08,
+                       linewidth = 0.32) +
     ggplot2::geom_line(data = central_curve,
                        ggplot2::aes(x = temp,
-                  y = pred),
-              col = "#CF8143", #'#B1492E',
-              linewidth = .85) +
+                                    y = pred),
+                       col = "#CF8143", #'#B1492E',
+                       linewidth = .85) +
     ggplot2::geom_point(data = devdata,
                         ggplot2::aes(temp, dev_rate),
-               size = 2) +
+                        size = 2) +
     ggplot2::facet_wrap(~model_name, scales = "free")+
     ggplot2::scale_x_continuous(limits = c(0, 50))+
     ggplot2::scale_y_continuous(limits = c(0, max(bootstrap_uncertainties_tpcs$pred, na.rm = TRUE)))+
     ggplot2::theme_bw(base_size = 12) +
     ggplot2::labs(x = 'Temperature (ºC)',
-         y = italic(R)(T)~(d^-1),
-         title = my_title,
-         subtitle = life_stage,
-         caption = "Bootstrapping with residual resampling, see `rTPC` package vignettes"
+                  y = italic(R)(T)~(d^-1),
+                  title = my_title,
+                  subtitle = life_stage,
+                  caption = "Bootstrapping with residual resampling, see `rTPC` package vignettes"
     )
   return(plot_boot_tpcs)
 }
