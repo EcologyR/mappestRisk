@@ -17,15 +17,16 @@
 #' [options(timeout = 500)] (or more).
 #' @param region Optional object specifying the region to map. Must overlap the
 #' extent of `t_rast` if both are provided. Can be a [terra::SpatVector]
-#' polygon map (obtained with [terra::vect()]); or a [sf::sf] polygon map
-#' (obtained with [sf::st_as_sf()]); or a character vector of country name(s)
-#' in English, in which case a countries map will be downloaded and subset to
-#' those countries; or a [terra::SpatExtent] object (obtained with [terra::ext()]);
-#' or a numeric vector of length 4 specifying the region coordinates in the
-#' order xmin, xmax, ymin, ymax. The latter two must be in in the same CRS as
-#' `t_rast` if `t_rast` is provided, or in unprojected lon-lat coordinates
-#' (WGS84, EPSG:4326) otherwise. If NULL, the output maps will cover the entire
-#' `t_rast` if provided, or the entire world otherwise.
+#' polygon map (obtained with [terra::vect()]); or an [sf::sf] polygon map
+#' (obtained with [sf::st_as_sf()]), in which case it will be coerced with
+#' [terra::vect()]) to a [terra::SpatVector]; or a character vector of country
+#' name(s) in English, in which case a countries map will be downloaded and
+#' subset to those countries; or a [terra::SpatExtent] object (obtained with
+#' [terra::ext()]); or a numeric vector of length 4 specifying the region
+#' coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
+#' the same CRS as`t_rast` if `t_rast` is provided, or in unprojected lon-lat
+#' coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will
+#' cover the entire `t_rast` if provided, or the entire world otherwise.
 #' @param res Argument to pass to [geodata::worldclim_global()] specifying
 #' the spatial resolution for the raster maps to download, if 't_rast' is not
 #' provided. The default is 2.5 arc-minutes.
