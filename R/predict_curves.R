@@ -107,7 +107,8 @@ predict_curves <- function(temp = NULL,
   if (!is.logical(propagate_uncertainty)) {
     stop("`propagate_uncertainty` must be `TRUE` or `FALSE` (def. `TRUE`)")
   }
-  require(car, quietly = TRUE) # <- since car::Boot() needs to be set manually to work
+  requireNamespace(car, quietly = TRUE) # <- since car::Boot() needs to be set manually to work
+
   devdata <- dplyr::tibble(temp,
                            dev_rate)
   predict2fill <- dplyr::tibble(temp = NULL,
