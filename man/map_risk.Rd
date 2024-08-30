@@ -11,29 +11,32 @@ map_risk(
   res = 2.5,
   path = NULL,
   mask = TRUE,
-  output = "binary",
   verbose = FALSE
 )
 }
 \arguments{
-\item{t_vals}{Data frame or tibble with 2 columns specifying,
-respectively, the left (minimum) and right (maximum) temperature bounds for
-optimal performance of the target species.}
+\item{t_vals}{Numeric vector of length 2 or data frame with 2 columns
+specifying, respectively, the left (minimum) and right (maximum)
+temperature bounds for the development of the target species.}
 
 \item{t_rast}{Optional 12-layer \link[terra:SpatRaster-class]{terra::SpatRaster} with monthly mean
 temperatures for (at least) the target 'region'. If not provided, global
 WorldClim raster layers will be (down)loaded and cropped to 'region'. Note
 that the download can be slow the first time you use the function in a new
-working directory. If you get a download error, consider running e.g.
+\code{path}. If you get a download error, consider running e.g.
 \link{options(timeout = 500)} (or more).}
 
 \item{region}{Optional object specifying the region to map. Must overlap the
-extent of 't_rast' if both are provided. Can be a \link[terra:SpatVector-class]{terra::SpatVector} polygon #' map (obtained with \code{\link[terra:vect]{terra::vect()}}); or a character vector of country name(s)
-in English, in which case a countries map will be downloaded and subset to
-those countries; or a \link[terra:SpatExtent-class]{terra::SpatExtent} object (obtained with
+extent of \code{t_rast} if both are provided. Can be a \link[terra:SpatVector-class]{terra::SpatVector}
+polygon map (obtained with \code{\link[terra:vect]{terra::vect()}}); or an \link[sf:sf]{sf::sf} polygon map
+(obtained with \code{\link[sf:st_as_sf]{sf::st_as_sf()}}), in which case it will be coerced with
+\code{\link[terra:vect]{terra::vect()}}) to a \link[terra:SpatVector-class]{terra::SpatVector}; or a character vector of country
+name(s) in English, in which case a countries map will be downloaded and
+subset to those countries; or a \link[terra:SpatExtent-class]{terra::SpatExtent} object (obtained with
 \code{\link[terra:ext]{terra::ext()}}); or a numeric vector of length 4 specifying the region
 coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
-unprojected coordinates (WGS84, EPSG:4326). If NULL, the output maps will
+the same CRS as\code{t_rast} if \code{t_rast} is provided, or in unprojected lon-lat
+coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will
 cover the entire \code{t_rast} if provided, or the entire world otherwise.}
 
 \item{res}{Argument to pass to \code{\link[geodata:worldclim]{geodata::worldclim_global()}} specifying
@@ -49,51 +52,44 @@ output raster maps should be masked with the borders of the target 'region',
 if this is a polygon map or a vector of country names. The default is TRUE.
 If FALSE, the entire rectangular extent of 'region' will be used.}
 
-\item{output}{Character value specifying the type of values in the output
-map pixels. Can be "binary" (the default), to identify pixels within (1)
-and outside (0) the bounds of the input 't_vals'; or "value", to assign
-to pixels the temperature values where these are within the bounds of the
-input 't_vals', and NA where they are not.}
-
 \item{verbose}{Logical value specifying whether to display messages about
 what the function is doing at possibly slow steps. The default is FALSE.
 Setting it to TRUE can be useful for checking progress when maps are large.}
 }
 \value{
-This function returns a \link[terra:SpatRaster-class]{terra::SpatRaster} object with 13 layers:
-one for each month, and a final summary layer with the sum (if output
-="binary") or the mean (if output="value") across months.
+This function returns a \link[terra:SpatRaster-class]{terra::SpatRaster} with up to 2 layers:
+the (\link{mean}) number of months with temperature within the species' thermal
+bounds; and (if \code{t_vals} has >1 rows) the standard deviation (\link{sd}) around
+that mean.
 }
 \description{
-Map pest risk
+This function produces a raster map where each pixel shows the number of
+months per year in which temperature is within a given set of bounds. If
+the input has several pairs of minimum and maximum temperatures (e.g. as
+produced by \link{therm_suit_bounds}), the output raster has two layers: mean
+and standard deviation.
 }
 \examples{
+# if you have temperature rasters for your region:
 tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 tavg_rast <- terra::rast(tavg_file)
 terra:::plot(tavg_rast)
 
-risk_rast_binary <- map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast)
-# note that 't_vals' should be an output of `therm_suit_bounds()`
+therm_bounds <- data.frame(tval_left = c(12.5, 12.1, 13.2),
+                           tval_right = c(21.4, 21.2,  22.0))
+therm_bounds  # normally you would use the output of `therm_suit_bounds()`
 
-terra::plot(risk_rast_binary)
+risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast)
 
-terra::plot(risk_rast_binary[[13]])
-
-
-risk_rast_value <- map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast,
-output = "value")
-
-terra::plot(risk_rast_value)
-
-terra::plot(risk_rast_value[[13]])
+terra::plot(risk_rast)
 
 \dontrun{
 # if you don't have temperature rasters for your region:
-risk_rast <- map_risk(t_vals = c(12.5, 21.4), path = "downloaded_maps",
+risk_rast <- map_risk(t_vals = therm_bounds, path = "downloaded_maps",
 region = c("Portugal", "Spain"), verbose = TRUE)
-terra::plot(risk_rast[[13]])
-# if you want to save some output map(s) to disk:
-terra::writeRaster(risk_rast[[13]], "risk_map.tif")  # exported maps can
+terra::plot(risk_rast)
+# if you want to save output map(s) to disk:
+terra::writeRaster(risk_rast, "risk_map.tif")  # exported maps can
 be seen with GIS software
 }
 

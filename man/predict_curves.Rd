@@ -68,11 +68,11 @@ plot_devmodels(temp = aphid$temperature,
 
 # Obtain prediction TPCs with bootstraps for propagating uncertainty:
 tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-                                             dev_rate = aphid$rate_value,
-                                             fitted_parameters = fitted_tpcs_aphid,
-                                             model_name_2boot = c("lactin1"),
-                                             propagate_uncertainty = TRUE,
-                                             n_boots_samples = 10)
+                                        dev_rate = aphid$rate_value,
+                                        fitted_parameters = fitted_tpcs_aphid,
+                                        model_name_2boot = "lactin2",
+                                        propagate_uncertainty = TRUE,
+                                        n_boots_samples = 10)
 
 head(tpc_preds_boots_aphid)
 }

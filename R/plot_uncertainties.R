@@ -136,7 +136,7 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
     ggplot2::scale_x_continuous(limits = c(0, 50))+
     ggplot2::scale_y_continuous(limits = c(0, max(bootstrap_uncertainties_tpcs$pred, na.rm = TRUE)))+
     ggplot2::theme_bw(base_size = 12) +
-    ggplot2::labs(x = 'Temperature (ºC)',
+    ggplot2::labs(x = 'Temperature (°C)',
                   y = italic(R)(T)~(d^-1),
                   title = my_title,
                   subtitle = life_stage,

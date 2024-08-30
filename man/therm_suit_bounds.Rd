@@ -45,42 +45,42 @@ A tibble with six columns:
 This function calculates thermal boundaries that define the suitable region of a Thermal Performance Curve (TPC) corresponding to a user-defined optimal performance level.
 }
 \examples{
-data("b.schwartzi_satar2002")
+data("aphid")
 
-fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-                                        dev_rate = b.schwartzi_satar2002$rate_value,
+fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
+                                        dev_rate = aphid$rate_value,
                                         model_name = "all")
 
-plot_devmodels(temp = b.schwartzi_satar2002$temperature,
-               dev_rate = b.schwartzi_satar2002$rate_value,
-               fitted_parameters = fitted_tpcs_bschwartzi,
-               species = "Brachycaudus swartzi",
-               life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
+plot_devmodels(temp = aphid$temperature,
+               dev_rate = aphid$rate_value,
+               fitted_parameters = fitted_tpcs_aphid,
+               species = "Brachycaudus schwartzi",
+               life_stage = "Nymphs") #choose "lactin2"
 
 # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-tpc_preds_boots_bschwartzi <- predict_curves(temp = b.schwartzi_satar2002$temperature,
-                                             dev_rate = b.schwartzi_satar2002$rate_value,
-                                             fitted_parameters = fitted_tpcs_bschwartzi,
-                                             model_name_2boot = c("briere2", "thomas", "lactin2"),
+tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
+                                             dev_rate = aphid$rate_value,
+                                             fitted_parameters = fitted_tpcs_aphid,
+                                             model_name_2boot = "lactin2",
                                              propagate_uncertainty = TRUE,
                                              n_boots_samples = 100)
 
-head(tpc_preds_boots_bschwartzi)
+head(tpc_preds_boots_aphid)
 
 # Plot bootstrapped curves:
 
-plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_bschwartzi,
-                   temp = b.schwartzi_satar2002$temperature,
-                   dev_rate = b.schwartzi_satar2002$rate_value,
+plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
+                   temp = aphid$temperature,
+                   dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
 
 #5. Calculate Q80 thermal bounds
 
-boundaries_bschwartzi <- therm_suitability_bounds(preds_tbl = tpc_preds_boots_bschwartzi,
-                                                  model_name = "lactin2",
-                                                  suitability_threshold = 80)
-head(boundaries_bschwartzi)
+boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
+                                             model_name = "lactin2",
+                                             suitability_threshold = 80)
+head(boundaries_aphid)
 }
 \references{
 Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.

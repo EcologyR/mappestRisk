@@ -27,7 +27,7 @@ check_data <- function(temp = NULL, dev_rate = NULL) {
   }
 
   if (any(temp < -10) | any(temp > 56)) {
-    warning("experienced temperatures by active organisms are usually between 0 and 50ºC")
+    warning("experienced temperatures by active organisms are usually between 0 and 50 degrees centigrades")
   }
 
 }

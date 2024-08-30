@@ -43,33 +43,33 @@ curves as a ribbon. Each model is represented in a facet, and data points are al
 Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty bands in parameter estimation of TPC fitting
 }
 \examples{
-data("b.schwartzi_satar2002")
+data("aphid")
 
-fitted_tpcs_bschwartzi <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-                                        dev_rate = b.schwartzi_satar2002$rate_value,
+fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
+                                        dev_rate = aphid$rate_value,
                                         model_name = "all")
 
-plot_devmodels(temp = b.schwartzi_satar2002$temperature,
-               dev_rate = b.schwartzi_satar2002$rate_value,
-               fitted_parameters = fitted_tpcs_bschwartzi,
+plot_devmodels(temp = aphid$temperature,
+               dev_rate = aphid$rate_value,
+               fitted_parameters = fitted_tpcs_aphid,
                species = "Brachycaudus swartzi",
-               life_stage = "Nymphs") #choose "briere2", "thomas" and "lactin2"
+               life_stage = "Nymphs") # choose "lactin2"
 
 # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-tpc_preds_boots_bschwartzi <- predict_curves(temp = b.swartzi_satar2002$temperature,
-                                             dev_rate = b.swartzi_satar2002$rate_value,
-                                             fitted_parameters = fitted_tpcs_bswartzi,
-                                             model_name_2boot = c("briere2", "thomas", "lactin2"),
+tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
+                                             dev_rate = aphid$rate_value,
+                                             fitted_parameters = fitted_tpcs_aphid,
+                                             model_name_2boot = "lactin2",
                                              propagate_uncertainty = TRUE,
                                              n_boots_samples = 100)
 
-head(tpc_preds_boots_bschwartzi)
+print(tpc_preds_boots_aphid)
 
 # Plot bootstrapped curves:
 
-plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_bschwartzi,
-                   temp = b.schwartzi_satar2002$temperature,
-                   dev_rate = b.schwartzi_satar2002$rate_value,
+plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
+                   temp = aphid$temperature,
+                   dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
 }

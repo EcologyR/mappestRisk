@@ -154,7 +154,7 @@ plot_devmodels <- function(temp = NULL,
     ggplot2::facet_wrap(~factor(model_name, levels = aic_order))+
     ggplot2::theme_bw() +
     ggplot2::theme(legend.position = "none")+
-    ggplot2::labs(x = "Temperature (ºC)",
+    ggplot2::labs(x = "Temperature (°C)",
                   y = expression(italic(R(T))~(d^-1)),
                   title = my_title,
                   subtitle = life_stage)+
