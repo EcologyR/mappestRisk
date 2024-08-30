@@ -1,5 +1,11 @@
 #' Map pest risk
 #'
+#' This function produces a raster map where each pixel shows the number of
+#' months per year in which temperature is within a given set of bounds. If
+#' the input has several pairs of minimum and maximum temperatures (e.g. as
+#' produced by [therm_suit_bounds]), the output raster has two layers: mean
+#' and standard deviation.
+#'
 #' @param t_vals Numeric vector of length 2 or data frame with 2 columns
 #' specifying, respectively, the left (minimum) and right (maximum)
 #' temperature bounds for the development of the target species.
@@ -7,18 +13,27 @@
 #' temperatures for (at least) the target 'region'. If not provided, global
 #' WorldClim raster layers will be (down)loaded and cropped to 'region'. Note
 #' that the download can be slow the first time you use the function in a new
-#' working directory. If you get a download error, consider running e.g.
+#' `path`. If you get a download error, consider running e.g.
 #' [options(timeout = 500)] (or more).
 #' @param region Optional object specifying the region to map. Must overlap the
+<<<<<<< HEAD
 #' extent of 't_rast' if both are provided. Can be a [terra::SpatVector] polygon
 #' map (obtained with [terra::vect()]); or a character vector of country name(s)
 #' in English, in which case a countries map will be downloaded and subset to
 #' those countries; or a [terra::SpatExtent] object (obtained with
+=======
+#' extent of `t_rast` if both are provided. Can be a [terra::SpatVector]
+#' polygon map (obtained with [terra::vect()]); or an [sf::sf] polygon map
+#' (obtained with [sf::st_as_sf()]), in which case it will be coerced with
+#' [terra::vect()]) to a [terra::SpatVector]; or a character vector of country
+#' name(s) in English, in which case a countries map will be downloaded and
+#' subset to those countries; or a [terra::SpatExtent] object (obtained with
+>>>>>>> 82398e7dbafb4960549ca4956a6ed087f072da20
 #' [terra::ext()]); or a numeric vector of length 4 specifying the region
 #' coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
-#' in the same CRS as `t_rast` if `t_rast` is provided, or in unprojected lon-lat
-#' coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will cover
-#' the entire `t_rast` if provided, or the entire world otherwise.
+#' the same CRS as`t_rast` if `t_rast` is provided, or in unprojected lon-lat
+#' coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will
+#' cover the entire `t_rast` if provided, or the entire world otherwise.
 #' @param res Argument to pass to [geodata::worldclim_global()] specifying
 #' the spatial resolution for the raster maps to download, if 't_rast' is not
 #' provided. The default is 2.5 arc-minutes.
@@ -118,6 +133,10 @@ map_risk <- function(t_vals = NULL,
     region <- terra::ext(region)
   }
 
+  if (methods::is(region, "sf")) {
+    region <- terra::vect(region)
+  }
+
   if (is.null(t_rast)) {
     if (verbose) cat("\n(Down)loading temperature rasters...\n")
     t_rast <- geodata::worldclim_global(var = "tavg",
@@ -140,17 +159,10 @@ map_risk <- function(t_vals = NULL,
     region <- terra::project(region, t_rast)
   }
 
-  if (is.null(terra::intersect(terra::ext(t_rast), terra::ext(region)))) {
+  if (is.null(terra::intersect(region, terra::ext(t_rast)))) {
     stop("There's no overlap between 'region' and 't_rast'.")
   }
 
-  # if (isTRUE(terra::is.lonlat(region))) {
-  #   global <- terra::vect(terra::ext(), crs = "epsg:4326")
-  # } else {
-  #   global <- terra::vect(terra::ext(), crs = terra::crs(region))
-  # }
-
-  # if (!isTRUE(all.equal(terra::ext(region), terra::ext(global)))) {
   if (terra::ext(region) < terra::ext(t_rast)) {
     if (verbose) cat("\nCropping temperature rasters to region...\n")
     t_rast <- terra::crop(t_rast,
