@@ -266,10 +266,9 @@ predict_curves <- function(temp = NULL,
       dplyr::bind_rows(central_curve)
   }
   }
-  if(!any(central_and_bootstrap_tpcs$curvetype) == "uncertainty"){
-    warning("No bootstrap was accomplished. Your model might not be suitable for bootstrapping
+  if(!any(central_and_bootstrap_tpcs$curvetype == "uncertainty")){
+   warning("No bootstrap was accomplished. Your model might not be suitable for bootstrapping
 due to convergence problems")
   }
       return(central_and_bootstrap_tpcs)
 }
-

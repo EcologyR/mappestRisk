@@ -10,7 +10,8 @@
 #' working directory. If you get a download error, consider running e.g.
 #' [options(timeout = 500)] (or more).
 #' @param region Optional object specifying the region to map. Must overlap the
-#' extent of 't_rast' if both are provided. Can be a [terra::SpatVector] polygon #' map (obtained with [terra::vect()]); or a character vector of country name(s)
+#' extent of 't_rast' if both are provided. Can be a [terra::SpatVector] polygon
+#' map (obtained with [terra::vect()]); or a character vector of country name(s)
 #' in English, in which case a countries map will be downloaded and subset to
 #' those countries; or a [terra::SpatExtent] object (obtained with
 #' [terra::ext()]); or a numeric vector of length 4 specifying the region
