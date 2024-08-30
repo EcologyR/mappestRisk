@@ -17,17 +17,23 @@
 #' [options(timeout = 500)] (or more).
 #' @param region Optional object specifying the region to map. Must overlap the
 <<<<<<< HEAD
+<<<<<<< HEAD
 #' extent of 't_rast' if both are provided. Can be a [terra::SpatVector] polygon
 #' map (obtained with [terra::vect()]); or a character vector of country name(s)
 #' in English, in which case a countries map will be downloaded and subset to
 #' those countries; or a [terra::SpatExtent] object (obtained with
 =======
+=======
+>>>>>>> 82398e7dbafb4960549ca4956a6ed087f072da20
 #' extent of `t_rast` if both are provided. Can be a [terra::SpatVector]
 #' polygon map (obtained with [terra::vect()]); or an [sf::sf] polygon map
 #' (obtained with [sf::st_as_sf()]), in which case it will be coerced with
 #' [terra::vect()]) to a [terra::SpatVector]; or a character vector of country
 #' name(s) in English, in which case a countries map will be downloaded and
 #' subset to those countries; or a [terra::SpatExtent] object (obtained with
+<<<<<<< HEAD
+>>>>>>> 82398e7dbafb4960549ca4956a6ed087f072da20
+=======
 >>>>>>> 82398e7dbafb4960549ca4956a6ed087f072da20
 #' [terra::ext()]); or a numeric vector of length 4 specifying the region
 #' coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
