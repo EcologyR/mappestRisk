@@ -64,14 +64,12 @@ plot_devmodels <- function(temp = NULL,
     stop("`fitted_parameters` is NULL; use `mappestRisk::fit_devmodels()` to check that at least one model converged")
   }
   if (!is.data.frame(fitted_parameters)) {
-    stop("fitted_parameters` must be a tibble or data.frame inherited from the output of `mappestRisk::fit_devmodels()` function.
-    No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering
-    or subsetting by rows if desired.")
+  stop("The argument `fitted_parameters` must be a tibble or data.frame inherited from the output of `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering or subsetting by rows if desired.")
   }
-  if (suppressWarnings(any(!c("param_name", "start_vals", "param_est", "param_se", "model_name", "model_AIC", "model_fit") %in% names(fitted_parameters)))){
-    stop("fitted_parameters` must be a  data.frame inherited from the output of `mappestRisk::fit_devmodels()` function.
-    No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering
-    or subsetting by rows if desired.")
+  if (suppressWarnings(any(!c("param_name", "start_vals", "param_est",
+                              "param_se", "model_name", "model_AIC",
+                              "model_BIC", "model_fit") %in% names(fitted_parameters)))){
+    stop("The argument `fitted_parameters` must be a tibble or data.frame inherited from the output of `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering or subsetting by rows if desired.")
   }
 
   if (nrow(fitted_parameters) == 0) {

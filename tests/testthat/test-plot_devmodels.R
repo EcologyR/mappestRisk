@@ -1,13 +1,8 @@
-library(dplyr)
-library(testthat)
-library(mappestRisk)
-suppressWarnings(library(ggplot2))
 ## first use a data of example
 set.seed(2023)
 fitted_params_example <- fit_devmodels(temp = seq(4, 40, 3),
                                        dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                                       model_name = "all",
-                                       variance_model = "exp")
+                                       model_name = "all")
 
 # Test input data types
 test_that("plot_devmodels should throw an error if temperature data is not numeric", {
@@ -39,15 +34,14 @@ test_that("plot_devmodels should throw an error if temperature and development r
                "development rate and temperature inputs are not of same length. Please check it.")
 })
 
-
+example_no_AIC <- fitted_params_example |> dplyr::select(-model_AIC)
 test_that("plot_devmodels should throw an error if fitted_parameters is not inherited unmodified from `fit_devmodels()`", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
                               dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                              fitted_parameters = fitted_params_example |> select(- model_AIC)),
-               "`fitted_parameters` must be a  data.frame inherited   from the output of `mappestRisk::fit_devmodels()` function.
-  No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filter(ing
-  or subsetting by rows if desired.")
-})
+                              fitted_parameters = example_no_AIC),
+               "The argument `fitted_parameters` must be a tibble or data.frame inherited from the output of `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering or subsetting by rows if desired.",
+               fixed=TRUE)
+  })
 
 test_that("plot_devmodels should throw an error if fitted_parameters columns are renamed from `fit_devmodels()`", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
