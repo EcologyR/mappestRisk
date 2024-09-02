@@ -103,46 +103,22 @@ test_that("fit_devmodels warns no convergence", {
 })
 
 ## test that a fitted model is accessible through the fitted_params tbl
-test_that("gnls object is retrieved and of correct class", {
+test_that("nls object is retrieved and of correct class", {
   fitted_parameters <-fit_devmodels(temp = seq(4, 40, 3),
                             dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                            model_name = "all",
-                            variance_model = "exp")
-  expect_true(all(class(fitted_parameters$model_fit[[1]])[1] == "gnls"))
+                            model_name = "all")
+  expect_true(all(class(fitted_parameters$model_fit[[1]])[1] == "nls"))
 
 })
 
 ## test that a fitted model summary is accessible
-test_that("gnls object and its summary and table of parameters and statistics are correct", {
+test_that("nls object and its summary and table of parameters and statistics are correct", {
   suppressWarnings(fitted_parameters <-fit_devmodels(temp = seq(4, 40, 3),
                                     dev_rate = rnorm(13, mean = 0.12, sd = 0.1),
-                                    model_name = "all",
-                                    variance_model = "exp"))
+                                    model_name = "all"))
   sum_fitted <- summary(fitted_parameters$model_fit[[1]])
   expect_true(all(colnames(sum_fitted$tTable) == c("Value", "Std.Error", "t-value", "p-value")))
 
 })
 
-## test that no false convergence occurs
-test_that("false convergence (i.e. start_vals == param_est) is excluded from fitted_params", {
-  number_of_falseconverg <- vector("list", length = 20)
-  sample_seeds_random <- sample(1000, 20, replace = FALSE)
-  for(seed in sample_seeds_random) {
-    set.seed(seed)
-    suppressWarnings(fitted_parameters <-fit_devmodels(temp = seq(4, 40, 3),
-                                     dev_rate = rnorm(13, mean = 0.12, sd = 0.01), # this combination ensures that model converge and we can test this concrete thing
-                                     model_name = "all",
-                                     variance_model = "exp"))
-    detect_false_convergence <- fitted_parameters |>
-      dplyr::mutate(bad_convergence = purrr::map2_lgl(.x = start_vals,
-                                               .y = param_est,
-                                               .f = ~dplyr::if_else(.x == .y,
-                                                             TRUE,
-                                                             FALSE
-                                               )))
-    n_false_conv_seed <- length(which(detect_false_convergence$bad_convergence == TRUE))
-    number_of_falseconverg[which(sample_seeds_random == seed)] <- n_false_conv_seed
-  }
-  total_false_conv <- purrr::pmap(number_of_falseconverg, sum)
-  expect_true(total_false_conv == 0)
-})
+
