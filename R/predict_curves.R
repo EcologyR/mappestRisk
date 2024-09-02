@@ -74,7 +74,7 @@
 #'                                         fitted_parameters = fitted_tpcs_aphid,
 #'                                         model_name_2boot = "lactin2",
 #'                                         propagate_uncertainty = TRUE,
-#'                                         n_boots_samples = 10)
+#'                                         n_boots_samples = 100)
 #'
 #' head(tpc_preds_boots_aphid)
 
@@ -84,8 +84,7 @@ predict_curves <- function(temp = NULL,
                               model_name_2boot = NULL,
                               propagate_uncertainty = TRUE,
                               n_boots_samples = 100) {
-
-  check_data(temp, dev_rate)
+    check_data(temp, dev_rate)
   if (any(! model_name_2boot %in% fitted_parameters$model_name)) {
     stop("model not available. Models available for bootstrapping: ",
          paste0(unique(fitted_parameters$model_name), collapse = ", "))
@@ -107,7 +106,7 @@ predict_curves <- function(temp = NULL,
   if (!is.logical(propagate_uncertainty)) {
     stop("`propagate_uncertainty` must be `TRUE` or `FALSE` (def. `TRUE`)")
   }
-  requireNamespace(car, quietly = TRUE) # <- since car::Boot() needs to be set manually to work
+  requireNamespace("car", quietly = TRUE) # <- since car::Boot() needs to be set manually to work
 
   devdata <- dplyr::tibble(temp,
                            dev_rate)
@@ -132,7 +131,7 @@ predict_curves <- function(temp = NULL,
     ##predict based on parameters
     explore_preds <- dplyr::tibble(temp = seq(min(devdata$temp) - 20,
                                        max(devdata$temp) + 15,
-                                       .1),
+                                       .5),
                             model_name = model_name_i,
                             model_fit = model_fit_i[1],
                             model_AIC = model_AIC_i[1],
@@ -196,6 +195,8 @@ predict_curves <- function(temp = NULL,
                                       na.action = na.exclude,
                                       start = coefs_i)
       assign("temp_fit", temp_fit, envir=parent.frame())
+
+      ## now bootstrap is performed to each model fit and listed
       boot <- car::Boot(temp_fit,
                    method = 'residual',
                    R = n_boots_samples)
@@ -212,13 +213,16 @@ predict_curves <- function(temp = NULL,
     boot_2fill <- dplyr::bind_rows(boot_2fill, boot_2fill_i)
   }
   rm("model_i", "predict_model_i", "coefs_i", "temp_data_i", "formula_i", "temp_fit", "boot")
-  boot_2fill_clean <- boot_2fill |>
-    dplyr::filter(!is.na(bootstrap))
 
-  #get the raw values of each bootstrap (the code pipes from here to next object was copied from `rTPC` vignette on bootstrapping curves)
+  boot_2fill_clean <- boot_2fill |>
+    dplyr::filter(!is.na(bootstrap)) # avoid errors from NAs
+
+  #get the raw values of each bootstrap. These raw values represent the estimates
+  #  generated from each bootstrap sample for further analysis, such as computing confidence intervals
   tpc_fits_boot <- boot_2fill_clean |>
     dplyr::group_by(model_name) |>
-    dplyr::mutate(output_boot = purrr::map(bootstrap, function(x) x$t))
+    dplyr::mutate(output_boot = purrr::map(.x = bootstrap,
+                                           .f = ~purrr::pluck(.x, "t")))
 
   bootstrap_tpcs_all <- dplyr::tibble(model_name = NULL,
                                iter = NULL,
@@ -226,7 +230,8 @@ predict_curves <- function(temp = NULL,
                                pred = NULL,
                                curvetype = NULL)
   #preds boot with a for loop
-  print("ADVISE: the botostrapping procedure takes some time. Await patiently or reduce your `n_boots_samples`")
+  print("ADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`")
+
   for (temp_model_i in 1:length(tpc_fits_boot$output_boot)){
     boot_preds_i <- tpc_fits_boot[temp_model_i,]
     print(paste("Predicting bootstrapped TPCs", round(100*temp_model_i/length(tpc_fits_boot$output_boot), 1), "%"))
