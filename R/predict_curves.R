@@ -74,20 +74,20 @@
 #'                                         fitted_parameters = fitted_tpcs_aphid,
 #'                                         model_name_2boot = "lactin2",
 #'                                         propagate_uncertainty = TRUE,
-#'                                         n_boots_samples = 100)
+#'                                         n_boots_samples = 10)
 #'
 #' head(tpc_preds_boots_aphid)
 
 predict_curves <- function(temp = NULL,
-                              dev_rate = NULL,
-                              fitted_parameters = NULL,
-                              model_name_2boot = NULL,
-                              propagate_uncertainty = TRUE,
-                              n_boots_samples = 100) {
+                           dev_rate = NULL,
+                           fitted_parameters = NULL,
+                           model_name_2boot = NULL,
+                           propagate_uncertainty = TRUE,
+                           n_boots_samples = 100) {
     check_data(temp, dev_rate)
-  if (any(! model_name_2boot %in% fitted_parameters$model_name)) {
-    stop("model not available. Models available for bootstrapping: ",
-         paste0(unique(fitted_parameters$model_name), collapse = ", "))
+  if (!all(model_name_2boot %in% fitted_parameters$model_name)) {
+    message(paste0("Models available: ", paste0(unique(fitted_parameters$model_name), collapse = ", ")))
+    stop("model not available. Check the models that converged in `fitted_parameters`")
   }
 
 
@@ -103,10 +103,14 @@ predict_curves <- function(temp = NULL,
     warning("100 iterations might be desirable. Consider increasing `n_boots_samples` if possible")
   }
 
+  if (n_boots_samples == 0){
+    stop("`n_boots_samples` must be a positive integer whenever `propagate_uncertainty` is set to `TRUE`.")
+  }
+
   if (!is.logical(propagate_uncertainty)) {
     stop("`propagate_uncertainty` must be `TRUE` or `FALSE` (def. `TRUE`)")
   }
-  requireNamespace("car", quietly = TRUE) # <- since car::Boot() needs to be set manually to work
+  require("car", quietly = T) # <- since car::Boot() needs to be set manually to work
 
   devdata <- dplyr::tibble(temp,
                            dev_rate)
@@ -160,6 +164,7 @@ predict_curves <- function(temp = NULL,
                            pred = predict2fill_complete$preds,
                            curvetype = rep("estimate", nrow(predict2fill_complete))
                            )
+    warning("No bootstrap was performed. We strongly recommend to propagate uncertainty.")
     return(tpc_estimate)
 
   } else {
@@ -189,17 +194,17 @@ predict_curves <- function(temp = NULL,
     assign("temp_data_i", temp_data_i, envir=parent.frame())
     assign("formula_i", formula_i, envir=parent.frame())
     possible_error <- tryCatch(expr = {
-        temp_fit <- minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
+        temp_fit <- suppressWarnings(minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
                                                             termlabels = formula_i),
-                                      data = temp_data_i,
-                                      na.action = na.exclude,
-                                      start = coefs_i)
+                                                       data = temp_data_i,
+                                                       na.action = na.exclude,
+                                                       start = coefs_i))
       assign("temp_fit", temp_fit, envir=parent.frame())
 
       ## now bootstrap is performed to each model fit and listed
-      boot <- car::Boot(temp_fit,
-                   method = 'residual',
-                   R = n_boots_samples)
+      boot <- suppressWarnings(car::Boot(temp_fit,
+                        method = 'residual',
+                        R = n_boots_samples))
       boot_2fill_i <- predict_model_i |>
         dplyr::mutate(bootstrap = list(boot))
     }, # <- inside tryCatch
@@ -278,3 +283,4 @@ due to convergence problems")
   }
       return(central_and_bootstrap_tpcs)
 }
+

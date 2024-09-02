@@ -23,11 +23,11 @@ check_data <- function(temp = NULL, dev_rate = NULL) {
     stop("Negative dev_rate development rate data found. Please check it.")
   }
   if (any(dev_rate > 10)) {
-    warning("Extremely high values of dev_rate development rate data might contain a typo error. Please check it.")
+    stop("Extremely high values of dev_rate development rate data might contain a typo error. Please check it.")
   }
 
   if (any(temp < -10) | any(temp > 56)) {
-    warning("experienced temperatures by active organisms are usually between 0 and 50 degrees centigrades")
+    stop("experienced temperatures by active organisms are usually between 0 and 50 degrees centigrades")
   }
 
 }

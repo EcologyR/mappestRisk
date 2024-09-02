@@ -61,8 +61,8 @@ test_that("fit_devmodels should throw an error if development rate is negative, 
 
 # Test input data ranges and warnings
 
-test_that("fit_devmodels should issue a warning if temperature data contains values outside of the range of active organisms", {
-  expect_warning(fit_devmodels(temp = c(seq(4, 39, 3), 4000),
+test_that("fit_devmodels should throw an error if temperature data contains values outside of the range of active organisms", {
+  expect_error(fit_devmodels(temp = c(seq(4, 39, 3), 4000),
                                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
                                              model_name = "all"),
                  "experienced temperatures by active organisms are usually between 0 and 50 degrees centigrades",
