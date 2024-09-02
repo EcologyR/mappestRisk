@@ -16,6 +16,10 @@
 #' @param fitted_parameters a `tibble` obtained with [fit_devmodels()] function, including parameter names,
 #'  estimates, standard errors, AICs, and <nls> objects (fitted_models) using the [nls.multstart::nls_multstart()] approach.
 #'
+#' @param species <optional> a string of the target species that will constitute the plot title. Must be of type "character".
+#'
+#' @param life_stage <optional> a string of the target life stage that will constitute the plot subtitle. Must be of type "character".
+#'
 #' @returns A plot with predicted values (development rate) across temperatures for models that have adequately converged
 #' using [fit_devmodels()] function. The facets of the resulting plots are automatically sorted by lowest
 #' AIC values in descending order, and additional information such as the number of
@@ -76,7 +80,12 @@ plot_devmodels <- function(temp = NULL,
     stop("no model has converged in your `fitted_parameters` data.frame. Is it the appropriate object coming from converged
     `fit_devmodels()`?")
   }
-
+ if(typeof(species) != "character" && !is.null(species)) {
+   stop("`species` must be a character or NULL")
+ }
+  if(typeof(life_stage) != "character" && !is.null(life_stage)) {
+    stop("`life_stage` must be a character or NULL")
+  }
   devdata <- dplyr::tibble(temperature = temp,
                            development_rate = dev_rate)
 
@@ -134,10 +143,6 @@ plot_devmodels <- function(temp = NULL,
     dplyr::mutate(aic =   paste("AIC =", round(aic, 2)),
                   temp = min(devdata$temperature),
                   preds = 1.5*max(devdata$development_rate))
-  if (max(predict2fill$preds, na.rm = TRUE) > 5 * max(devdata$development_rate, na.rm = TRUE) | max(devdata$development_rate, na.rm = TRUE) > 5 * max(predict2fill$preds, na.rm = TRUE)) {
-    warning("scale in the plot might not be appropriate to your data or at least for some points or some regions of the curve.
-    Please consider to check out the input of `dev_rate`")
-  }
   my_title <- substitute(italic(paste(especie)), list(especie = species))
   ggplot_models <- ggplot2::ggplot()+
     ggplot2::geom_line(data = predict2fill |>

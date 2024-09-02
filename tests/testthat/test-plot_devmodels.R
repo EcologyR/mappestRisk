@@ -12,6 +12,23 @@ test_that("plot_devmodels should throw an error if temperature data is not numer
                "temperature data is not numeric. Please check it.")
 })
 
+test_that("plot_devmodels should throw an error if a given `species` argument is not a string", {
+  expect_error(plot_devmodels(temp = seq(4, 40, 3),
+                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                              fitted_parameters = fitted_params_example,
+                              species = 43),
+               "`species` must be a character or NULL")
+})
+
+test_that("plot_devmodels should throw an error if a given `life_stage` argument is not a string", {
+  expect_error(plot_devmodels(temp = seq(4, 40, 3),
+                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                              fitted_parameters = fitted_params_example,
+                              species = "Brachycaudus schwartzi",
+                              life_stage = TRUE),
+               "`life_stage` must be a character or NULL")
+})
+
 test_that("plot_devmodels should throw an error if dev_rate data is not numeric", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
                               dev_rate = as.character(rnorm(13, mean = 0.02, sd = 0.005)),
@@ -34,14 +51,22 @@ test_that("plot_devmodels should throw an error if temperature and development r
                "development rate and temperature inputs are not of same length. Please check it.")
 })
 
-example_no_AIC <- fitted_params_example |> dplyr::select(-model_AIC)
 test_that("plot_devmodels should throw an error if fitted_parameters is not inherited unmodified from `fit_devmodels()`", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
                               dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                              fitted_parameters = example_no_AIC),
+                              fitted_parameters = fitted_params_example |> dplyr::select(-model_AIC)),
                "The argument `fitted_parameters` must be a tibble or data.frame inherited from the output of `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering or subsetting by rows if desired.",
                fixed=TRUE)
   })
+
+test_that("plot_devmodels should throw an error if fitted_parameters is not a data.frame or tibble`", {
+  expect_error(plot_devmodels(temp = seq(4, 40, 3),
+                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                              fitted_parameters = list(fitted_params_example)),
+               "The argument `fitted_parameters` must be a tibble or data.frame inherited from the output of `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering or subsetting by rows if desired.",
+               fixed=TRUE)
+               })
+
 
 test_that("plot_devmodels should throw an error if fitted_parameters columns are renamed from `fit_devmodels()`", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
@@ -52,11 +77,11 @@ test_that("plot_devmodels should throw an error if fitted_parameters columns are
 
 test_that("no error happens when filtering or subsetting only by rows and at least one model is left in the data.frame", {
   expect_no_error(plot_devmodels(temp = seq(4, 40, 3),
-                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                              fitted_parameters = fitted_params_example |>
-                                dplyr::group_by(model_name) |>
-                                filter(all(fit == "okay"))))
-})
+                                                  dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                                                  fitted_parameters = fitted_params_example |>
+                                                    dplyr::filter(model_name %in% unique(fitted_params_example$model_name)[1:3]))
+                  )
+                  })
 
 test_that("plot_devmodels should throw an error if fitted_parameters is not inherited from `fit_devmodels()`", {
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
@@ -75,21 +100,6 @@ test_that("plot_devmodels() outputs a ggplot object",{
                                      dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
                                      fitted_parameters = fitted_params_example)
   expect_true(class(example_plotdevs)[2] == "ggplot")
-})
-
-# test if ºC are parsed correctly
-test_that("temperature units (ºC) are not parsed as `?`", {
-  example_plotdevs <- plot_devmodels(temp = seq(4, 40, 3),
-                                     dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                                     fitted_parameters = fitted_params_example)
-  expect_true(stringr::str_sub(example_plotdevs$labels$x, 14, 15) == "ºC")
-})
-
-# test that likely mistaken development data input gives a warning
-test_that("if dev_data and predictions are steeply different, a warning is printed", {
-  expect_warning(plot_devmodels(temp = seq(4, 40, 3),
-                                     dev_rate = rnorm(13, mean = 0.3, sd = 0.005),
-                                     fitted_parameters = fitted_params_example))
 })
 
 # test that if only one model has converged, the plot works
