@@ -65,7 +65,7 @@ sim_tpc_gridparams <- function(grid_parameters, temperature, model_name){
 
 start_vals_devRate <- function(model_name_2fit, temperature, dev_rate){
   if(model_name_2fit$model_name == "briere1"){start_vals_explore <- c(a = 2e-04, tmin = 8, tmax = 32)
-  warning("poorly informative start values for Brière-1 model")} else {
+  message("poorly informative start values for Brière-1 model")} else {
     model_name_devrate <- model_name_2fit$source_model_name
     devdata <- dplyr::tibble(temp = temperature,
                              rate_development = dev_rate)

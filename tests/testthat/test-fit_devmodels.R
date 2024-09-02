@@ -1,11 +1,8 @@
-library(dplyr)
-
 # input test
 test_that("fit_devmodels should throw an error if temperature data is not numeric", {
   expect_error(fit_devmodels(temp = as.character(seq(4, 40, 3)),
                              dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
-                             model_name = "all",
-                             variance_model = "exp"),
+                             model_name = "all"),
                "temperature data is not numeric. Please check it.")
 })
 
@@ -13,16 +10,14 @@ test_that("fit_devmodels should throw an error if temperature data is a data.fra
   expect_error(fit_devmodels(temp = data.frame(temperature = seq(4, 40, 3),
                                                temp_error = runif(13, 0, 2)),
                              dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
-                             model_name = "all",
-                             variance_model = "exp"),
+                             model_name = "all"),
                "temperature data is not numeric. Please check it.")
 })
 
 test_that("fit_devmodels should throw an error if temperature data have just three values", {
   expect_error(fit_devmodels(temp = c(15, 20, 25),
                              dev_rate = rnorm(3, mean = 0.02, sd = 0.005),
-                             model_name = "all",
-                             variance_model = "exp"),
+                             model_name = "all"),
                "At least four different temperature treatments in the data are required.",
                fixed = TRUE)
 })
@@ -31,24 +26,21 @@ test_that("fit_devmodels should throw an error if development rate data is not n
           (e.g. incorrectly importing data from csv/xlsx, using commas as decimal markers, etc)", {
   expect_error(fit_devmodels(temp = seq(4, 40, 3),
                              dev_rate = as.character(rnorm(13, mean = 0.02, sd = 0.005)),
-                             model_name = "all",
-                             variance_model = "exp"),
+                             model_name = "all"),
                "development rate data is not numeric. Please check it.")
 })
 
 test_that("fit_devmodels should throw an error if temperature and development rate inputs are not of same length", {
   expect_error(fit_devmodels(temp = seq(4, 40, 3),
                              dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
-                             model_name = "all",
-                             variance_model = "exp"),
+                             model_name = "all"),
                "development rate and temperature inputs are not of same length. Please check it.")
 })
 
 test_that("fit_devmodels should throw an error if model_name is not a character string but a number", {
   expect_error(fit_devmodels(temp = seq(4, 40, 3),
                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                             model_name = 2,
-                             variance_model = "exp"),
+                             model_name = 2),
                "model_name must be a string in ?available_models",
                fixed = TRUE)
 })
@@ -56,27 +48,24 @@ test_that("fit_devmodels should throw an error if model_name is not a character 
 test_that("fit_devmodels should throw an error if model_name is not in available_models", {
   expect_error(fit_devmodels(temp = seq(4, 40, 3),
                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                             model_name = "SharpeDeMichele",
-                             variance_model = "exp"),
-               "model not available. For available model names, see `dev_model_table`")
+                             model_name = "SharpeDeMichele"),
+               "model not available. For available model names, see `available_models`")
+})
+
+test_that("fit_devmodels should throw an error if development rate is negative, which is biologically unrealistic", {
+  expect_error(fit_devmodels(temp = seq(4, 40, 3),
+                             dev_rate = c(rnorm(12, mean = 0.02, sd = 0.005), -abs(rnorm(1))),
+                             model_name = "all"),
+               "Negative dev_rate development rate data found. Please check it.")
 })
 
 # Test input data ranges and warnings
-test_that("fit_devmodels should print a warning if development rate data contains negative
-          values or higher than 10", {
-  set.seed(2023) # <- ensure a seed with any negative number and any model converging to test exactly this warning
-  expect_warning(fit_devmodels(temp = seq(4, 40, 3),
-                               dev_rate = rnorm(13, mean = 0.01, sd = 0.01),
-                               model_name = "all",
-                               variance_model = "exp"))
-})
 
 test_that("fit_devmodels should issue a warning if temperature data contains values outside of the range of active organisms", {
-  expect_warning(capture_error(fit_devmodels(temp = c(seq(4, 39, 3), 4000),
+  expect_warning(fit_devmodels(temp = c(seq(4, 39, 3), 4000),
                                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                                             model_name = "all",
-                                             variance_model = "exp")),
-                 "experienced temperatures by active organisms (i.e. not in diapause) are usually between 0 and 50ºC",
+                                             model_name = "all"),
+                 "experienced temperatures by active organisms are usually between 0 and 50 degrees centigrades",
                  fixed = TRUE)
 })
 
@@ -84,45 +73,16 @@ test_that("fit_devmodels should issue a warning if temperature data contains val
 test_that("fit_devmodels should return a list object", {
   expect_type(fit_devmodels(temp = c(seq(4, 40, 3)),
                           dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                          model_name = "all",
-                          variance_model = "exp"),
+                          model_name = "all"),
               type = "list")
 })
 
-# test that function works without any value of variance_model printing a warning
-test_that("fit_devmodels should incorporate by default
-          variance_model exp showing a warning", {
-  expect_warning(fit_devmodels(temp = c(seq(4, 40, 3)),
-                            dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                            model_name = "all"),
-                 "no variance_model input has been provided by the user. Using exp by default")
-            })
-
-# test that function stops if varFunction is not an available option
-test_that("fit_devmodels should incorporate by default variance_model exp showing a warning", {
-  expect_error(fit_devmodels(temp = c(seq(4, 40, 3)),
-                             dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                             model_name = "all",
-                             variance_model = "none"),
-               "variance_model input not available. Use `exp`, `power` or `constant` - see ?fit_devmodels() for more information",
-               fixed = TRUE)
-            })
-
-test_that("fit_devmodels should incorporate by default variance_model exp showing a warning", {
-            expect_error(fit_devmodels(temp = c(seq(4, 40, 3)),
-                                       dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                                       model_name = "all",
-                                       variance_model = 3),
-                         "variance_model input not available. Use `exp`, `power` or `constant` - see ?fit_devmodels() for more information",
-                         fixed = TRUE)
-          })
 
 ## test that rate of development data have NAs
 test_that("fit_devmodels should stop the function and advise the user about NAs in the data set", {
             expect_error(fit_devmodels(temp = c(seq(4, 40, 3)),
                                        dev_rate = c(rnorm(12, mean = 0.02, sd = 0.005), NA),
-                                       model_name = "all",
-                                       variance_model = "exp"),
+                                       model_name = "all"),
                          "development rate data have NAs; please consider removing them or fixing them")
           })
 
@@ -130,17 +90,15 @@ test_that("fit_devmodels should stop the function and advise the user about NAs 
 test_that("fit_devmodels should stop the function and advise the user about NAs in the data set", {
   expect_error(fit_devmodels(temp = c(seq(4, 40, 3), NA),
                              dev_rate = c(rnorm(14, mean = 0.02, sd = 0.005)),
-                             model_name = "all",
-                             variance_model = "exp"),
+                             model_name = "all"),
                "temperature data have NAs; please consider removing them or fixing them")
 })
 
-## test extreme data sets with no convergence gives an error saying no model fitted to the data
-test_that("fit_devmodels can deal with no convergence at all", {
-  expect_error(suppressWarnings(fit_devmodels(temp = seq(4, 40, 7),
-                                dev_rate = runif(6, min = -234, max = 101),
-                                model_name = "all",
-                                variance_model = "exp")),
+## test that no converged model yields a warning
+test_that("fit_devmodels warns no convergence", {
+  expect_warning(fit_devmodels(temp = c(21, 28, 35, 42),
+                               dev_rate = c(.5, 0, 0.8, 0.8),
+                               model_name = c("mod_polynomial")),
                "no model converged adequately for fitting your data")
 })
 

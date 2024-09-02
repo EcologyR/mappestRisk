@@ -73,7 +73,7 @@ fit_devmodels <- function(temp = NULL,
     stop("model not available. For available model names, see `available_models`")
   }
 
-  if (model_name == "all") {
+  if (any(model_name == "all")) {
     models_2fit <- available_models |>
       dplyr::filter(n_params <= dplyr::n_distinct(temp)) |>
       dplyr::pull(model_name)
@@ -97,6 +97,10 @@ fit_devmodels <- function(temp = NULL,
       dplyr::filter(model_name == i)
 
     if (available_models$package[available_models$model_name == i] == "devRate") {
+
+      if (available_models$n_params[available_models$model_name == i] > length(temp)) {
+        fit_nls <- NULL
+      } else {
       start_vals <- start_vals_devRate(model_name_2fit = model_i,
                                        temperature = temp,
                                        dev_rate = dev_rate)
@@ -135,8 +139,9 @@ fit_devmodels <- function(temp = NULL,
         list_param <- list_param |>
         dplyr::bind_rows(list_param_tbl)
         }
-    }
-    ## end of devRate
+      }
+     }
+    # end of devRate
 
     if (available_models$package[available_models$model_name == i] == "rTPC") {
       possible_error <- tryCatch(expr = {start_vals <- rTPC::get_start_vals(x = temp,
@@ -183,6 +188,9 @@ fit_devmodels <- function(temp = NULL,
     # end of rTPC processing
 
     } # <- loop ends
+    if (length(list_param) == 0) {
+      warning("no model converged adequately for fitting your data")
+    }
     return(list_param)
   }
 
