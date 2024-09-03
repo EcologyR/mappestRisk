@@ -85,7 +85,7 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
 
   if(!is.character(species) &&
      !is.null(species)) {
-    stop("`species` must be a character with the scientific name of your species, or `NULL`")
+    stop("`species` must be a character or `NULL`")
   } else if (is.null(species)){
     species <- NULL
   }
@@ -98,15 +98,21 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
   if(!is.data.frame(bootstrap_uncertainties_tpcs)) {
     stop("`bootstrap_uncertainties_tpcs` must be a  `data.frame` or `tibble`
     inherited from the output of `mappestRisk::predict_curves()` function with
-    `propagate_uncertainty = TRUE` and `n_boots_samples > 10`.")
+    `propagate_uncertainty = TRUE` and `n_boots_samples > 0`.")
   }
   if(suppressWarnings(any(!c("model_name", "iter", "temp", "pred", "curvetype") %in% colnames(bootstrap_uncertainties_tpcs)))){
-    stop("`bootstrap_uncertainties_tpcs` must be a  data.frame inherited from the
+    stop("`bootstrap_uncertainties_tpcs` must be a  `data.frame` or `tibble` inherited from the
     output of `mappestRisk::predict_curves()` function with
-    `propagate_uncertainty = TRUE` and `n_boots_samples > 10`.")
+    `propagate_uncertainty = TRUE` and `n_boots_samples > 0`.")
   }
   if(nrow(bootstrap_uncertainties_tpcs) == 0){
-    warning("No bootstrapped predictions were obtained. Please check `bootstrap_uncertainties_tpcs`")
+    stop("No bootstrapped or estimate predictions are available.
+         Please check `bootstrap_uncertainties_tpcs` and consider using a different model or
+         setting `propagate_uncertainty` to `FALSE` in `predict_curves()`")
+  }
+  if(!any(bootstrap_uncertainties_tpcs$curvetype == "uncertainty")){
+    warning("No bootstrapped predictions available. Please check `bootstrap_uncertainties_tpcs`.
+             Plotting only the central curve.")
   }
   devdata <- dplyr::tibble(temp,
                            dev_rate)

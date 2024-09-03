@@ -90,6 +90,9 @@ predict_curves <- function(temp = NULL,
     stop("model not available. Check the models that converged in `fitted_parameters`")
   }
 
+  if(is.null(fitted_parameters)) {
+    stop("`fitted_parameters` must be provided.")
+  }
 
   if (!is.numeric(n_boots_samples)){
     stop("`n_boots_samples` must be numeric. Please change it within 1 and 5000 (Default 100)")
