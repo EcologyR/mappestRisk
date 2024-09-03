@@ -87,6 +87,12 @@ predict_curves <- function(temp = NULL,
 
     check_data(temp, dev_rate)
 
+  # Check if 'car' package is loaded
+  if (!"package:car" %in% search()) {
+    if (!requireNamespace("car", quietly = TRUE)) {
+      stop("Package 'car' is required but is not installed.")
+      }
+    }
   if (!all(model_name_2boot %in% fitted_parameters$model_name)) {
     message(paste0("Models available: ", paste0(unique(fitted_parameters$model_name), collapse = ", ")))
     stop("model not available. Check the models that converged in `fitted_parameters`")
@@ -197,7 +203,6 @@ predict_curves <- function(temp = NULL,
     assign("coefs_i", coefs_i, envir=parent.frame())
     assign("temp_data_i", temp_data_i, envir=parent.frame())
     assign("formula_i", formula_i, envir=parent.frame())
-
     possible_error <- tryCatch(expr = {
         temp_fit <- suppressWarnings(minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
                                                             termlabels = formula_i),
@@ -207,7 +212,7 @@ predict_curves <- function(temp = NULL,
       assign("temp_fit", temp_fit, envir=parent.frame())
       ## now bootstrap is performed to each model fit and listed
       boot <- suppressWarnings(car::Boot(temp_fit,
-                                         method = 'case',
+                                         method = 'residual',
                                          R = n_boots_samples)
                                )
       boot_2fill_i <- predict_model_i |>

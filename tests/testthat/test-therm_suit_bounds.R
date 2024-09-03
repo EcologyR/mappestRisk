@@ -5,6 +5,7 @@
 #fitted_params_example <- fit_devmodels(temp = temp_test,
 #                                       dev_rate = dev_rate_test,
 #                                       model_name = "all")
+library(car)
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
                                    dev_rate = aphid$rate_value,
                                    model_name = "lactin2")
