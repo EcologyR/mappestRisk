@@ -87,12 +87,6 @@ predict_curves <- function(temp = NULL,
 
     check_data(temp, dev_rate)
 
-  # Check if 'car' package is loaded
-  if (!"package:car" %in% search()) {
-    if (!requireNamespace("car", quietly = TRUE)) {
-      stop("Package 'car' is required but is not installed.")
-      }
-    }
   if (!all(model_name_2boot %in% fitted_parameters$model_name)) {
     message(paste0("Models available: ", paste0(unique(fitted_parameters$model_name), collapse = ", ")))
     stop("model not available. Check the models that converged in `fitted_parameters`")
@@ -210,7 +204,8 @@ predict_curves <- function(temp = NULL,
                                                        na.action = na.exclude,
                                                        start = coefs_i))
       assign("temp_fit", temp_fit, envir=parent.frame())
-      ## now bootstrap is performed to each model fit and listed
+      library(car)
+      # now bootstrap is performed to each model fit and listed
       boot <- suppressWarnings(car::Boot(temp_fit,
                                          method = 'residual',
                                          R = n_boots_samples)
@@ -227,7 +222,8 @@ predict_curves <- function(temp = NULL,
     }
     boot_2fill <- dplyr::bind_rows(boot_2fill, boot_2fill_i)
   }
-  rm("model_i", "predict_model_i", "coefs_i", "temp_data_i", "formula_i", "temp_fit", "boot")
+  rm("model_i", "predict_model_i", "coefs_i", "temp_data_i", "formula_i", "temp_fit",
+     envir = parent.frame())
 
   boot_2fill_clean <- boot_2fill |>
     dplyr::filter(!is.na(bootstrap)) # avoid errors from NAs

@@ -42,6 +42,7 @@ Imports:
     terra,
     nls.multstart,
     rTPC,
-    devRate
+    devRate,
+    car
 Remotes:
     rstudio/leaflet
