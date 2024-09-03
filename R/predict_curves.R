@@ -252,10 +252,12 @@ predict_curves <- function(temp = NULL,
                                curvetype = NULL)
   #preds boot with a for loop
   print("ADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`")
-
+  pb <- progress::progress_bar$new(
+    format = "Predicting bootstrapped TPCs [:bar] :percent",
+    total = length(tpc_fits_boot$output_boot),
+    clear = F)
   for (temp_model_i in 1:length(tpc_fits_boot$output_boot)){
     boot_preds_i <- tpc_fits_boot[temp_model_i,]
-    print(paste("Predicting bootstrapped TPCs", round(100*temp_model_i/length(tpc_fits_boot$output_boot), 1), "%"))
     model_name_boot_i <- boot_preds_i$model_name
     boot_coefs_i <- boot_preds_i |>
       tidyr::unnest_wider(col = coefs)
@@ -291,7 +293,9 @@ predict_curves <- function(temp = NULL,
       dplyr::mutate(curvetype = "estimate")
     central_and_bootstrap_tpcs <- bootstrap_tpcs_all |>
       dplyr::bind_rows(central_curve)
-  }
+    pb$tick()
+    }
+  cat("\n Bootstrapping simulations completed \n")
   }
   if(!any(central_and_bootstrap_tpcs$curvetype == "uncertainty")){
    warning("No bootstrap was accomplished. Your model might not be suitable for bootstrapping

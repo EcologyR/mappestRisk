@@ -6,6 +6,7 @@
 #                                       dev_rate = dev_rate_test,
 #                                       model_name = "all")
 library(car)
+
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
                                    dev_rate = aphid$rate_value,
                                    model_name = "lactin2")
@@ -20,7 +21,7 @@ boots_params_example <- predict_curves(temp = aphid$temperature,
                                         fitted_parameters = fitted_tpcs_aphid,
                                         model_name_2boot = "lactin2",
                                         propagate_uncertainty = TRUE,
-                                        n_boots_samples = 100)
+                                        n_boots_samples = 3)
 plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example,
                    temp = aphid$temperature,
                    dev_rate = aphid$rate_value,

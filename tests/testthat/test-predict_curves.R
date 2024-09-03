@@ -1,11 +1,14 @@
+set.seed(2024)
+rate_sample <- rnorm(13, mean = 0.02, sd = 0.005)
+
 
 fitted_params_example <- fit_devmodels(temp = seq(4, 40, 3),
-                                       dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                                       dev_rate = rate_sample,
                                        model_name = "all")
 
 test_that("predict_curves should throw an error if temperature data is not numeric", {
   expect_error(predict_curves(temp =  as.character(seq(4, 40, 3)),
-                              dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
+                              dev_rate = rate_sample,
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = "lactin2",
                               propagate_uncertainty = TRUE,
@@ -48,7 +51,7 @@ test_that("predict_curves should throw an error if temperature and development r
 
 test_that("predict_curves should throw an error if model_name is not a character", {
   expect_error(predict_curves(temp = seq(4, 40, 3),
-                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                              dev_rate = rate_sample,
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = 3,
                               propagate_uncertainty = TRUE,
@@ -60,7 +63,7 @@ test_that("predict_curves should throw an error if model_name is not a character
 
 test_that("predict_curves should throw an error if model_name is not from `fitted_parameters`", {
   expect_error(predict_curves(temp = seq(4, 40, 3),
-                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                              dev_rate = rate_sample,
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = "SharpeDeMichele",
                               propagate_uncertainty = TRUE,
@@ -72,7 +75,7 @@ test_that("predict_curves should throw an error if model_name is not from `fitte
 
 test_that("predict_curves should throw a message with the  error of available models for bootstrapping", {
   expect_message(capture_error(predict_curves(temp = seq(4, 40, 3),
-                                              dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                                              dev_rate = rate_sample,
                                               fitted_parameters = fitted_params_example,
                                               model_name_2boot = "SharpeDeMichele",
                                               propagate_uncertainty = TRUE,
@@ -97,7 +100,7 @@ test_that("predict_curves should throw an error if development rate is negative,
 
 test_that("predict_curves should throw an error if temperature data contains values outside of the range of active organisms", {
   expect_error(predict_curves(temp = c(seq(4, 39, 3), 4000),
-                               dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
+                               dev_rate = rate_sample,
                                fitted_parameters = fitted_params_example,
                                model_name_2boot = "lactin2",
                                propagate_uncertainty = TRUE,
@@ -109,12 +112,12 @@ test_that("predict_curves should throw an error if temperature data contains val
 ## few samples for bootstrap yields a warning
 test_that("predict_curves should issue a warning if `n_boots_samples` < 100", {
   requireNamespace("car", quietly = T)
-  capt_warnings <- capture_warnings(predict_curves(temp = seq(4, 39, 3),
-                                    dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
-                                    fitted_parameters = fitted_params_example,
-                                    model_name_2boot = "lactin1",
-                                    propagate_uncertainty = TRUE,
-                                    n_boots_samples = 2))
+  capt_warnings <- capture_warnings(predict_curves(temp = seq(4, 40, 3),
+                                                   dev_rate = rate_sample,
+                                                   fitted_parameters = fitted_params_example,
+                                                   model_name_2boot = "lactin1",
+                                                   propagate_uncertainty = TRUE,
+                                                   n_boots_samples = 2))
 expect_true(any(capt_warnings == "100 iterations might be desirable. Consider increasing `n_boots_samples` if possible"))
 })
 
@@ -139,8 +142,8 @@ test_that("predict_curves should issue a warning if no boostrap is accomplished"
 # error for 0 samples to boot if desired uncertainty propagation.
 test_that("predict_curves should throw an error if `n_boots_samples` is set to 0 and `propagate_uncertainty` is TRUE", {
   requireNamespace("car", quietly = T)
-  expect_error(suppressWarnings(predict_curves(temp = seq(4, 39, 3),
-                                               dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
+  expect_error(suppressWarnings(predict_curves(temp = seq(4, 40, 3),
+                                               dev_rate = rate_sample,
                                                fitted_parameters = fitted_params_example,
                                                model_name_2boot = "lactin2",
                                                propagate_uncertainty = TRUE,
@@ -150,10 +153,10 @@ test_that("predict_curves should throw an error if `n_boots_samples` is set to 0
 
 test_that("predict_curves output should be a tibble with some uncertainty curves", {
   requireNamespace("car", quietly = T)
-  preds_tbl <- suppressWarnings(predict_curves(temp = seq(4, 39, 3),
-                                               dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
+  preds_tbl <- suppressWarnings(predict_curves(temp = seq(4, 40, 3),
+                                               dev_rate = rate_sample,
                                                fitted_parameters = fitted_params_example,
-                                               model_name_2boot = unique(fitted_params_example$model_name)[2],
+                                               model_name_2boot = unique(fitted_params_example$model_name)[1], # <- boatman is able to bootstrap
                                                propagate_uncertainty = TRUE,
                                                n_boots_samples = 5))
   expect_true(any(preds_tbl$curvetype == "uncertainty"))
@@ -161,8 +164,8 @@ test_that("predict_curves output should be a tibble with some uncertainty curves
 
 test_that("predict_curves output should be a data.frame", {
   requireNamespace("car", quietly = T)
-  preds_tbl <- suppressWarnings(predict_curves(temp = seq(4, 39, 3),
-                                               dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
+  preds_tbl <- suppressWarnings(predict_curves(temp = seq(4, 40, 3),
+                                               dev_rate = rate_sample,
                                                fitted_parameters = fitted_params_example,
                                                model_name_2boot = unique(fitted_params_example$model_name)[2],
                                                propagate_uncertainty = TRUE,
