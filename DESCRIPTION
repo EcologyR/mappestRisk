@@ -39,7 +39,6 @@ Imports:
     leaflet.opacity,
     raster,
     terra,
-    car,
     nls.multstart,
     rTPC,
     devRate

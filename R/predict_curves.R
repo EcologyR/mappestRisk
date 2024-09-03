@@ -84,7 +84,9 @@ predict_curves <- function(temp = NULL,
                            model_name_2boot = NULL,
                            propagate_uncertainty = TRUE,
                            n_boots_samples = 100) {
+
     check_data(temp, dev_rate)
+
   if (!all(model_name_2boot %in% fitted_parameters$model_name)) {
     message(paste0("Models available: ", paste0(unique(fitted_parameters$model_name), collapse = ", ")))
     stop("model not available. Check the models that converged in `fitted_parameters`")
@@ -113,7 +115,6 @@ predict_curves <- function(temp = NULL,
   if (!is.logical(propagate_uncertainty)) {
     stop("`propagate_uncertainty` must be `TRUE` or `FALSE` (def. `TRUE`)")
   }
-  require("car", quietly = T) # <- since car::Boot() needs to be set manually to work
 
   devdata <- dplyr::tibble(temp,
                            dev_rate)
@@ -196,6 +197,7 @@ predict_curves <- function(temp = NULL,
     assign("coefs_i", coefs_i, envir=parent.frame())
     assign("temp_data_i", temp_data_i, envir=parent.frame())
     assign("formula_i", formula_i, envir=parent.frame())
+
     possible_error <- tryCatch(expr = {
         temp_fit <- suppressWarnings(minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
                                                             termlabels = formula_i),
@@ -203,11 +205,11 @@ predict_curves <- function(temp = NULL,
                                                        na.action = na.exclude,
                                                        start = coefs_i))
       assign("temp_fit", temp_fit, envir=parent.frame())
-
       ## now bootstrap is performed to each model fit and listed
       boot <- suppressWarnings(car::Boot(temp_fit,
-                        method = 'residual',
-                        R = n_boots_samples))
+                                         method = 'case',
+                                         R = n_boots_samples)
+                               )
       boot_2fill_i <- predict_model_i |>
         dplyr::mutate(bootstrap = list(boot))
     }, # <- inside tryCatch
@@ -225,6 +227,12 @@ predict_curves <- function(temp = NULL,
   boot_2fill_clean <- boot_2fill |>
     dplyr::filter(!is.na(bootstrap)) # avoid errors from NAs
 
+  if(nrow(boot_2fill_clean) == 0) {
+    stop("Bootstrapping failed for all the models provided in `model_name_2boot` due to convergence problems.
+         You may try other models fitted with `fit_devmodels()`. If this error persists after attempting all the
+         models obtained from `fit_devmodels()`,your data may not be appropriate for
+         projecting risk of pest occurrence with the models you have fitted.")
+  }
   #get the raw values of each bootstrap. These raw values represent the estimates
   #  generated from each bootstrap sample for further analysis, such as computing confidence intervals
   tpc_fits_boot <- boot_2fill_clean |>

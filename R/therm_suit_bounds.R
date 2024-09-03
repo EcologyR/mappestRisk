@@ -87,7 +87,15 @@
 
 therm_suit_bounds <- function(preds_tbl = NULL,
                               model_name = NULL,
-                              suitability_threshold = 75) {
+                              suitability_threshold = NULL) {
+  if (is.null(preds_tbl)) {
+    stop("The `preds_tbl` argument is absent. Please provide a `tibble` or `data.frame` object
+         from `predict_curves()`")
+  }
+
+  if (nrow(preds_tbl) == 0) {
+    stop("The `preds_tbl` table is empty; check out the output of `fit_devmodels()` and `predict_curves()`.")
+  }
 
   if (!is.data.frame(preds_tbl) |
       suppressWarnings(any(!c("model_name", "iter",
@@ -95,29 +103,37 @@ therm_suit_bounds <- function(preds_tbl = NULL,
                               "curvetype") %in% colnames(preds_tbl)))) {
     stop("`preds_tbl` must be a  `data.frame` inherited   from the output of `mappestRisk::predict_curves()` function")
   }
-  if (nrow(preds_tbl) == 0) {
-    stop("The `preds_tbl` table is NULL; check out the output of `fit_devmodels()` and `predict_curves()`.")
-  }
+
   if(is.null(suitability_threshold)){
     suitability_threshold <- 75
     message("No suitability_threshold value input. Default to `suitability_threshold = 75`")
   }
+
   if(suitability_threshold < 50) {
     warning("Suitability thresholds under 50% indicate thermal boundaries for positive development but not
 necessarily optimal for pest risk assessment. Subsequent map risk analysis will imply
 risk of thermal tolerance at each location rather than risk of optimal performance or high pest pressure.")
   }
-  if (!is.null(model_name) && any(!model_name %in% available_models$model_name)) {
-    stop("Model name not available. For available model names, see `?available_models`.")
+
+  if(is.null(model_name)) {
+    stop("No model name was provided by the user. Please provide any model present in `pred_tbl`")
   }
-  if(!is.null(model_name) && any(!model_name %in% preds_tbl$model_name)) {
-    stop(paste("Model", model_name, "did not fitted well to your data. Try using another fitted model in your table instead"))
-  }
+
   if(length(model_name) > 1 || model_name == "all") {
     stop("Only one model is allowed in `therm_suit_bounds()` at a time.
 Please use this function repetedly for each of your models one by one.")
   }
-  if(length(unique(preds_tbl$iter)) < 2){
+
+  if(!is.null(model_name) && any(!model_name %in% unique(preds_tbl$model_name))) {
+    stop(paste("Model", model_name, "did not fitted well to your data or is not available. Try using another fitted model in your table instead"))
+  }
+
+  if(length(model_name) > 1 || model_name == "all") {
+    stop("Only one model is allowed in `therm_suit_bounds()` at a time.
+Please use this function repetedly for each of your models one by one.")
+  }
+
+  if(!any(preds_tbl$curvetype == "uncertainty")) {
     warning("No bootstrapped predictions were performed.
 We strongly recommend to propagate uncertainty by setting the `predict_curves()`
 arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")

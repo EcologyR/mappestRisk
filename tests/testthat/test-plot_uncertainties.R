@@ -11,7 +11,7 @@ boots_params_example <- predict_curves(temp = temp_test,
                                        fitted_parameters = fitted_params_example,
                                        model_name_2boot = unique(fitted_params_example$model_name)[3],
                                        propagate_uncertainty = TRUE,
-                                       n_boots_samples = 2)
+                                       n_boots_samples = 100)
 
 # Test input data types
 test_that("plot_devmodels should throw an error if temperature data is not numeric", {

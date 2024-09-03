@@ -147,3 +147,25 @@ test_that("predict_curves should throw an error if `n_boots_samples` is set to 0
                                                n_boots_samples = 0)),
                "`n_boots_samples` must be a positive integer whenever `propagate_uncertainty` is set to `TRUE`.")
   })
+
+test_that("predict_curves output should be a tibble with some uncertainty curves", {
+  requireNamespace("car", quietly = T)
+  preds_tbl <- suppressWarnings(predict_curves(temp = seq(4, 39, 3),
+                                               dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
+                                               fitted_parameters = fitted_params_example,
+                                               model_name_2boot = unique(fitted_params_example$model_name)[2],
+                                               propagate_uncertainty = TRUE,
+                                               n_boots_samples = 5))
+  expect_true(any(preds_tbl$curvetype == "uncertainty"))
+})
+
+test_that("predict_curves output should be a data.frame", {
+  requireNamespace("car", quietly = T)
+  preds_tbl <- suppressWarnings(predict_curves(temp = seq(4, 39, 3),
+                                               dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
+                                               fitted_parameters = fitted_params_example,
+                                               model_name_2boot = unique(fitted_params_example$model_name)[2],
+                                               propagate_uncertainty = TRUE,
+                                               n_boots_samples = 5))
+  expect_true(is.data.frame(preds_tbl))
+})
