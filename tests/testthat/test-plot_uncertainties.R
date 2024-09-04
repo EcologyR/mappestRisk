@@ -1,4 +1,5 @@
 ## first use a data of example
+set.seed(2024)
 temp_test <- seq(4, 40, 3)
 dev_rate_test <- rnorm(13, mean = 0.02, sd = 0.005)
 
@@ -109,4 +110,14 @@ test_that("plot_uncertainties should throw an error if `bootstrap_uncertainties_
          Please check `bootstrap_uncertainties_tpcs` and consider using a different model or
          setting `propagate_uncertainty` to `FALSE` in `predict_curves()",
                            fixed = TRUE)
+})
+
+# test if output is a ggplot object
+test_that("plot_uncertainties() outputs a ggplot object",{
+  example_plotdevs_uncertainty <- plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example,
+                                         temp = temp_test,
+                                         dev_rate = dev_rate_test,
+                                         species = "Brachycaudus schwartzi",
+                                         life_stage = "Nymphs")
+  expect_true(class(example_plotdevs_uncertainty)[2] == "ggplot")
 })

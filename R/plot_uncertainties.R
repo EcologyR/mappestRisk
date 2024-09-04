@@ -78,23 +78,21 @@
 plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
                                temp,
                                dev_rate,
-                               species,
-                               life_stage) {
+                               species = NULL,
+                               life_stage = NULL) {
 
   check_data(temp, dev_rate)
 
   if(!is.character(species) &&
      !is.null(species)) {
     stop("`species` must be a character or `NULL`")
-  } else if (is.null(species)){
-    species <- NULL
   }
+
   if(!is.character(life_stage) &&
      !is.null(life_stage)) {
     stop("`life_stage` must be a character or `NULL`")
-  } else if(is.null(life_stage)){
-    life_stage <- NULL
   }
+
   if(!is.data.frame(bootstrap_uncertainties_tpcs)) {
     stop("`bootstrap_uncertainties_tpcs` must be a  `data.frame` or `tibble`
     inherited from the output of `mappestRisk::predict_curves()` function with

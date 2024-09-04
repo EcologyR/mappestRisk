@@ -43,6 +43,6 @@ Imports:
     nls.multstart,
     rTPC,
     devRate,
-    car
+    boot
 Remotes:
     rstudio/leaflet
