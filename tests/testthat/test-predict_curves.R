@@ -109,7 +109,6 @@ test_that("predict_curves should throw an error if temperature data contains val
 
 ## few samples for bootstrap yields a warning
 test_that("predict_curves should issue a warning if `n_boots_samples` < 100", {
-  requireNamespace("car", quietly = T)
   capt_warnings <- capture_warnings(predict_curves(temp = seq(4, 40, 3),
                                                    dev_rate = rate_sample,
                                                    fitted_parameters = fitted_params_example,
@@ -126,11 +125,10 @@ aphid_parameters <- fit_devmodels(temp = aphid$temperature,
                                   model_name = "all")
 
 test_that("predict_curves should issue a warning if no boostrap is accomplished", {
-  requireNamespace("car", quietly = T)
   capt_warnings <- capture_warnings(predicted_curves <- predict_curves(temp = aphid$temperature,
                                                                        dev_rate = aphid$rate_value,
                                                                        fitted_parameters = aphid_parameters,
-                                                                       model_name_2boot = "boatman",
+                                                                       model_name_2boot = "boatman", # <- previously known as not adequately converging
                                                                        propagate_uncertainty = FALSE,
                                                                        n_boots_samples = 5))
 
