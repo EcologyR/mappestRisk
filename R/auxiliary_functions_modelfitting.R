@@ -1,5 +1,9 @@
 ### script with auxiliary functions for fit_devmodels()
 
+is_positive_integer <- function(x) {
+  is.numeric(x) && x > 0 && x == as.integer(x)
+}
+
 #### a) working functions ----
 model_name_translate <- function(user_model_name) {
   if (!all(user_model_name %in% c("all", available_models$model_name))) {
@@ -14,6 +18,8 @@ model_name_translate <- function(user_model_name) {
   return(model_eq)
 
 }
+
+
 
 # take names from a fitted model to assign them as names for start values later
 extract_param_names <- function(nls_object){

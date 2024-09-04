@@ -87,29 +87,25 @@ predict_curves <- function(temp = NULL,
 
   check_data(temp, dev_rate)
 
+  if(is.null(fitted_parameters)) {
+    stop("`fitted_parameters` must be provided.")
+  }
+
   if (!all(model_name_2boot %in% fitted_parameters$model_name)) {
     message(paste0("Models available: ", paste0(unique(fitted_parameters$model_name), collapse = ", ")))
     stop("model not available. Check the models that converged in `fitted_parameters`")
   }
 
-  if(is.null(fitted_parameters)) {
-    stop("`fitted_parameters` must be provided.")
+  if (!is_positive_integer(n_boots_samples)){
+    stop("`n_boots_samples` must be a positive integer. Please change it within 1 and 5000 (Default 100)")
   }
 
-  if (!is.numeric(n_boots_samples)){
-    stop("`n_boots_samples` must be numeric. Please change it within 1 and 5000 (Default 100)")
-  }
-
-  if (n_boots_samples > 5000) {
-    stop("computation time will be extremely high. Please adjust `n_boots_samples` to be < 5000")
+  if (is_positive_integer(n_boots_samples) && n_boots_samples > 5000) {
+    stop("computation time will be extremely high. Please adjust `n_boots_samples` to be < 5000. Usually 100 is fine.")
   }
 
   if (n_boots_samples < 100){
     warning("100 iterations might be desirable. Consider increasing `n_boots_samples` if possible")
-  }
-
-  if (n_boots_samples == 0){
-    stop("`n_boots_samples` must be a positive integer whenever `propagate_uncertainty` is set to `TRUE`.")
   }
 
   if (!is.logical(propagate_uncertainty)) {

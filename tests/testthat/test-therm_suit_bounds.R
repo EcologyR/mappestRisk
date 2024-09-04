@@ -17,8 +17,10 @@ boots_params_example <- predict_curves(temp = aphid$temperature,
 
 test_that("`therm_suit_bounds()` should throw an error if the structure of `preds_tbl` has been altered from
           that output at `predict_curves()`", {
+          # boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
+           # temp_test <- seq(4, 40, 3)
   expect_error(therm_suit_bounds(preds_tbl = boots_params_example |> dplyr::select(1:3),
-                                 model_name = unique(fitted_tpcs_aphid$model_name)[1],
+                                 model_name = unique(boots_params_example$model_name)[1],
                                  suitability_threshold = 80),
                "`preds_tbl` must be a  `data.frame` inherited   from the output of `mappestRisk::predict_curves()` function",
                fixed = TRUE)

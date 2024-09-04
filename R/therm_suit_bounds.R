@@ -128,11 +128,6 @@ Please use this function repetedly for each of your models one by one.")
     stop(paste("Model", model_name, "did not fitted well to your data or is not available. Try using another fitted model in your table instead"))
   }
 
-  if(length(model_name) > 1 || model_name == "all") {
-    stop("Only one model is allowed in `therm_suit_bounds()` at a time.
-Please use this function repetedly for each of your models one by one.")
-  }
-
   if(!any(preds_tbl$curvetype == "uncertainty")) {
     warning("No bootstrapped predictions were performed.
 We strongly recommend to propagate uncertainty by setting the `predict_curves()`
