@@ -1,7 +1,5 @@
 set.seed(2024)
 rate_sample <- rnorm(13, mean = 0.02, sd = 0.005)
-
-
 fitted_params_example <- fit_devmodels(temp = seq(4, 40, 3),
                                        dev_rate = rate_sample,
                                        model_name = "all")

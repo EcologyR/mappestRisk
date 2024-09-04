@@ -85,7 +85,7 @@ predict_curves <- function(temp = NULL,
                            propagate_uncertainty = TRUE,
                            n_boots_samples = 100) {
 
-    check_data(temp, dev_rate)
+  check_data(temp, dev_rate)
 
   if (!all(model_name_2boot %in% fitted_parameters$model_name)) {
     message(paste0("Models available: ", paste0(unique(fitted_parameters$model_name), collapse = ", ")))
@@ -192,19 +192,20 @@ predict_curves <- function(temp = NULL,
       dplyr::pull(formula)
 
     ## avoid errors when wrapping Boot
-    assign("model_i", model_i, envir=parent.frame())
-    assign("predict_model_i", predict_model_i, envir = parent.frame())
-    assign("coefs_i", coefs_i, envir=parent.frame())
-    assign("temp_data_i", temp_data_i, envir=parent.frame())
-    assign("formula_i", formula_i, envir=parent.frame())
+    assign("model_i", model_i, envir=.GlobalEnv)
+    assign("predict_model_i", predict_model_i, envir = .GlobalEnv)
+    assign("coefs_i", coefs_i, envir=.GlobalEnv)
+    assign("temp_data_i", temp_data_i, envir=.GlobalEnv)
+    assign("formula_i", formula_i, envir=.GlobalEnv)
     possible_error <- tryCatch(expr = {
         temp_fit <- suppressWarnings(minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
                                                             termlabels = formula_i),
                                                        data = temp_data_i,
                                                        na.action = na.exclude,
                                                        start = coefs_i))
-      assign("temp_fit", temp_fit, envir=parent.frame())
-      library(car)
+      assign("temp_fit", temp_fit, envir=.GlobalEnv)
+      suppressPackageStartupMessages(library(car)) # <- necessary for "residual" method of car::Boot() to work
+
       # now bootstrap is performed to each model fit and listed
       boot <- suppressWarnings(car::Boot(temp_fit,
                                          method = 'residual',
@@ -223,7 +224,7 @@ predict_curves <- function(temp = NULL,
     boot_2fill <- dplyr::bind_rows(boot_2fill, boot_2fill_i)
   }
   rm("model_i", "predict_model_i", "coefs_i", "temp_data_i", "formula_i", "temp_fit",
-     envir = parent.frame())
+     envir = .GlobalEnv)
 
   boot_2fill_clean <- boot_2fill |>
     dplyr::filter(!is.na(bootstrap)) # avoid errors from NAs
