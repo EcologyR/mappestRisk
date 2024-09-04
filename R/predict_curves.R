@@ -204,8 +204,8 @@ predict_curves <- function(temp = NULL,
                                                        na.action = na.exclude,
                                                        start = coefs_i))
       assign("temp_fit", temp_fit, envir=.GlobalEnv)
-      suppressPackageStartupMessages(library(car)) # <- necessary for "residual" method of car::Boot() to work
-
+      #suppressPackageStartupMessages(library(car)) # <- necessary for "residual" method of car::Boot() to work
+      loadNamespace("car")
       # now bootstrap is performed to each model fit and listed
       boot <- suppressWarnings(car::Boot(temp_fit,
                                          method = 'residual',
