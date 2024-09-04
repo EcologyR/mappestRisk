@@ -40,6 +40,8 @@
 #' @param verbose Logical value specifying whether to display messages about
 #' what the function is doing at possibly slow steps. The default is FALSE.
 #' Setting it to TRUE can be useful for checking progress when maps are large.
+#' @param plot Logical value specifying whether to plot the results in a map. The default is TRUE.
+#' @param interactive Logical value specifying whether the plotted map should be interactive (if plot=TRUE). The default is TRUE if the 'leaflet' package is installed.
 #' @return This function returns a [terra::SpatRaster] with up to 2 layers:
 #' the ([mean]) number of months with temperature within the species' thermal
 #' bounds; and (if `t_vals` has >1 rows) the standard deviation ([sd]) around
@@ -48,6 +50,7 @@
 #' @export
 #' @examples
 #' # if you have temperature rasters for your region:
+#'
 #' tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 #' tavg_rast <- terra::rast(tavg_file)
 #' terra:::plot(tavg_rast)
@@ -58,16 +61,19 @@
 #'
 #' risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast)
 #'
-#' terra::plot(risk_rast)
+#' risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast, interactive = FALSE)
+#'
+#'
 #'
 #' \dontrun{
 #' # if you don't have temperature rasters for your region:
+#'
 #' risk_rast <- map_risk(t_vals = therm_bounds, path = "downloaded_maps",
 #' region = c("Portugal", "Spain"), verbose = TRUE)
-
-#' terra::plot(risk_rast)
-
-#' # if you want to save output map(s) to disk:
+#'
+#'
+#' # to save output map(s) to disk:
+#'
 #' terra::writeRaster(risk_rast, "risk_map.tif")  # exported maps can
 #' be seen with GIS software
 #' }
@@ -79,7 +85,9 @@ map_risk <- function(t_vals = NULL,
                      res = 2.5,
                      path = NULL,
                      mask = TRUE,
-                     verbose = FALSE
+                     verbose = FALSE,
+                     plot = TRUE,
+                     interactive = TRUE
 ) {
 
   if (is.atomic(t_vals) && length(t_vals) == 2) {
@@ -185,6 +193,22 @@ map_risk <- function(t_vals = NULL,
     out <- t_rast_sum
   }
 
-  if (verbose) cat("\nFinished!\n")
+  if (plot) {
+    if (verbose) cat("\nPlotting map...\n")
+
+    if (interactive && !requireNamespace("leaflet", quietly = TRUE)) {
+      if (verbose) message("'interactive' requires having the 'leaflet' package installed. Plotting a static map instead.")
+      interactive <- FALSE
+    }
+
+    if (interactive) {
+      outmap <- terra::plet(out, y = names(out), collapse = FALSE, legend = "bottomleft")
+      print(outmap)
+    } else {
+      terra::plot(out, type = "continuous")
+    }
+  }
+
+  if (verbose) cat("\nFinished!\n\n")
   return(out)
 }
