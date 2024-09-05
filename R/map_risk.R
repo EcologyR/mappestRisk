@@ -202,7 +202,7 @@ map_risk <- function(t_vals = NULL,
     }
 
     if (interactive) {
-      outmap <- terra::plet(out, y = names(out), collapse = FALSE, legend = "bottomleft")
+      outmap <- terra::plet(out, y = names(out), collapse = FALSE, legend = "bottomleft", tiles = "Esri.WorldTerrain")
       print(outmap)
     } else {
       terra::plot(out, type = "continuous")
