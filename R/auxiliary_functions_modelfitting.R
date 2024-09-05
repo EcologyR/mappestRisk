@@ -4,6 +4,11 @@ is_positive_integer <- function(x) {
   is.numeric(x) && x > 0 && x == as.integer(x)
 }
 
+crop_palette <- function(palette_vector, n_breaks) {
+  palette_flex <- palette_vector[1:(n_breaks+1)]
+  return(palette_flex)
+}
+
 #### a) working functions ----
 model_name_translate <- function(user_model_name) {
   if (!all(user_model_name %in% c("all", available_models$model_name))) {

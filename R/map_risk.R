@@ -202,10 +202,20 @@ map_risk <- function(t_vals = NULL,
     }
 
     if (interactive) {
-      outmap <- terra::plet(out, y = names(out), collapse = FALSE, legend = "bottomleft", tiles = "Esri.WorldTerrain")
+      palette_acton <- khroma::color(palette = "bilbao",reverse = F)(13)
+      outmap <- terra::plet(out, y = names(out), collapse = FALSE,
+                            legend = "bottomleft",
+                            col = crop_palette(c(palette_acton),
+                                               n_breaks = terra::minmax(out)[2]),
+                            tiles = "Esri.WorldTerrain",
+                            alpha =.95)
       print(outmap)
     } else {
-      terra::plot(out, type = "continuous")
+      palette_acton <- khroma::color(palette = "bilbao",reverse = F)(13)
+      terra::plot(out,
+                  type = "classes",
+                  col = crop_palette(c(palette_acton),
+                                     n_breaks = terra::minmax(out)[2]))
     }
   }
 

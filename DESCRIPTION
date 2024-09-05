@@ -43,6 +43,7 @@ Imports:
     nls.multstart,
     rTPC,
     devRate,
-    boot
+    boot,
+    khroma
 Remotes:
     rstudio/leaflet
