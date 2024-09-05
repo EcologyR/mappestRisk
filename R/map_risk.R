@@ -195,26 +195,24 @@ map_risk <- function(t_vals = NULL,
 
   if (plot) {
     if (verbose) cat("\nPlotting map...\n")
-
+    palette_bilbao <- khroma::color(palette = "bilbao",reverse = F)(13)
     if (interactive && !requireNamespace("leaflet", quietly = TRUE)) {
       if (verbose) message("'interactive' requires having the 'leaflet' package installed. Plotting a static map instead.")
       interactive <- FALSE
     }
 
     if (interactive) {
-      palette_acton <- khroma::color(palette = "bilbao",reverse = F)(13)
       outmap <- terra::plet(out, y = names(out), collapse = FALSE,
                             legend = "bottomleft",
-                            col = crop_palette(c(palette_acton),
+                            col = crop_palette(c(palette_bilbao),
                                                n_breaks = terra::minmax(out)[2]),
                             tiles = "Esri.WorldTerrain",
                             alpha =.95)
       print(outmap)
     } else {
-      palette_acton <- khroma::color(palette = "bilbao",reverse = F)(13)
       terra::plot(out,
                   type = "classes",
-                  col = crop_palette(c(palette_acton),
+                  col = crop_palette(c(palette_bilbao),
                                      n_breaks = terra::minmax(out)[2]))
     }
   }
