@@ -64,6 +64,8 @@ fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
 
+  n_params <- AIC <- BIC <- NULL
+
   check_data(temp, dev_rate)
 
   if (!is.character(model_name)){
