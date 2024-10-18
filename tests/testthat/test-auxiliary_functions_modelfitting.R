@@ -6,7 +6,7 @@ library(dplyr)
 test_that("start_vals_devRate should throw an error if temperature data is not numeric", {
   expect_error(start_vals_devRate(temperature = as.character(seq(4, 40, 3)),
                                  dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                                 model_name = sample(dev_model_table |>
+                                 model_name = sample(available_models |>
                                                         filter(package == "devRate") |>
                                                         pull(model_name),
                                                       1)),
@@ -16,7 +16,7 @@ test_that("start_vals_devRate should throw an error if temperature data is not n
 test_that("start_vals_devRate should throw an error if temperature data has NAs", {
   expect_error(start_vals_devRate(temperature = c(seq(4, 37, 3), NA),
                                   dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
-                                  model_name = sample(dev_model_table |>
+                                  model_name = sample(available_models |>
                                                         filter(package == "devRate") |>
                                                         pull(model_name),
                                                       1)),
@@ -26,7 +26,7 @@ test_that("start_vals_devRate should throw an error if temperature data has NAs"
 test_that("start_vals_devRate should throw an error if dev_rate data has NAs", {
   expect_error(start_vals_devRate(temperature = c(seq(4, 40, 3)),
                                   dev_rate = c(rnorm(12, mean = 0.02, sd = 0.005), NA),
-                                  model_name = sample(dev_model_table |>
+                                  model_name = sample(available_models |>
                                                         filter(package == "devRate") |>
                                                         pull(model_name),
                                                       1)),
@@ -38,7 +38,7 @@ test_that("start_vals_devRate should throw an error if temperature data is a dat
   expect_error(start_vals_devRate(temperature = data.frame(temperature = seq(4, 40, 3),
                                                 temp_error = runif(13, 0, 2)),
                              dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
-                             model_name =sample(dev_model_table |>
+                             model_name =sample(available_models |>
                                                   filter(package == "devRate") |>
                                                   pull(model_name),
                                                 1)),
@@ -48,7 +48,7 @@ test_that("start_vals_devRate should throw an error if temperature data is a dat
 test_that("start_vals_devRate should throw an error if temperature data have just three values", {
   expect_error(start_vals_devRate(temperature = c(15, 20, 25),
                                   dev_rate = rnorm(3, mean = 0.02, sd = 0.005),
-                                  model_name = sample(dev_model_table |>
+                                  model_name = sample(available_models |>
                                                         filter(package == "devRate") |>
                                                         pull(model_name),
                                                       1)),
@@ -60,7 +60,7 @@ test_that("start_vals_devRate should throw an error if development rate data is 
           (e.g. incorrectly importing data from csv/xlsx, using commas as decimal markers, etc)", {
             expect_error(start_vals_devRate(temperature = seq(4, 40, 3),
                                             dev_rate = as.character(rnorm(13, mean = 0.02, sd = 0.005)),
-                                            model_name = sample(dev_model_table |>
+                                            model_name = sample(available_models |>
                                                                   filter(package == "devRate") |>
                                                                   pull(model_name),
                                                                 1)),
@@ -70,7 +70,7 @@ test_that("start_vals_devRate should throw an error if development rate data is 
 test_that("start_vals_devRate should throw an error if temperature and development rate inputs are not of same length", {
   expect_error(start_vals_devRate(temperature = seq(4, 40, 3),
                              dev_rate = rnorm(12, mean = 0.02, sd = 0.005),
-                             model_name =sample(dev_model_table |>
+                             model_name =sample(available_models |>
                                                   filter(package == "devRate") |>
                                                   pull(model_name),
                                                 1)),
@@ -81,7 +81,7 @@ test_that("start_vals_devRate should throw an error if model_name is not in avai
   expect_error(start_vals_devRate(temperature = seq(4, 40, 3),
                                   dev_rate = rnorm(13, mean = 0.02, sd = 0.005),
                                   model_name = "SharpeDeMichele"),
-               "model not available. For available model names, see `dev_model_table`")
+               "model not available. For available model names, see `available_models`")
 })
 
 test_that("briere1 model gives a warning advising the use of generic starting values", {
