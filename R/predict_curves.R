@@ -244,7 +244,7 @@ predict_curves <- function(temp = NULL,
                                pred = NULL,
                                curvetype = NULL)
   #preds boot with a for loop
-  print("ADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`")
+  cat("\nADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`\n")
   pb <- progress::progress_bar$new(
     format = "Predicting bootstrapped TPCs [:bar] :percent",
     total = length(tpc_fits_boot$output_boot),

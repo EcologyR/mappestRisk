@@ -28,7 +28,8 @@ For that purpose, mappestRisk is built upon previous efforts such as `devRate` [
 
 ## Installation
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
+
 # install.packages("devtools")
 # devtools::install_github("EcologyR/mappestRisk")
 
@@ -39,13 +40,6 @@ For that purpose, mappestRisk is built upon previous efforts such as `devRate` [
 #library(mappestRisk)
 devtools::load_all() #for now, provisionally
 
-library(ggplot2)
-library(dplyr)
-library(nls.multstart)
-library(rTPC)
-library(devRate)
-library(tidyr)
-library(purrr)
 ```
 
 If you want to clone or fork the repository or open and read some issues, you can find the code [here](https://github.com/EcologyR/mappestRisk).
@@ -58,11 +52,11 @@ In this example, we'll show how to fit one to several thermal performance curves
 
 [^1]: At least 4 unique temperatures are required. Fore more details, see documentation and vignettes.
 
-```{r, message=FALSE, warning=FALSE}
-data("b.schwartzi_satar2002")
+```{r,  warning=FALSE}
+data("aphid")
 
-fitted_tpcs_aphid <- fit_devmodels(temp = b.schwartzi_satar2002$temperature,
-                                   dev_rate = b.schwartzi_satar2002$rate_value,
+fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
+                                   dev_rate = aphid$rate_value,
                                    model_name = "all")
 print(fitted_tpcs_aphid)
 ```
@@ -72,8 +66,8 @@ print(fitted_tpcs_aphid)
 To help select which model might be more appropriate, the function `plot_devmodels()` draws the predicted TPCs for each adequately-converged model. This step aims to improve model selection based not only on statistical criteria (i.e. AIC and number of parameters) but also on ecological realism, since curves can be graphically checked to select realistic shapes and thermal traits --vertical cuts with x-axis such as $CT_\min$, $CT_\max$ and $T_\text{opt}$ .
 
 ```{r, warning=FALSE}
-plot_devmodels(temp = b.schwartzi_satar2002$temperature,
-               dev_rate = b.schwartzi_satar2002$rate_value,
+plot_devmodels(temp = aphid$temperature,
+               dev_rate = aphid$rate_value,
                fitted_parameters = fitted_tpcs_aphid,
                species = "Brachycaudus schwartzi",
                life_stage = "Nymphs")
@@ -88,16 +82,11 @@ This function requires some time to compute bootstraps and predictions of the mu
 In our example, we choose three models that performed similarly and, unlike others with similar or even higher AICs, had a markedly higher left-skewness, e.g., *briere2, thomas* and *lactin2.* After a few minutes, we obtain the `data.frame`:
 
 ```{r, warning=FALSE}
-library(boot)
-library(car)
 
-
-preds_boots_aphid <-predict_curves(temp = b.schwartzi_satar2002$temperature,
-                                   dev_rate = b.schwartzi_satar2002$rate_value,
+preds_boots_aphid <-predict_curves(temp = aphid$temperature,
+                                   dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2",
-                                                        "thomas",
-                                                        "lactin2"),
+                                   model_name_2boot = "lactin2",
                                    propagate_uncertainty = TRUE,
                                    n_boots_samples = 100)
 ```
@@ -106,10 +95,10 @@ preds_boots_aphid <-predict_curves(temp = b.schwartzi_satar2002$temperature,
 
 The bootstrapped uncertainty curves can be plotted easily with the `plot_uncertainties()` function.
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
-                   temp = b.schwartzi_satar2002$temperature,
-                   dev_rate = b.schwartzi_satar2002$rate_value,
+                   temp = aphid$temperature,
+                   dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
 ```
@@ -127,48 +116,57 @@ print(boundaries_aphid)
 
 ### 4. Climatic data extraction and projection
 
-Using the thermal boundaries provided by the previous function and a set of raster maps of monthly temperatures for a given region (which can be provided by the user or downloaded by the function), a map can be produced showing where and for how many months a year (on average across simulations) thermal conditions are suitable for the development of the pest.
+Using the thermal boundaries provided by the previous function and a set of raster maps of monthly temperatures for a given region (which can be provided by the user or downloaded by the function), two maps are plotted. The left panel (*risk map*) shows how many months a year (on average across simulations) thermal conditions are suitable for the development of the pest. The right panel (*uncertainty map*) shows the standard deviation of the risk index for each pixel.
 
 ```{r}
 # Downloading temperature data with geodata::wordlclim_global().
 # May take time the first time you use the function on the same 'path'.
-  risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")],
-                        path = "~/downloaded_maps", # directory to download data
-                        region = "Réunion",
-                        verbose = TRUE)
-terra::plot(risk_rast)
+risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")],
+                      path = "~/downloaded_maps", # directory to download data
+                      region = "Morocco",
+                      mask = TRUE,
+                      plot = TRUE,
+                      interactive = FALSE,
+                      verbose = TRUE)
 
 # We can also save the raster with:
 # terra::writeRaster(risk_rast, filename = "~/output_maps/risk_rast.tif")
 
 
-# Alternatively, if you already have a raster of monthly average temperatures for your region of interest, you can use that as input:
+# Alternativele 1: if you already have a raster of monthly average temperatures for your region of interest, you can use that as input:
 ## load it (here Luxembourg data)
 tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+
 ## import it with `terra`
 tavg_rast <- terra::rast(tavg_file)
 ## and apply the function
-risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")], t_rast = tavg_rast)
-terra::plot(risk_rast)
-# the 1st layer shows the mean number of suitable months per year
-# the 2nd layer is the standard deviation (measure of uncertainty)
+risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")], t_rast = tavg_rast,
+                      mask = TRUE,
+                      plot = TRUE,
+                      interactive = FALSE,
+                      verbose = TRUE)
+
+
+
+# Alternative 2: if the region to project risk is given by the user as a spatial feature (sf) object.
+
+andalucia_sf <- readRDS(system.file("extdata", "andalucia_sf.rds",
+                                    package = "mappestRisk"))
+
+risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")],
+                      path = "~/downloaded_maps", # directory to download data
+                      region = andalucia_sf,
+                      mask = TRUE,
+                      plot = TRUE,
+                      interactive = FALSE,
+                      verbose = TRUE)
 ```
 
-### 5. Interactive map with `leaflet`
+### 5. Interactive map
 
-```{r}
-#example <- interactive_map(x = risk_rast[[1]], map_type = "high",
- #               path_out = paste0(tempdir(), "test_map.html"))
-#example
+(to be completed!)
 
-#htmlwidgets::saveWidget(example,file = "index.html")
-```
-
-A provisional example of the kind of output from `interactive_map()` is shown in the following animated picture:
-
-![](images/mappestRisk_interactive.gif)
-
-## Citation
+### Citation
 
 If using this package, please cite it:
 

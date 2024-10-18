@@ -215,11 +215,13 @@ map_risk <- function(t_vals = NULL,
       sd_mean <- out["sd"]
       par(mfrow = c(1, 2))
       terra::plot(out_mean,
-                  col = palette_bilbao,
-                  main = "Risk Map")
+                  col = palette_bilbao[5:100],
+                  main = "Risk Map",
+                  colNA = "white")
       terra::plot(sd_mean,
                   col = palette_acton,
-                  main = "Uncertainty Map")
+                  main = "Uncertainty Map",
+                  colNA = "white")
       par(mfrow = c(1, 1))
     }
   }
