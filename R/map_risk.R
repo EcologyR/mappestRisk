@@ -195,7 +195,9 @@ map_risk <- function(t_vals = NULL,
 
   if (plot) {
     if (verbose) cat("\nPlotting map...\n")
-    palette_bilbao <- khroma::color(palette = "bilbao",reverse = F)(13)
+    palette_bilbao <- khroma::color(palette = "bilbao",reverse = F)(100)
+    palette_acton <- khroma::color(palette = "acton",reverse = T)(100)
+
     if (interactive && !requireNamespace("leaflet", quietly = TRUE)) {
       if (verbose) message("'interactive' requires having the 'leaflet' package installed. Plotting a static map instead.")
       interactive <- FALSE
@@ -210,10 +212,16 @@ map_risk <- function(t_vals = NULL,
                             alpha =.95)
       print(outmap)
     } else {
-      terra::plot(out,
-                  type = "classes",
-                  col = crop_palette(c(palette_bilbao),
-                                     n_breaks = terra::minmax(out)[2]))
+      out_mean <- out["mean"]
+      sd_mean <- out["sd"]
+      par(mfrow = c(1, 2))
+      terra::plot(out_mean,
+                  col = palette_bilbao,
+                  main = "Risk Map")
+      terra::plot(sd_mean,
+                  col = palette_acton,
+                  main = "Uncertainty Map")
+      par(mfrow = c(1, 1))
     }
   }
 
