@@ -206,9 +206,8 @@ map_risk <- function(t_vals = NULL,
     if (interactive) {
       outmap <- terra::plet(out, y = names(out), collapse = FALSE,
                             legend = "bottomleft",
-                            col = crop_palette(c(palette_bilbao),
-                                               n_breaks = terra::minmax(out)[2]),
-                            tiles = "Esri.WorldTerrain",
+                            col = c(palette_bilbao),
+                            tiles = "Stadia.AlidadeSmoothDark",
                             alpha =.95)
       print(outmap)
     } else {
