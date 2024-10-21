@@ -90,14 +90,26 @@ map_risk <- function(t_vals = NULL,
                      interactive = TRUE
 ) {
 
+
   if (is.atomic(t_vals) && length(t_vals) == 2) {
     t_vals <- t(data.frame(t_vals))
   }
 
-  stopifnot(inherits(t_vals, "data.frame"),
-            ncol(t_vals) == 2,
-            all(na.omit(t_vals)[ , 2] >= na.omit(t_vals)[ , 1])
-  )
+  stopifnot(inherits(t_vals, "data.frame"))
+
+  if (suppressWarnings(any(!c("model_name", "suitability", "tval_left",
+                              "tval_right", "pred_suit", "iter") %in% names(t_vals)))){
+    stop("The argument `t_vals` must be a tibble or data.frame inherited
+         from the output of `mappestRisk::therm_suit_bounds()` function.
+         No modifications of columns of the `t_vals` data.frame are allowed in order
+         to ensure a continuous workflow of the package functions")
+  }
+
+  t_vals <- t_vals |>
+    dplyr::select(tval_left, tval_right) |>
+    tidyr::drop_na()
+
+  stopifnot(all(na.omit(t_vals)[ , 2] >= na.omit(t_vals)[ , 1]))
 
   if (!is.null(t_rast)) {
     stopifnot(inherits(t_rast, "SpatRaster"))
@@ -215,17 +227,17 @@ map_risk <- function(t_vals = NULL,
       sd_mean <- out["sd"]
       par(mfrow = c(1, 2))
       terra::plot(out_mean,
-                  col = palette_bilbao[5:100],
+                  col = c(palette_bilbao)[5:100],
                   main = "Risk Map",
                   colNA = "white")
       terra::plot(sd_mean,
-                  col = palette_acton,
+                  col = c(palette_acton),
                   main = "Uncertainty Map",
                   colNA = "white")
-      par(mfrow = c(1, 1))
     }
   }
 
   if (verbose) cat("\nFinished!\n\n")
   return(out)
 }
+

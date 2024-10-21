@@ -22,9 +22,11 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-The goal of mappestRisk package is to facilitate the transition from development data of pests obtained in lab-controlled conditions to understandable forecasts assessing risk of pest occurrence in a given region.
+The goal of `mappestRisk` package is to facilitate the transition from development data of pests obtained in lab-controlled conditions to understandable forecasts assessing risk of pest occurrence in a given region.
 
-For that purpose, mappestRisk is built upon previous efforts such as `devRate` [@rebaudo2018], `rTPC` and `nls.multstart` packages [@padfield2021] and a methodology for predicting climatic suitability based on fundamental thermal niche as estimated by mechanistic, process-based approaches suggested in @taylor2019 . Therefore, mappestRisk has three different modules: *(1) model fitting & selection* using a set of the most widely used equations describing developmental responses to temperature under the `nls.multstart` [@nls.multstart] and `nlme` [@nlme] frameworks, with visualization of model fitting to help model selection by the user; (2) *thermal traits extraction:* including selection of the suitability threshold guiding the forecast (i.e. obtaining the temperatures at which estimated performance lies upon a performance higher threshold percentage); and (3) *climatic data extraction & visualization* with either exportable rasters or interactive maps with `leaflet` [@leaflet].
+For that purpose, mappestRisk is built upon previous efforts such as `devRate` [@rebaudo2018], `rTPC` and `nls.multstart` packages [@padfield2021] and a methodology for predicting climatic suitability based on fundamental thermal niche as estimated by deductive, process-based approaches (i.e., those based on species performance variation across temperatures), as suggested in @taylor2019 . For now, `mappestRisk` is built for modelling developmental thermal performance curves, as this is the most commonly measured life-history trait in experimental approaches and it has been observed to have major contribution to fitness dependence on temperature [@pawar2024].
+
+Therefore, mappestRisk has three different modules: *(1) model fitting & selection* using a set of the most commonly used equations describing developmental responses to temperature under the `nls.multstart`framework [@nls.multstart] using equation helpers from `rTPC`[@rTPC] and `devRate` [@devRate], with visualization of model fitting to help model selection by the user; (2) *calculation of suitability thermal limits,* which consist on a temperature interval delimiting the optimal performance zone or suitability; and (3) *climatic data extraction & visualization* with either exportable rasters or static or interactive map figures.
 
 ## Installation
 
@@ -44,7 +46,7 @@ devtools::load_all() #for now, provisionally
 
 If you want to clone or fork the repository or open and read some issues, you can find the code [here](https://github.com/EcologyR/mappestRisk).
 
-## Example: mappestRisk workflow
+## Example: `mappestRisk` workflow
 
 ### 1. Fit a thermal performance curve (TPC) to your data:
 
@@ -75,7 +77,7 @@ plot_devmodels(temp = aphid$temperature,
 
 ### 3. Calculate predictions and bootstrap 100 TPCs for propagating parameter uncertainty
 
-After careful examination of fitted TPCs in `plot_devmodels()`, the predictions of the selected models must be allocated in a `data.frame` in order to continue the package workflow towards climatic projection for pest risk analysis. Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures following vignettes in @padfield2021. This can be done with the function `predict_curves()` by setting the argument `propagate_uncertainty` to be `TRUE` and by providing a number of bootstrap sampling iterations in the argument `n_boots_samples`.
+After careful examination of fitted TPCs in `plot_devmodels()`, the predictions of the selected models must be allocated in a `data.frame` in order to continue the package workflow towards climatic projection for pest risk analysis. Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures with residual resampling, following vignettes of `rTPC` package [@padfield2021]. This can be done with the function `predict_curves()` by setting the argument `propagate_uncertainty` to be `TRUE` and by providing a number of bootstrap sampling iterations in the argument `n_boots_samples`.
 
 This function requires some time to compute bootstraps and predictions of the multiple TPCs it generates. Hence, it is important to use only one or few TPC models in the argument `model_name_2boot` based on visual examination from `plot_devmodels()` with reasonable selection. We discourage to bootstrap all TPC models for computational and time consuming reasons.
 
@@ -86,7 +88,7 @@ In our example, we choose three models that performed similarly and, unlike othe
 preds_boots_aphid <-predict_curves(temp = aphid$temperature,
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = "lactin2",
+                                   model_name_2boot = c("briere2", "thomas", "lactin2"),
                                    propagate_uncertainty = TRUE,
                                    n_boots_samples = 100)
 ```
@@ -121,13 +123,15 @@ Using the thermal boundaries provided by the previous function and a set of rast
 ```{r}
 # Downloading temperature data with geodata::wordlclim_global().
 # May take time the first time you use the function on the same 'path'.
-risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")],
+
+risk_rast <- map_risk(t_vals = boundaries_aphid,
                       path = "~/downloaded_maps", # directory to download data
                       region = "Morocco",
                       mask = TRUE,
                       plot = TRUE,
                       interactive = FALSE,
                       verbose = TRUE)
+
 
 # We can also save the raster with:
 # terra::writeRaster(risk_rast, filename = "~/output_maps/risk_rast.tif")
@@ -164,7 +168,9 @@ risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")]
 
 ### 5. Interactive map
 
-(to be completed!)
+Additionally, the `map_risk()` can produce interactive maps based on `terra::plet()` by setting the argument `interactive` to `TRUE`. These maps are html objects that can be displayed in your browser, with one clickable tab for the risk map and another one for the uncertainty map.
+
+You can try yourself this option in your RStudio Viewer.
 
 ### Citation
 
