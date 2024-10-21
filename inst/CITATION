@@ -26,6 +26,6 @@ citEntry(
   # number   = ,
   # pages    = ,
   url      = "https://ecologyr.github.io/templateRpackage/mappestRisk",
-  textVersion = paste("San Segundo Molina, D., Barbosa, A.M., Pérez-Luque, A.J. & Rodríguez-Sánchez, F. 2023. mappestRisk: Create Maps Forecasting Risk of Pest Occurrence",
+  textVersion = paste("San Segundo Molina, D., Barbosa, A.M., Pérez-Luque, A.J. & Rodríguez-Sánchez, F. 2024. mappestRisk: Create Maps Forecasting Risk of Pest Occurrence",
                       "https://ecologyr.github.io/templateRpackage/mappestRisk")
 )

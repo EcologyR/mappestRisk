@@ -120,6 +120,8 @@ print(boundaries_aphid)
 
 Using the thermal boundaries provided by the previous function and a set of raster maps of monthly temperatures for a given region (which can be provided by the user or downloaded by the function), two maps are plotted. The left panel (*risk map*) shows how many months a year (on average across simulations) thermal conditions are suitable for the development of the pest. The right panel (*uncertainty map*) shows the standard deviation of the risk index for each pixel.
 
+Independently of whether `plot` is set to `TRUE` or `FALSE`, the function returns a raster that can be later exported by the user.
+
 ```{r}
 # Downloading temperature data with geodata::wordlclim_global().
 # May take time the first time you use the function on the same 'path'.
@@ -144,7 +146,8 @@ tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 ## import it with `terra`
 tavg_rast <- terra::rast(tavg_file)
 ## and apply the function
-risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")], t_rast = tavg_rast,
+risk_rast <- map_risk(t_vals = boundaries_aphid, 
+                      t_rast = tavg_rast,
                       mask = TRUE,
                       plot = TRUE,
                       interactive = FALSE,
@@ -157,7 +160,7 @@ risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")]
 andalucia_sf <- readRDS(system.file("extdata", "andalucia_sf.rds",
                                     package = "mappestRisk"))
 
-risk_rast <- map_risk(t_vals = boundaries_aphid[ , c("tval_left", "tval_right")],
+risk_rast <- map_risk(t_vals = boundaries_aphid,
                       path = "~/downloaded_maps", # directory to download data
                       region = andalucia_sf,
                       mask = TRUE,
@@ -178,6 +181,7 @@ If using this package, please cite it:
 
 ```{r comment=NA}
 citation("mappestRisk")
+
 ```
 
 ## Funding
