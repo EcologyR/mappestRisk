@@ -6,16 +6,21 @@
 #' produced by [therm_suit_bounds]), the output raster has two layers: mean
 #' and standard deviation.
 #'
-#' @param t_vals Numeric vector of length 2 or data frame with 2 columns
-#' specifying, respectively, the left (minimum) and right (maximum)
-#' temperature bounds for the development of the target species.
+#' @param t_vals a `data.frame` or [dplyr::tibble] inherited from `therm_suit_bounds()`
+#' function without any further modification. It must contain at least one row
+#' of numeric values. Additionally, the minimum ("left") thermal boundary or `tval_left`
+#' must be lower than the maximum ("right") one, or `tval_right` for all rows.
+#' Nominative columns must be present in the input (i.e., `model_name`,
+#' `suitability`, `pred_suit` and `iter`).
+#'
 #' @param t_rast Optional 12-layer [terra::SpatRaster] with monthly mean
 #' temperatures for (at least) the target 'region'. If not provided, global
-#' WorldClim raster layers will be (down)loaded and cropped to 'region'. Note
-#' that the download can be slow the first time you use the function in a new
-#' `path`. If you get a download error, consider running e.g.
-#' [options(timeout = 500)] (or more).
-#' @param region Optional object specifying the region to map. Must overlap the
+#' WorldClim raster layers will be automatically (down)loaded and cropped to
+#' 'region' using [geodata::worldclim_global()].
+#' Note that the download can be slow the first time you use the function in a new
+#' `path`. If you get a download error, consider running e.g [options(timeout = 500)] (or more).
+#'
+#' @param region Mandatory object specifying the region to map. Must overlap the
 #' extent of `t_rast` if both are provided. Can be a [terra::SpatVector]
 #' polygon map (obtained with [terra::vect()]); or an [sf::sf] polygon map
 #' (obtained with [sf::st_as_sf()]), in which case it will be coerced with
@@ -23,13 +28,16 @@
 #' name(s) in English, in which case a countries map will be downloaded and
 #' subset to those countries; or a [terra::SpatExtent] object (obtained with
 #' [terra::ext()]); or a numeric vector of length 4 specifying the region
-#' coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
+#' coordinates as folows: `c(xmin, xmax, ymin, ymax)`. The latter two must be in
 #' the same CRS as`t_rast` if `t_rast` is provided, or in unprojected lon-lat
 #' coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will
 #' cover the entire `t_rast` if provided, or the entire world otherwise.
+#'
 #' @param res Argument to pass to [geodata::worldclim_global()] specifying
 #' the spatial resolution for the raster maps to download, if 't_rast' is not
-#' provided. The default is 2.5 arc-minutes.
+#' provided. The default is 2.5 arc-minutes. Beware that lower values (e.g., 0.5)
+#' may lead to extremely heavy data sets and large computation times.
+#'
 #' @param path Argument to pass to [geodata::worldclim_global()] (if `t_rast`
 #' is not provided) and/or to [geodata::world()] (if 'region' is a vector of
 #' country names) specifying the folder path for the downloaded maps.
@@ -37,17 +45,27 @@
 #' output raster maps should be masked with the borders of the target 'region',
 #' if this is a polygon map or a vector of country names. The default is TRUE.
 #' If FALSE, the entire rectangular extent of 'region' will be used.
+#'
 #' @param verbose Logical value specifying whether to display messages about
 #' what the function is doing at possibly slow steps. The default is FALSE.
 #' Setting it to TRUE can be useful for checking progress when maps are large.
-#' @param plot Logical value specifying whether to plot the results in a map. The default is TRUE.
-#' @param interactive Logical value specifying whether the plotted map should be interactive (if plot=TRUE). The default is TRUE if the 'leaflet' package is installed.
+#'
+#' @param plot Logical value specifying whether to plot the results in a map.
+#' Defaults to TRUE. Note that the function will always return a [terra::SpatRaster]
+#' object even if `plot = TRUE`.
+#'
+#' @param interactive Logical value specifying whether the plotted map should be
+#'  interactive (if plot=TRUE). The default is TRUE if the 'leaflet' package is installed.
+#'
 #' @return This function returns a [terra::SpatRaster] with up to 2 layers:
 #' the ([mean]) number of months with temperature within the species' thermal
 #' bounds; and (if `t_vals` has >1 rows) the standard deviation ([sd]) around
 #' that mean.
+#'
 #' @import terra
+#'
 #' @export
+#'
 #' @examples
 #' # if you have temperature rasters for your region:
 #'
