@@ -10,7 +10,7 @@ The dataset used in the example was originally published in Satar & Yokomi (2022
 therm_suit_bounds(
   preds_tbl = NULL,
   model_name = NULL,
-  suitability_threshold = 75
+  suitability_threshold = NULL
 )
 }
 \arguments{

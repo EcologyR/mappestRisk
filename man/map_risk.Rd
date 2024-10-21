@@ -11,7 +11,9 @@ map_risk(
   res = 2.5,
   path = NULL,
   mask = TRUE,
-  verbose = FALSE
+  verbose = FALSE,
+  plot = TRUE,
+  interactive = TRUE
 )
 }
 \arguments{
@@ -55,6 +57,10 @@ If FALSE, the entire rectangular extent of 'region' will be used.}
 \item{verbose}{Logical value specifying whether to display messages about
 what the function is doing at possibly slow steps. The default is FALSE.
 Setting it to TRUE can be useful for checking progress when maps are large.}
+
+\item{plot}{Logical value specifying whether to plot the results in a map. The default is TRUE.}
+
+\item{interactive}{Logical value specifying whether the plotted map should be interactive (if plot=TRUE). The default is TRUE if the 'leaflet' package is installed.}
 }
 \value{
 This function returns a \link[terra:SpatRaster-class]{terra::SpatRaster} with up to 2 layers:
@@ -71,6 +77,7 @@ and standard deviation.
 }
 \examples{
 # if you have temperature rasters for your region:
+
 tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 tavg_rast <- terra::rast(tavg_file)
 terra:::plot(tavg_rast)
@@ -81,14 +88,19 @@ therm_bounds  # normally you would use the output of `therm_suit_bounds()`
 
 risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast)
 
-terra::plot(risk_rast)
+risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast, interactive = FALSE)
+
+
 
 \dontrun{
 # if you don't have temperature rasters for your region:
+
 risk_rast <- map_risk(t_vals = therm_bounds, path = "downloaded_maps",
 region = c("Portugal", "Spain"), verbose = TRUE)
-terra::plot(risk_rast)
-# if you want to save output map(s) to disk:
+
+
+# to save output map(s) to disk:
+
 terra::writeRaster(risk_rast, "risk_map.tif")  # exported maps can
 be seen with GIS software
 }

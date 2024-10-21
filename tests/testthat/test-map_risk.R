@@ -1,16 +1,20 @@
-library(mappestRisk)
-library(testthat)
-library(terra)
+
 tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 tavg_rast <- terra::rast(tavg_file)
-t_vals <- c(12.5, 21.4)
+t_vals <- dplyr::tibble(model_name = "any model",
+                     suitability = 75,
+                     tval_left = rnorm(1, 15, 1),
+                     tval_right = rnorm(1, 22, 1),
+                     pred_suit = .1,
+                     iter = sample(1:100, 1))
+
 ext_region <- terra::ext(-10, 10, 30, 40)
 
 # Test the function with default arguments:
 test_that("map_risk function works with default arguments", {
   skip_on_ci()
   skip_on_cran()
-  result <- map_risk(t_vals = t_vals, path = "downloaded_maps", verbose = TRUE)
+  result <- map_risk(t_vals = t_vals, path = tempdir(), verbose = TRUE)
   expect_true(is(result, "SpatRaster"))
   expect_equal(terra::nlyr(result), 13)
   # unlink("downloaded_maps")

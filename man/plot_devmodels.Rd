@@ -27,6 +27,10 @@ It must be numeric and of the same length as \code{temp}.}
 
 \item{fitted_parameters}{a \code{tibble} obtained with \code{\link[=fit_devmodels]{fit_devmodels()}} function, including parameter names,
 estimates, standard errors, AICs, and \if{html}{\out{<nls>}} objects (fitted_models) using the \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach.}
+
+\item{species}{\if{html}{\out{<optional>}} a string of the target species that will constitute the plot title. Must be of type "character".}
+
+\item{life_stage}{\if{html}{\out{<optional>}} a string of the target life stage that will constitute the plot subtitle. Must be of type "character".}
 }
 \value{
 A plot with predicted values (development rate) across temperatures for models that have adequately converged

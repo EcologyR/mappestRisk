@@ -96,6 +96,10 @@ map_risk <- function(t_vals = NULL,
   }
 
   stopifnot(inherits(t_vals, "data.frame"))
+  if(is.null(region)) {
+    stop("`region` must be defined by the user. You can use a name from `country_names` or
+         input your own spatial feature object")
+  }
 
   if (suppressWarnings(any(!c("model_name", "suitability", "tval_left",
                               "tval_right", "pred_suit", "iter") %in% names(t_vals)))){

@@ -11,8 +11,8 @@ plot_uncertainties(
   bootstrap_uncertainties_tpcs,
   temp,
   dev_rate,
-  species,
-  life_stage
+  species = NULL,
+  life_stage = NULL
 )
 }
 \arguments{
