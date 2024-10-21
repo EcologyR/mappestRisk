@@ -8,6 +8,13 @@ t_vals <- dplyr::tibble(model_name = "any model",
                      pred_suit = .1,
                      iter = sample(1:100, 1))
 
+tvals_several <- dplyr::tibble(model_name = "any model",
+                               suitability = 75,
+                               tval_left = rnorm(10, 15, 1),
+                               tval_right = rnorm(10, 22, 1),
+                               pred_suit = .1,
+                               iter = sample(1:100, 10))
+
 ext_region <- terra::ext(-10, 10, 30, 40)
 andalucia_sf <- readRDS(system.file("extdata", "andalucia_sf.rds",
                                     package = "mappestRisk"))
@@ -122,7 +129,7 @@ test_that(" the function returns an error when no path to download data is given
             and raster of temperatures neither", {
   expect_error(map_risk(t_vals = t_vals,
                         region = "Spain"),
-               "Please provide an existing'path' to save the downloaded temperature maps.",
+               "Please provide an existing 'path' to save the downloaded temperature maps.",
                fixed = TRUE)
 })
 
@@ -136,16 +143,6 @@ test_that("the function returns an error when providing an invalid character vec
                "Input region(s) nowhere not found. For available region names, run 'data(country_names); country_names'.",
                fixed = TRUE)
 })
-
-# Test that the output of the function is cropped to the extent of the input region
-test_that("the output is cropped to the extent of the input region", {
-  result <- map_risk(t_vals = t_vals,
-                     region = ext_region,
-                     t_rast = tavg_rast,
-                     plot = TRUE)
-  expect_equal(all.equal(ext(result), ext_region), TRUE)
-})
-
 
 # Test that `interactive = TRUE` yields a leaflet object rather than a `SpatRaster`
 test_that("interactive html map is plotted in the Viewer when `interactive = TRUE`", {
@@ -259,4 +256,42 @@ test_that("Luxembourg temperatures tavg_rast cannot be mapped for a region in th
                        region = c(0, 1, 0, 1),
                        path = tempdir()),
     "There's no overlap between 'region' and 't_rast'.")
+})
+
+# Test that the output of the function is cropped to the extent of the input region
+test_that("Luxembourg temperatures tavg_rast cannot be mapped for a region in the equator", {
+  result <- map_risk(t_vals = t_vals,
+                     t_rast = tavg_rast,
+                     region = c(6, 6.10, 49.7, 50),
+                     path = tempdir())
+  expect_true(all(terra::ext(result) == terra::ext(c(6, 6.10, 49.7, 50))))
+    })
+
+# Test that if more than one row are found, the output has two layers ("mean" and "sd)
+test_that("resulting SpatRaster has two layers if t_vals has more than one row", {
+
+  result <- map_risk(t_vals = tvals_several,
+                     region = "Spain",
+                     path = tempdir())
+  expect_true(terra::nlyr(result) == 2)
+})
+
+# Test that if more than one row are found, the output has two layers named "mean" and "sd"
+test_that("resulting SpatRaster has two layers if t_vals has more than one row", {
+
+  result <- map_risk(t_vals = tvals_several,
+                     region = "Spain",
+                     path = tempdir())
+  expect_true(all(names(result) == c("mean", "sd")))
+})
+
+# Test that if more than one row are found, the output leaflet object has two layers
+test_that("resulting SpatRaster has two layers if t_vals has more than one row", {
+
+  result <- map_risk(t_vals = tvals_several,
+                     region = "Spain",
+                     path = tempdir(),
+                     interactive = TRUE)
+  layer_names <- result$x$calls[[6]]$args[[1]] # where layer names are located in a leaflet object
+  expect_true(all(layer_names == c("mean", "sd")))
 })
