@@ -9,22 +9,29 @@ t_vals <- dplyr::tibble(model_name = "any model",
                      iter = sample(1:100, 1))
 
 ext_region <- terra::ext(-10, 10, 30, 40)
+andalucia_sf <- readRDS(system.file("extdata", "andalucia_sf.rds",
+                                    package = "mappestRisk"))
+
 
 # Test the function with default arguments:
 test_that("map_risk function works with default arguments", {
-  skip_on_ci()
-  skip_on_cran()
-  result <- map_risk(t_vals = t_vals, path = tempdir(), verbose = TRUE)
+  result <- map_risk(t_vals = t_vals,
+                     region =  "Spain",
+                     path = tempdir(),
+                     verbose = TRUE)
   expect_true(is(result, "SpatRaster"))
-  expect_equal(terra::nlyr(result), 13)
-  # unlink("downloaded_maps")
-})
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
+  })
 
 # Test the function with provided rasters:
 test_that("map_risk function works with provided rasters", {
-  result <- map_risk(t_vals = t_vals, t_rast = tavg_rast)
+  result <- map_risk(t_vals = t_vals,
+                     path = tempdir(),
+                     t_rast = tavg_rast)
   expect_true(is(result, "SpatRaster"))
-  expect_equal(terra::nlyr(result), 13)
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
 })
 
 # Test the function with a SpatVector region:
@@ -32,7 +39,9 @@ region <- terra::vect(system.file("ex/lux.shp", package="terra"))
 test_that("map_risk function works with a SpatVector region", {
   result <- map_risk(t_vals = t_vals, region = region, t_rast = tavg_rast)
   expect_true(is(result, "SpatRaster"))
-  expect_equal(terra::nlyr(result), 13)
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
+
 })
 
 # Test the function with a SpatExtent region:
@@ -40,45 +49,49 @@ extent <- ext(-10, 10, 30, 50)
 test_that("map_risk function works with a SpatExtent region", {
   result <- map_risk(t_vals = t_vals, region = extent, t_rast = tavg_rast)
   expect_true(is(result, "SpatRaster"))
-  expect_equal(terra::nlyr(result), 13)
-})
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
+  })
 
 # Test the function with a numeric vector region:
 region <- c(-10, 10, 30, 50)
 test_that("map_risk function works with a numeric vector region", {
-  result <- map_risk(t_vals = t_vals, t_rast = tavg_rast, region = region)
+  result <- map_risk(t_vals = t_vals,
+                     t_rast = tavg_rast,
+                     region = region)
   expect_true(is(result, "SpatRaster"))
-  expect_equal(terra::nlyr(result), 13)
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
 })
 
 # Test the function with a character region:
-region <- "Luxembourg"
+region <- "Spain"
 test_that("map_risk function works with a character vector region", {
-  skip_on_ci()
-  skip_on_cran()
-  result <- map_risk(t_vals = t_vals, region = region, path = "downloaded_maps")
+  result <- map_risk(t_vals = t_vals,
+                     region = region,
+                     path = tempdir())
   expect_true(is(result, "SpatRaster"))
-  expect_equal(terra::nlyr(result), 13)
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
+
 })
 
 # Test the function with multiple character regions:
 test_that("map_risk works for multiple character regions", {
-  region <- c("Luxembourg", "Belgium")
-  result <- map_risk(t_vals = t_vals, region = region, path = "downloaded_maps")
+  region <- c("Spain", "Portugal")
+  result <- map_risk(t_vals = t_vals, region = region, path = tempdir())
   expect_true(is(result, "SpatRaster"))
-  expect_equal(terra::nlyr(result), 13)
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
+
 })
 
-# Test that the values outside the temperature bounds are NA
-test_that("values outside temperature bounds are NA", {
-  result <- map_risk(t_vals = t_vals, t_rast = tavg_rast)
-  expect_true(all(result[[1]][result[[1]] < 12.5 | result[[1]] > 21.4] == 0))
-})
 
 # Test that the function returns the same result when using a SpatExtent or a SpatVector as input for region
-ext_region <- terra::ext(tavg_rast)
-vec_region <- terra::vect(ext_region, crs = "epsg:4326")
+
 test_that("the function returns the same result with SpatExtent and SpatVector input for region", {
+  ext_region <- terra::ext(tavg_rast)
+  vec_region <- terra::vect(ext_region, crs = "epsg:4326")
   result1 <- map_risk(t_vals = t_vals, region = ext_region, t_rast = tavg_rast)
   result2 <- map_risk(t_vals = t_vals, region = vec_region, t_rast = tavg_rast)
   expect_identical(all.equal(result1, result2), TRUE)
@@ -86,66 +99,164 @@ test_that("the function returns the same result with SpatExtent and SpatVector i
 
 # Test that the function returns an error when providing an invalid numeric vector for t_vals
 test_that("the function returns an error when providing an invalid numeric vector for region", {
-  expect_error(map_risk(t_vals = t_vals[1], region = c(-10, 10, 30, 40), t_rast = tavg_rast))
-})
+  expect_error(map_risk(t_vals = c(12.5, 20.3), region = c(-10, 10, 30, 40), t_rast = tavg_rast),
+               "The argument `t_vals` must be a tibble or data.frame inherited
+from the output of `mappestRisk::therm_suit_bounds()` function.
+No modifications of columns of the `t_vals` data.frame are allowed in order
+to ensure a continuous workflow of the package functions",
+               fixed = TRUE)
+  })
 
 # Test that the function returns an error when providing an invalid numeric vector for region
 test_that("the function returns an error when providing an invalid numeric vector for region", {
-  expect_error(map_risk(t_vals = t_vals, region = c(-10, 10, 30), t_rast = tavg_rast))
+  expect_error(map_risk(t_vals = t_vals,
+                        region = c(-10, 10, 30),
+                        path = tempdir(),
+                        t_rast = tavg_rast),
+               "When provided as a numeric vector, 'region' must have length 4 (xmin, xmax, ymin, ymax) in unprojected geographic coordinates (EPSG:4326).",
+               fixed = TRUE)
 })
+
+# Test that the function returns an error when no valid path to download data is given
+test_that(" the function returns an error when no path to download data is given
+            and raster of temperatures neither", {
+  expect_error(map_risk(t_vals = t_vals,
+                        region = "Spain"),
+               "Please provide an existing'path' to save the downloaded temperature maps.",
+               fixed = TRUE)
+})
+
 
 # Test that the function returns an error when providing an invalid character vector for region
 test_that("the function returns an error when providing an invalid character vector for region", {
-  expect_error(map_risk(t_vals = t_vals, region = "nowhere", t_rast = tavg_rast))
+  expect_error(map_risk(t_vals = t_vals,
+                        region = "nowhere",
+                        path = tempdir(),
+                        t_rast = tavg_rast),
+               "Input region(s) nowhere not found. For available region names, run 'data(country_names); country_names'.",
+               fixed = TRUE)
 })
 
 # Test that the output of the function is cropped to the extent of the input region
 test_that("the output is cropped to the extent of the input region", {
-  result <- map_risk(t_vals = t_vals, region = ext_region, t_rast = tavg_rast)
+  result <- map_risk(t_vals = t_vals,
+                     region = ext_region,
+                     t_rast = tavg_rast,
+                     plot = TRUE)
   expect_equal(all.equal(ext(result), ext_region), TRUE)
 })
 
-# Test that the function returns the same result when using a pre-existing SpatRaster for t_rast and downloading a new SpatRaster with worldclim_global()
-# test_that("map_risk returns same result for t_rast and worldclim_global()", {
-#   skip_on_ci()
-#   skip_on_cran()
-#
-#   # Create SpatRaster with worldclim_global()
-#   wclim <- geodata::worldclim_global(var = "tavg", res = 2.5, path = "downloaded_maps")
-#
-#   # Run function with t_rast
-#   result_t_rast <- map_risk(t_vals = t_vals, t_rast = tavg_rast, verbose = TRUE)
-#
-#   # Run function with worldclim_global()
-#   result_worldclim <- map_risk(t_vals = t_vals, region = region, res = res, t_rast = wclim, verbose = TRUE)
-#
-#   # Test output
-#   expect_true(all.equal(result_t_rast, result_worldclim))
-# })
 
-# Binary output, with temperature range covering the entire range of the data, should produce only 0s and 1s
-test_that("Binary output produces SpatRaster with pixel values of 0 or 1", {
-  result <- map_risk(t_vals = t_vals, t_rast = tavg_rast, output = "binary")
-  monthly_layers <- result[[-13]]
-  out_values <- as.vector(terra::values(monthly_layers))
-  out_values <- out_values[!is.nan(out_values)]
-  expect_true(all(out_values %in% c(0, 1), na.rm = TRUE))
+# Test that `interactive = TRUE` yields a leaflet object rather than a `SpatRaster`
+test_that("interactive html map is plotted in the Viewer when `interactive = TRUE`", {
+  result <- map_risk(t_vals = t_vals,
+                     region = "Spain",
+                     path = tempdir(),
+                     interactive = TRUE)
+  expect_true(any(class(result) == "leaflet"))
+  })
+
+# Test that `mask = FALSE` is adjusted with the extent
+test_that("`mask = FALSE` gives more cells with NA values than mask = TRUE", {
+  result <- map_risk(t_vals = t_vals,
+                     region = "Spain",
+                     mask = FALSE,
+                     path = tempdir(),
+                     interactive = FALSE)
+  result_masked <- map_risk(t_vals = t_vals,
+                            region = "Spain",
+                            mask = TRUE,
+                            path = tempdir(),
+                            interactive = FALSE)
+  how_many_nas_nomask <- nrow(result[which(!is.na(result[]))])
+  how_many_nas_mask <- nrow(result_masked[which(!is.na(result_masked[]))])
+  expect_true(how_many_nas_mask < how_many_nas_nomask)
 })
 
-# Value output, with temperature range covering the entire range of the data, should produce pixel values between the min and max temperature
-test_that("Value output produces SpatRaster with pixel values between min and max temperature", {
-  result <- map_risk(t_vals = c(-50, 50), t_rast = tavg_rast, output = "value")
-  expect_true(all(result[] >= -50 & result[] <= 50, na.rm = TRUE))
+# Test that different CRSs are re-projected to be the same
+test_that("t_rast with EPSG: 3039 is converted to EPSG: 4326 for masking", {
+  andalucia_sf <- sf::st_transform(andalucia_sf, 3035)
+  result <- map_risk(t_vals = t_vals,
+                     region = andalucia_sf,
+                     mask = FALSE,
+                     path = tempdir(),
+                     interactive = FALSE)
+  expect_true(terra::same.crs(tavg_rast, result)
+  )
 })
 
-# Binary output, with temperature range outside the range of the data, should produce only 0s
-test_that("Binary output with temperature range outside data range produces all 0s", {
-  result <- map_risk(t_vals = c(-100, -50), t_rast = tavg_rast, output = "binary")
-  expect_true(all(result[] == 0, na.rm = TRUE))
+# Test that mask should be logical
+test_that("using a non-logical argument for `mask` drops an error", {
+  expect_error(result <- map_risk(t_vals = t_vals,
+                                  region = "Spain",
+                                  mask = "true",
+                                  path = tempdir()),
+               "`mask` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.",
+               fixed = TRUE)
+               })
+
+# Test that interactive should be logical
+test_that("using a non-logical argument for `interactive` drops an error", {
+  expect_error(result <- map_risk(t_vals = t_vals,
+                                  region = "Spain",
+                                  interactive = "yes",
+                                  path = tempdir()),
+               "`interactive` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.",
+               fixed = TRUE)
 })
 
-# Value output, with temperature range outside the range of the data, should produce only NAs
-test_that("Value output with temperature range outside data range produces all NAs", {
-  result <- map_risk(t_vals = c(-100, -50), output = "value", t_rast = tavg_rast)
-  expect_true(all(is.na(result[])))
+# Test that plot should be logical
+test_that("using a non-logical argument for `plot` drops an error", {
+  expect_error(result <- map_risk(t_vals = t_vals,
+                                  region = "Spain",
+                                  plot = "png",
+                                  path = tempdir()),
+               "`plot` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.",
+               fixed = TRUE)
+})
+
+# Test that verbose should be logical
+test_that("using a non-logical argument for `verbose` drops an error", {
+  expect_error(result <- map_risk(t_vals = t_vals,
+                                  region = "Spain",
+                                  verbose = "no",
+                                  path = tempdir()),
+               "`verbose` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.",
+               fixed = TRUE)
+})
+
+# Test that t_rast should be a SpatRast
+test_that("t_rast being a matrix drops an error", {
+  expect_error(result <- map_risk(t_vals = t_vals,
+                                  t_rast = as.matrix(tavg_rast),
+                                  path = tempdir()),
+               )
+})
+
+# Test that t_rast should be a SpatRast has 12 layers (one for each month)
+test_that("t_rast with just one layer gives an error", {
+  expect_error(result <- map_risk(t_vals = t_vals,
+                                  t_rast = tavg_rast[[1]],
+                                  path = tempdir()),
+  )
+  })
+
+# Test that no overlapping yields an error for an sf object
+test_that("Luxembourg temperatures tavg_rast cannot be mapped for Andalucia", {
+  expect_error(
+    result <- map_risk(t_vals = t_vals,
+                       t_rast = tavg_rast,
+                       region = andalucia_sf,
+                       path = tempdir()),
+               "There's no overlap between 'region' and 't_rast'.")
+  })
+
+# Test that no overlapping yields an error for a extent
+test_that("Luxembourg temperatures tavg_rast cannot be mapped for a region in the equator", {
+  expect_error(
+    result <- map_risk(t_vals = t_vals,
+                       t_rast = tavg_rast,
+                       region = c(0, 1, 0, 1),
+                       path = tempdir()),
+    "There's no overlap between 'region' and 't_rast'.")
 })

@@ -105,18 +105,30 @@ map_risk <- function(t_vals = NULL,
                      mask = TRUE,
                      verbose = FALSE,
                      plot = TRUE,
-                     interactive = TRUE
-) {
+                     interactive = FALSE
+                     ) {
 
-
-  if (is.atomic(t_vals) && length(t_vals) == 2) {
-    t_vals <- t(data.frame(t_vals))
+  if (class(mask) != "logical" ) {
+    stop("`mask` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
-
-  stopifnot(inherits(t_vals, "data.frame"))
-  if(is.null(region)) {
+  if (class(verbose) != "logical" ) {
+    stop("`verbose` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
+  }
+  if (class(plot) != "logical" ) {
+    stop("`plot` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
+  }
+  if (class(interactive) != "logical" ) {
+    stop("`interactive` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
+  }
+  if (!any(class(t_vals) == "data.frame")){
+    stop("The argument `t_vals` must be a tibble or data.frame inherited
+from the output of `mappestRisk::therm_suit_bounds()` function.
+No modifications of columns of the `t_vals` data.frame are allowed in order
+to ensure a continuous workflow of the package functions")
+  }
+  if (is.null(region) && is.null(t_rast)) {
     stop("`region` must be defined by the user. You can use a name from `country_names` or
-         input your own spatial feature object")
+         input your own spatial feature object or your own extent")
   }
 
   if (suppressWarnings(any(!c("model_name", "suitability", "tval_left",
@@ -141,7 +153,7 @@ map_risk <- function(t_vals = NULL,
 
   if (is.null(path)) {
     if (is.null(t_rast)) {
-      stop("Please provide a 'path' to save the downloaded temperature maps.")
+      stop("Please provide an existing 'path' to save the downloaded temperature maps.")
     }
     if (is.character(region)) {
       stop("Please provide a 'path' to save the downloaded region maps.")
@@ -194,7 +206,7 @@ map_risk <- function(t_vals = NULL,
     region <- terra::project(region, t_rast)
   }
 
-  if (is.null(terra::intersect(region, terra::ext(t_rast)))) {
+  if (is.null(terra::intersect(terra::ext(region), terra::ext(t_rast)))) {
     stop("There's no overlap between 'region' and 't_rast'.")
   }
 
@@ -225,6 +237,7 @@ map_risk <- function(t_vals = NULL,
              terra::app(t_rast_sum, "sd", na.rm = TRUE))
   } else {
     out <- t_rast_sum
+    names(out) <- "mean"
   }
 
   if (plot) {
@@ -244,22 +257,33 @@ map_risk <- function(t_vals = NULL,
                             tiles = "Stadia.AlidadeSmoothDark",
                             alpha =.95)
       print(outmap)
+      return(outmap)
+
     } else {
       out_mean <- out["mean"]
-      sd_mean <- out["sd"]
-      par(mfrow = c(1, 2))
-      terra::plot(out_mean,
-                  col = c(palette_bilbao)[5:100],
-                  main = "Risk Map",
-                  colNA = "white")
-      terra::plot(sd_mean,
-                  col = c(palette_acton),
-                  main = "Uncertainty Map",
-                  colNA = "white")
-    }
-  }
+      if(nrow(t_vals) > 1) {
+        sd_mean <- out["sd"]
+        par(mfrow = c(1, 2))
+        terra::plot(out_mean,
+                    col = c(palette_bilbao)[5:100],
+                    main = "Risk Map",
+                    colNA = "white")
 
+        terra::plot(sd_mean,
+                    col = c(palette_acton),
+                    main = "Uncertainty Map",
+                    colNA = "white")
+      } else {
+        par(mfrow = c(1, 1))
+        terra::plot(out_mean,
+                    col = c(palette_bilbao)[5:100],
+                    main = "Risk Map",
+                    colNA = "white")
+        }
+     }
+    return(out)
+    }
   if (verbose) cat("\nFinished!\n\n")
-  return(out)
+
 }
 
