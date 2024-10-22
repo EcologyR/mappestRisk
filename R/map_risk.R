@@ -151,23 +151,6 @@
 #'                                  interactive = FALSE,
 #'                                  verbose = TRUE)
 #'
-#'
-#'
-#'
-#'
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 map_risk <- function(t_vals = NULL,
                      t_rast = NULL,
