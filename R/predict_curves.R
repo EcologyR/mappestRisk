@@ -55,6 +55,8 @@
 #'
 #' @export
 #'
+#' @importFrom stats coef formula na.exclude reformulate
+#'
 #' @examples
 #' data("aphid")
 #'
@@ -155,7 +157,7 @@ predict_curves <- function(temp = NULL,
   predict2fill_complete <- predict2fill |>
     dplyr::mutate(tidyr::nest(devdata)) |>
     dplyr::mutate(coefs = purrr::map(.x = model_fit,
-                                     .f = coef))
+                                     .f = stats::coef))
 
   if (propagate_uncertainty == FALSE) {
     tpc_estimate <- dplyr::tibble(model_name = predict2fill_complete$model_name,

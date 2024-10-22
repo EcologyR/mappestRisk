@@ -1,0 +1,30 @@
+## global Variables for R CMD Checking
+utils::globalVariables(c("available_models", # <- fit_devmodels(),  model_name_translate(),
+                                            #     plot_devmodels() and predict_curves()
+                         "tval_left", # <- map_risk()
+                         "tval_right", # <- map_risk()
+                         "country_names", # <- map_risk()
+                         "is", # <- map_risk()
+                         "par", # <- map_risk()
+                         "model_name", # <- model_name_translate, plot_devmodels() and predict_curves()
+                         "source_model_name", # <- model_name_translate
+                         "model_AIC", # <- plot_devmodels() and predict_curves()
+                         "param_est", # <- plot_devmodels() and predict_curves()
+                         "working_formula", # <- plot_devmodels()
+                         "n_params", # <- plot_devmodels() and predict_curves()
+                         "preds", # <- plot_devmodels() and predict_curves()
+                         "formula", # <- plot_devmodels()
+                         "aic", # <- plot_devmodels()
+                         "temperature", # <- plot_devmodels()
+                         "development_rate", # <- plot_devmodels()
+                         "curvetype", # <- predict_curves()
+                         "pred", # <- predict_curves() and therm_suit_bounds()
+                         "iter", # <- predict_curves() and therm_suit_bounds()
+                         "model_fit", # <- predict_curves()
+                         "param_est", # <- predict_curves()
+                         "formula", # <- predict_curves() and start_vals_devRate()
+                         "bootstrap", # <- predict_curves()
+                         "coefs", # <- predict_curves()
+                         "temp" # <- therm_suit_bounds(),
+                         ))
+

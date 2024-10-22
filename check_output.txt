@@ -1,0 +1,853 @@
+══ Documenting ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+══ Building ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Setting env vars:
+• CFLAGS    : -Wall -pedantic
+• CXXFLAGS  : -Wall -pedantic
+• CXX11FLAGS: -Wall -pedantic
+• CXX14FLAGS: -Wall -pedantic
+• CXX17FLAGS: -Wall -pedantic
+• CXX20FLAGS: -Wall -pedantic
+── R CMD build ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+      ✔  checking for file 'C:\Users\dario\Documents\GitHub\r_packages_course\mappestRisk/DESCRIPTION'
+      ─  preparing 'mappestRisk': (2.9s)
+   checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   ✔  checking DESCRIPTION meta-information
+      ─  checking for LF line-endings in source and make files and shell scripts (3.1s)
+      ─  checking for empty or unneeded directories
+  Removed empty directory      Removed empty directory 'mappestRisk/tests/testthat/_snaps'
+      ─  building 'mappestRisk_0.0.0.9000.tar.gz'
+     
+══ Checking ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Setting env vars:
+• _R_CHECK_CRAN_INCOMING_REMOTE_               : FALSE
+• _R_CHECK_CRAN_INCOMING_                      : FALSE
+• _R_CHECK_FORCE_SUGGESTS_                     : FALSE
+• _R_CHECK_PACKAGES_USED_IGNORE_UNUSED_IMPORTS_: FALSE
+• NOT_CRAN                                     : true
+── R CMD check ───────────────────────────────────────────────────────────────────────────────────────────────────────────
+-    \  ─  using log directory 'C:/Users/dario/AppData/Local/Temp/RtmpsnCz1U/file2db076b548f1/mappestRisk.Rcheck'
+─  using R version 4.2.0 (2022-04-22 ucrt)
+─  using platform: x86_64-w64-mingw32 (64-bit)
+─  using session charset: UTF-8
+|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-    \  ─  using options '--no-manual --as-cran' (22.3s)
+|  ✔  checking for file 'mappestRisk/DESCRIPTION'
+─  this is package 'mappestRisk' version '0.0.0.9000'
+─  package encoding: UTF-8
+✔  checking package namespace information
+   checking package dependencies .../-\|/-\     checking package dependencies ... |  ✔  checking package dependencies (1.3s)
+   checking if this is a source package .../  ✔  checking if this is a source package
+✔  checking if there is a namespace
+-\    |     checking for executable files .../-\     checking for executable files ... |  ✔  checking for executable files (726ms)
+   checking for hidden files and directories .../     checking for hidden files and directories ... -  ✔  checking for hidden files and directories
+   checking for portable file names ...\     checking for portable file names ... |  ✔  checking for portable file names
+/     checking whether package 'mappestRisk' can be installed ...-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|     checking whether package 'mappestRisk' can be installed ... /  W  checking whether package 'mappestRisk' can be installed (9.7s)
+   Found the following significant warnings:
+     Warning: package 'carData' was built under R version 4.2.2
+   See 'C:/Users/dario/AppData/Local/Temp/RtmpsnCz1U/file2db076b548f1/mappestRisk.Rcheck/00install.out' for details.
+   checking installed package size ...-\     checking installed package size ... |  ✔  checking installed package size
+/-    \  ✔  checking package directory (396ms)
+   checking for future file timestamps ...|     checking for future file timestamps ... /  N  checking for future file timestamps
+   unable to verify current time
+-     checking DESCRIPTION meta-information ...\|     checking DESCRIPTION meta-information ... /  ✔  checking DESCRIPTION meta-information (355ms)
+N  checking top-level files
+   Non-standard files/directories found at top level:
+-       'check_output.txt' 'downloaded_maps' 'gadm36_adm0_r5_pk.rds'
+     'interactive_map.html' 'references.bib'
+✔  checking for left-over files
+✔  checking index information
+   checking package subdirectories ...\|     checking package subdirectories ... /  ✔  checking package subdirectories
+   checking R files for non-ASCII characters ...-\     checking R files for non-ASCII characters ... |  W  checking R files for non-ASCII characters
+/     Found the following file with non-ASCII characters:
+     auxiliary_functions_modelfitting.R
+-     Portable packages must use only ASCII characters in their R code,
+   except perhaps in comments.
+   Use \uxxxx escapes for other characters.
+   checking R files for syntax errors ...\     checking R files for syntax errors ... |  ✔  checking R files for syntax errors
+   checking whether the package can be loaded .../-\|/-\|/-\|     checking whether the package can be loaded ... /  ✔  checking whether the package can be loaded (2.5s)
+   checking whether the package can be loaded with stated dependencies ...-\|/-\|/-\|/     checking whether the package can be loaded with stated dependencies ... -  ✔  checking whether the package can be loaded with stated dependencies (2.5s)
+   checking whether the package can be unloaded cleanly ...\|/-\|/-\|/-\     checking whether the package can be unloaded cleanly ... |  ✔  checking whether the package can be unloaded cleanly (2.6s)
+   checking whether the namespace can be loaded with stated dependencies .../-\|/-\|/-\|     checking whether the namespace can be loaded with stated dependencies ... /  ✔  checking whether the namespace can be loaded with stated dependencies (2.5s)
+   checking whether the namespace can be unloaded cleanly ...-\|/-\|/-\|/     checking whether the namespace can be unloaded cleanly ... -  ✔  checking whether the namespace can be unloaded cleanly (2.5s)
+   checking loading without being on the library search path ...\|/-\|/-\|/-\|     checking loading without being on the library search path ... /  ✔  checking loading without being on the library search path (2.7s)
+   checking dependencies in R code ...-\|/-\|/-\|/-\|/-\|     checking dependencies in R code ... /  W  checking dependencies in R code (3.8s)
+   '::' or ':::' imports not declared from:
+     'geodata' 'leaflet' 'methods' 'minpack.lm' 'progress' 'purrr' 'tidyr'
+   'loadNamespace' or 'requireNamespace' call not declared from: 'leaflet'
+   'library' or 'require' call to 'car' which was already attached by Depends.
+     Please remove these calls from your code.
+   Namespace in Imports field not imported from: 'boot'
+     All declared Imports should be used.
+   Package in Depends field not imported from: 'car'
+     These packages need to be imported from (in the NAMESPACE file)
+     for when this namespace is loaded but not attached.
+   checking S3 generic/method consistency ...-\|/-\|/-\|/-     checking S3 generic/method consistency ... \  ✔  checking S3 generic/method consistency (2.7s)
+   checking replacement functions ...|/-\|/-\|/-\     checking replacement functions ... |  ✔  checking replacement functions (2.3s)
+   checking foreign function calls .../-\|/-\|/-\|     checking foreign function calls ... /  ✔  checking foreign function calls (2.3s)
+   checking R code for possible problems ...-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/     checking R code for possible problems ... -  N  checking R code for possible problems (12.4s)
+   extract_param_names: no visible global function definition for 'coef'
+   fit_devmodels: no visible binding for global variable
+     'available_models'
+   map_risk: no visible binding for global variable 'tval_left'
+   map_risk: no visible binding for global variable 'tval_right'
+   map_risk: no visible binding for global variable 'country_names'
+   map_risk: no visible global function definition for 'is'
+   map_risk: no visible global function definition for 'par'
+   model_name_translate: no visible binding for global variable
+     'available_models'
+   model_name_translate: no visible binding for global variable
+     'model_name'
+   model_name_translate: no visible binding for global variable
+     'source_model_name'
+   plot_devmodels: no visible binding for global variable 'model_name'
+   plot_devmodels: no visible binding for global variable 'model_AIC'
+   plot_devmodels: no visible binding for global variable 'param_est'
+   plot_devmodels: no visible binding for global variable
+     'available_models'
+   plot_devmodels: no visible binding for global variable
+     'working_formula'
+   plot_devmodels: no visible binding for global variable 'n_params'
+   plot_devmodels: no visible binding for global variable 'preds'
+   plot_devmodels: no visible binding for global variable 'formula'
+   plot_devmodels: no visible binding for global variable 'aic'
+   plot_devmodels: no visible binding for global variable 'temperature'
+   plot_devmodels: no visible binding for global variable
+     'development_rate'
+   plot_uncertainties: no visible binding for global variable 'curvetype'
+   plot_uncertainties: no visible binding for global variable 'pred'
+   plot_uncertainties: no visible binding for global variable 'iter'
+   predict_curves: no visible binding for global variable 'model_name'
+   predict_curves: no visible binding for global variable 'model_AIC'
+   predict_curves: no visible binding for global variable 'model_fit'
+   predict_curves: no visible binding for global variable 'param_est'
+predict_curves: no visible binding for global\     predict_curves: no visible binding for global variable
+     'available_models'
+   predict_curves: no visible binding for global variable
+     'working_formula'
+   predict_curves: no visible binding for global variable 'n_params'
+   predict_curves: no visible binding for global variable 'preds'
+   predict_curves: no visible binding for global variable 'formula'
+   predict_curves: no visible binding for global variable 'coef'
+   predict_curves: no visible global function definition for 'reformulate'
+   predict_curves: no visible binding for global variable 'na.exclude'
+   predict_curves: no visible binding for global variable 'bootstrap'
+   predict_curves: no visible binding for global variable 'coefs'
+   predict_curves: no visible binding for global variable 'pred'
+   sim_tpc_gridparams: no visible global function definition for 'filter'
+   sim_tpc_gridparams: no visible binding for global variable
+     'available_models'
+   sim_tpc_gridparams: no visible global function definition for
+     'reformulate'
+   sim_tpc_gridparams: no visible global function definition for 'mutate'
+   sim_tpc_gridparams: no visible global function definition for 'tibble'
+   sim_tpc_gridparams: no visible binding for global variable
+     'pred_devrate'
+   start_vals_devRate: no visible global function definition for
+     'reformulate'
+   start_vals_devRate: no visible binding for global variable 'formula'
+   start_vals_devRate: no visible binding for global variable
+     'start_value'
+   therm_suit_bounds: no visible binding for global variable 'pred'
+   therm_suit_bounds: no visible binding for global variable 'temp'
+   therm_suit_bounds: no visible binding for global variable 'iter'
+   Undefined global functions or variables:
+     aic available_models bootstrap coef coefs country_names curvetype
+     development_rate filter formula is iter model_AIC model_fit
+     model_name mutate n_params na.exclude par param_est pred pred_devrate
+     preds reformulate source_model_name start_value temp temperature
+     tibble tval_left tval_right working_formula
+   Consider adding
+     importFrom("graphics", "par")
+|       importFrom("methods", "is")
+     importFrom("stats", "coef", "filter", "formula", "na.exclude",
+                "reformulate")
+   to your NAMESPACE file (and ensure that your DESCRIPTION Imports field
+   contains 'methods').
+   
+   Found the following assignments to the global environment:
+   File 'mappestRisk/R/predict_curves.R':
+     assign("model_i", model_i, envir = .GlobalEnv)
+     assign("predict_model_i", predict_model_i, envir = .GlobalEnv)
+     assign("coefs_i", coefs_i, envir = .GlobalEnv)
+     assign("temp_data_i", temp_data_i, envir = .GlobalEnv)
+     assign("formula_i", formula_i, envir = .GlobalEnv)
+     assign("temp_fit", temp_fit, envir = .GlobalEnv)
+   checking Rd files .../-     checking Rd files ... \  ✔  checking Rd files
+   checking Rd metadata ...|     checking Rd metadata ... /  ✔  checking Rd metadata
+   checking Rd line widths ...-     checking Rd line widths ... \  ✔  checking Rd line widths
+   checking Rd cross-references ...|/     checking Rd cross-references ... -  W  checking Rd cross-references (336ms)
+   Missing link or links in documentation object 'map_risk.Rd':
+     'options(timeout = 500)'
+   
+   See section 'Cross-references' in the 'Writing R Extensions' manual.
+   checking for missing documentation entries ...\|/-\|/-\|/     checking for missing documentation entries ... -  ✔  checking for missing documentation entries (2.3s)
+   checking for code/documentation mismatches ...\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-     checking for code/documentation mismatches ... \  ✔  checking for code/documentation mismatches (7.3s)
+   checking Rd \usage sections ...|/-\|/-\|/-\|/-     checking Rd \usage sections ... \  ✔  checking Rd \usage sections (3s)
+   checking Rd contents ...|/     checking Rd contents ... -  ✔  checking Rd contents
+   checking for unstated dependencies in examples ...\|     checking for unstated dependencies in examples ... /  ✔  checking for unstated dependencies in examples
+   checking contents of 'data' directory ...-     checking contents of 'data' directory ... \  ✔  checking contents of 'data' directory
+   checking data for non-ASCII characters ...|/     checking data for non-ASCII characters ... -  W  checking data for non-ASCII characters
+     Warning: found non-ASCII strings
+     '<c3><85>land' in object 'country_names'
+     'C<c3><b4>te d'Ivoire' in object 'country_names'
+     'Cura<c3><a7>ao' in object 'country_names'
+     'R<c3><a9>union' in object 'country_names'
+     'S<c3><a3>o Tom<c3><a9> and Pr<c3><ad>ncipe' in object 'country_names'
+\  ✔  checking LazyData
+   checking data for ASCII and uncompressed saves ...|/     checking data for ASCII and uncompressed saves ... -  ✔  checking data for ASCII and uncompressed saves
+\    |     checking examples .../-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/     checking examples ... -  E  checking examples (13.5s)
+   Running examples in 'mappestRisk-Ex.R' failed
+\     The error most likely occurred in:
+   
+|     > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+   > ### Name: map_risk
+   > ### Title: Map pest risk
+   > ### Aliases: map_risk
+   > 
+   > ### ** Examples
+   > 
+   > # if you have temperature rasters for your region:
+   > 
+   > tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+   > tavg_rast <- terra::rast(tavg_file)
+   > terra:::plot(tavg_rast)
+   > 
+   > therm_bounds <- data.frame(tval_left = c(12.5, 12.1, 13.2),
+   +                            tval_right = c(21.4, 21.2,  22.0))
+   > therm_bounds  # normally you would use the output of `therm_suit_bounds()`
+     tval_left tval_right
+   1      12.5       21.4
+   2      12.1       21.2
+   3      13.2       22.0
+   > 
+   > risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast)
+   Error in map_risk(t_vals = therm_bounds, t_rast = tavg_rast) : 
+     The argument `t_vals` must be a tibble or data.frame inherited
+            from the output of `mappestRisk::therm_suit_bounds()` function.
+            No modifications of columns of the `t_vals` data.frame are allowed in order
+            to ensure a continuous workflow of the package functions
+   Execution halted
+   checking for unstated dependencies in 'tests' .../-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\     checking for unstated dependencies in 'tests' ... |  W  checking for unstated dependencies in 'tests' (6.3s)
+   '::' or ':::' imports not declared from:
+     'purrr' 'readr' 'sf'
+   checking tests .../  ─  checking tests
+-     Running 'testthat.R'\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-  \    |  ─  Running 'testthat.R' [52s] (51.6s)
+E  Some test files failed
+/     Running the tests in 'tests/testthat.R' failed.
+   Last 13 lines of output:
+         ▆
+      1. ├─base::suppressWarnings(...) at test-predict_curves.R:236:2
+      2. │ └─base::withCallingHandlers(...)
+      3. ├─mappestRisk::predict_curves(...)
+      4. └─base::loadNamespace(x)
+      5.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+      6.     └─base (local) withOneRestart(expr, restarts[[1L]])
+      7.       └─base (local) doWithOneRestart(return(expr), restart)
+     ── Error ('test-thermal_suitability_bounds.R:10:1'): (code run outside of `test_that()`) ──
+     Error in `fit_devmodels(temp = temp_example_typical, dev_rate = dev_rate_example_typical, 
+         model_name = "all", variance_model = "exp")`: unused argument (variance_model = "exp")
+     
+     [ FAIL 24 | WARN 2 | SKIP 0 | PASS 91 ]
+     Error: Test failures
+     Execution halted
+✔  checking for non-standard things in the check directory
+✔  checking for detritus in the temp directory
+   
+   See
+     'C:/Users/dario/AppData/Local/Temp/RtmpsnCz1U/file2db076b548f1/mappestRisk.Rcheck/00check.log'
+   for details.
+   
+-\|/-\      
+── R CMD check results ─────────────────────────────────────────────────────────────────────── mappestRisk 0.0.0.9000 ────
+Duration: 3m 4.6s
+
+❯ checking examples ... ERROR
+  Running examples in 'mappestRisk-Ex.R' failed
+  The error most likely occurred in:
+  
+  > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+  > ### Name: map_risk
+  > ### Title: Map pest risk
+  > ### Aliases: map_risk
+  > 
+  > ### ** Examples
+  > 
+  > # if you have temperature rasters for your region:
+  > 
+  > tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+  > tavg_rast <- terra::rast(tavg_file)
+  > terra:::plot(tavg_rast)
+  > 
+  > therm_bounds <- data.frame(tval_left = c(12.5, 12.1, 13.2),
+  +                            tval_right = c(21.4, 21.2,  22.0))
+  > therm_bounds  # normally you would use the output of `therm_suit_bounds()`
+    tval_left tval_right
+  1      12.5       21.4
+  2      12.1       21.2
+  3      13.2       22.0
+  > 
+  > risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast)
+  Error in map_risk(t_vals = therm_bounds, t_rast = tavg_rast) : 
+    The argument `t_vals` must be a tibble or data.frame inherited
+           from the output of `mappestRisk::therm_suit_bounds()` function.
+           No modifications of columns of the `t_vals` data.frame are allowed in order
+           to ensure a continuous workflow of the package functions
+  Execution halted
+
+❯ checking tests ...
+  See below...
+
+❯ checking whether package 'mappestRisk' can be installed ... WARNING
+  See below...
+
+❯ checking R files for non-ASCII characters ... WARNING
+  Found the following file with non-ASCII characters:
+    auxiliary_functions_modelfitting.R
+  Portable packages must use only ASCII characters in their R code,
+  except perhaps in comments.
+  Use \uxxxx escapes for other characters.
+
+❯ checking dependencies in R code ... WARNING
+  '::' or ':::' imports not declared from:
+    'geodata' 'leaflet' 'methods' 'minpack.lm' 'progress' 'purrr' 'tidyr'
+  'loadNamespace' or 'requireNamespace' call not declared from: 'leaflet'
+  'library' or 'require' call to 'car' which was already attached by Depends.
+    Please remove these calls from your code.
+  Namespace in Imports field not imported from: 'boot'
+    All declared Imports should be used.
+  Package in Depends field not imported from: 'car'
+    These packages need to be imported from (in the NAMESPACE file)
+    for when this namespace is loaded but not attached.
+
+❯ checking Rd cross-references ... WARNING
+  Missing link or links in documentation object 'map_risk.Rd':
+    'options(timeout = 500)'
+  
+  See section 'Cross-references' in the 'Writing R Extensions' manual.
+
+❯ checking data for non-ASCII characters ... WARNING
+    Warning: found non-ASCII strings
+    '<c3><85>land' in object 'country_names'
+    'C<c3><b4>te d'Ivoire' in object 'country_names'
+    'Cura<c3><a7>ao' in object 'country_names'
+    'R<c3><a9>union' in object 'country_names'
+    'S<c3><a3>o Tom<c3><a9> and Pr<c3><ad>ncipe' in object 'country_names'
+
+❯ checking for unstated dependencies in 'tests' ... WARNING
+  '::' or ':::' imports not declared from:
+    'purrr' 'readr' 'sf'
+
+❯ checking for future file timestamps ... NOTE
+  unable to verify current time
+
+❯ checking top-level files ... NOTE
+  Non-standard files/directories found at top level:
+    'check_output.txt' 'downloaded_maps' 'gadm36_adm0_r5_pk.rds'
+    'interactive_map.html' 'references.bib'
+
+❯ checking R code for possible problems ... NOTE
+  extract_param_names: no visible global function definition for 'coef'
+  fit_devmodels: no visible binding for global variable
+    'available_models'
+  map_risk: no visible binding for global variable 'tval_left'
+  map_risk: no visible binding for global variable 'tval_right'
+  map_risk: no visible binding for global variable 'country_names'
+  map_risk: no visible global function definition for 'is'
+  map_risk: no visible global function definition for 'par'
+  model_name_translate: no visible binding for global variable
+    'available_models'
+  model_name_translate: no visible binding for global variable
+    'model_name'
+  model_name_translate: no visible binding for global variable
+    'source_model_name'
+  plot_devmodels: no visible binding for global variable 'model_name'
+  plot_devmodels: no visible binding for global variable 'model_AIC'
+  plot_devmodels: no visible binding for global variable 'param_est'
+  plot_devmodels: no visible binding for global variable
+    'available_models'
+  plot_devmodels: no visible binding for global variable
+    'working_formula'
+  plot_devmodels: no visible binding for global variable 'n_params'
+  plot_devmodels: no visible binding for global variable 'preds'
+  plot_devmodels: no visible binding for global variable 'formula'
+  plot_devmodels: no visible binding for global variable 'aic'
+  plot_devmodels: no visible binding for global variable 'temperature'
+  plot_devmodels: no visible binding for global variable
+    'development_rate'
+  plot_uncertainties: no visible binding for global variable 'curvetype'
+  plot_uncertainties: no visible binding for global variable 'pred'
+  plot_uncertainties: no visible binding for global variable 'iter'
+  predict_curves: no visible binding for global variable 'model_name'
+  predict_curves: no visible binding for global variable 'model_AIC'
+  predict_curves: no visible binding for global variable 'model_fit'
+  predict_curves: no visible binding for global variable 'param_est'
+  predict_curves: no visible binding for global variable
+    'available_models'
+  predict_curves: no visible binding for global variable
+    'working_formula'
+  predict_curves: no visible binding for global variable 'n_params'
+  predict_curves: no visible binding for global variable 'preds'
+  predict_curves: no visible binding for global variable 'formula'
+  predict_curves: no visible binding for global variable 'coef'
+  predict_curves: no visible global function definition for 'reformulate'
+  predict_curves: no visible binding for global variable 'na.exclude'
+  predict_curves: no visible binding for global variable 'bootstrap'
+  predict_curves: no visible binding for global variable 'coefs'
+  predict_curves: no visible binding for global variable 'pred'
+  sim_tpc_gridparams: no visible global function definition for 'filter'
+  sim_tpc_gridparams: no visible binding for global variable
+    'available_models'
+  sim_tpc_gridparams: no visible global function definition for
+    'reformulate'
+  sim_tpc_gridparams: no visible global function definition for 'mutate'
+  sim_tpc_gridparams: no visible global function definition for 'tibble'
+  sim_tpc_gridparams: no visible binding for global variable
+    'pred_devrate'
+  start_vals_devRate: no visible global function definition for
+    'reformulate'
+  start_vals_devRate: no visible binding for global variable 'formula'
+  start_vals_devRate: no visible binding for global variable
+    'start_value'
+  therm_suit_bounds: no visible binding for global variable 'pred'
+  therm_suit_bounds: no visible binding for global variable 'temp'
+  therm_suit_bounds: no visible binding for global variable 'iter'
+  Undefined global functions or variables:
+    aic available_models bootstrap coef coefs country_names curvetype
+    development_rate filter formula is iter model_AIC model_fit
+    model_name mutate n_params na.exclude par param_est pred pred_devrate
+    preds reformulate source_model_name start_value temp temperature
+    tibble tval_left tval_right working_formula
+  Consider adding
+    importFrom("graphics", "par")
+    importFrom("methods", "is")
+    importFrom("stats", "coef", "filter", "formula", "na.exclude",
+               "reformulate")
+  to your NAMESPACE file (and ensure that your DESCRIPTION Imports field
+  contains 'methods').
+  
+  Found the following assignments to the global environment:
+  File 'mappestRisk/R/predict_curves.R':
+    assign("model_i", model_i, envir = .GlobalEnv)
+    assign("predict_model_i", predict_model_i, envir = .GlobalEnv)
+    assign("coefs_i", coefs_i, envir = .GlobalEnv)
+    assign("temp_data_i", temp_data_i, envir = .GlobalEnv)
+    assign("formula_i", formula_i, envir = .GlobalEnv)
+    assign("temp_fit", temp_fit, envir = .GlobalEnv)
+
+── Test failures ─────────────────────────────────────────────────────────────────────────────────────────── testthat ────
+
+> # This file is part of the standard setup for testthat.
+> # It is recommended that you do not modify it.
+> #
+> # Where should you do additional test configuration?
+> # Learn more about the roles of various files in:
+> # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
+> # * https://testthat.r-lib.org/articles/special-files.html
+> 
+> library(testthat)
+Warning message:
+package 'testthat' was built under R version 4.2.3 
+> library(mappestRisk)
+Loading required package: car
+Loading required package: carData
+Warning message:
+package 'carData' was built under R version 4.2.2 
+> 
+> test_check("mappestRisk")
+
+Attaching package: 'dplyr'
+
+The following object is masked from 'package:car':
+
+    recode
+
+The following object is masked from 'package:testthat':
+
+    matches
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+fitting model beta
+fitting model boatman
+fitting model briere1
+poorly informative start values for Brière-1 model
+fitting model briere2
+fitting model joehnk
+fitting model kamykowski
+fitting model lactin1
+fitting model lactin2
+fitting model mod_weibull
+fitting model mod_polynomial
+fitting model oneill
+fitting model pawar
+fitting model ratkowsky
+fitting model schoolfield
+fitting model regniere
+generic starting values
+fitting model thomas
+fitting model wang
+fitting model mod_polynomial
+fitting model beta
+fitting model boatman
+fitting model briere1
+poorly informative start values for Brière-1 model
+fitting model briere2
+fitting model joehnk
+fitting model kamykowski
+fitting model lactin1
+fitting model lactin2
+fitting model mod_weibull
+fitting model mod_polynomial
+fitting model oneill
+fitting model pawar
+fitting model ratkowsky
+fitting model schoolfield
+fitting model regniere
+generic starting values
+fitting model thomas
+fitting model wang
+fitting model beta
+fitting model boatman
+fitting model briere1
+poorly informative start values for Brière-1 model
+fitting model briere2
+fitting model joehnk
+fitting model kamykowski
+fitting model lactin1
+fitting model lactin2
+fitting model mod_weibull
+fitting model mod_polynomial
+fitting model oneill
+fitting model pawar
+fitting model ratkowsky
+fitting model schoolfield
+fitting model regniere
+generic starting values
+fitting model thomas
+fitting model wang
+terra 1.7.78
+
+Attaching package: 'terra'
+
+The following objects are masked from 'package:testthat':
+
+    compare, describe
+
+
+(Down)loading countries map...
+Models available: boatman, briere2, joehnk, kamykowski, lactin1, lactin2, mod_weibull, mod_polynomial, oneill, pawar, ratkowsky, schoolfield, thomas, wang
+Models available: boatman, briere2, joehnk, kamykowski, lactin1, lactin2, mod_weibull, mod_polynomial, oneill, pawar, ratkowsky, schoolfield, thomas, wang
+Loading required namespace: boot
+fitting model beta
+fitting model boatman
+fitting model briere1
+poorly informative start values for Brière-1 model
+fitting model briere2
+fitting model joehnk
+fitting model kamykowski
+fitting model lactin1
+fitting model lactin2
+fitting model mod_weibull
+fitting model mod_polynomial
+fitting model oneill
+fitting model pawar
+fitting model ratkowsky
+fitting model schoolfield
+fitting model regniere
+generic starting values
+fitting model thomas
+fitting model wang
+
+ Number of bootstraps was 3 out of 5 attempted 
+
+ADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`
+
+ADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`
+[ FAIL 24 | WARN 2 | SKIP 0 | PASS 91 ]
+
+══ Warnings ════════════════════════════════════════════════════════════════════
+── Warning ('test-auxiliary_functions_modelfitting.R:3:1'): (code run outside of `test_that()`) ──
+package 'dplyr' was built under R version 4.2.3
+Backtrace:
+    ▆
+ 1. └─base::library(dplyr) at test-auxiliary_functions_modelfitting.R:3:0
+ 2.   └─base (local) testRversion(pkgInfo, package, pkgpath)
+── Warning ('test-auxiliary_functions_modelfitting.R:88:3'): briere1 model gives a warning advising the use of generic starting values ──
+Arguments in `...` must be used.
+x Problematic argument:
+* fixed = TRUE
+i Did you misspell an argument name?
+Backtrace:
+     ▆
+  1. ├─testthat::expect_warning(...) at test-auxiliary_functions_modelfitting.R:88:2
+  2. │ └─testthat:::expect_condition_matching(...)
+  3. │   └─rlang (local) `<fn>`()
+  4. │     └─rlang:::check_dots(env, error, action, call)
+  5. │       └─rlang:::action_dots(...)
+  6. │         ├─rlang (local) try_dots(...)
+  7. │         │ └─rlang::try_fetch(expr, error = error)
+  8. │         │   ├─base::tryCatch(...)
+  9. │         │   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 10. │         │   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 11. │         │   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+ 12. │         │   └─base::withCallingHandlers(...)
+ 13. │         └─rlang (local) action(...)
+ 14. │           └─rlang:::signal_abort(cnd, .file)
+ 15. │             └─base::signalCondition(cnd)
+ 16. └─rlang (local) `<fn>`(`<rlb_rr__>`)
+ 17.   └─handlers[[1L]](cnd)
+
+══ Failed tests ════════════════════════════════════════════════════════════════
+── Error ('test-auxiliary_functions_modelfitting.R:7:3'): start_vals_devRate should throw an error if temperature data is not numeric ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_error(...) at test-auxiliary_functions_modelfitting.R:7:2
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:17:3'): start_vals_devRate should throw an error if temperature data has NAs ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_error(...) at test-auxiliary_functions_modelfitting.R:17:2
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:27:3'): start_vals_devRate should throw an error if dev_rate data has NAs ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_error(...) at test-auxiliary_functions_modelfitting.R:27:2
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:38:3'): start_vals_devRate should throw an error if temperature data is a data.frame ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_error(...) at test-auxiliary_functions_modelfitting.R:38:2
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:49:3'): start_vals_devRate should throw an error if temperature data have just three values ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_error(...) at test-auxiliary_functions_modelfitting.R:49:2
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:61:13'): start_vals_devRate should throw an error if development rate data is not numeric
+          (e.g. incorrectly importing data from csv/xlsx, using commas as decimal markers, etc) ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_error(...) at test-auxiliary_functions_modelfitting.R:61:12
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:71:3'): start_vals_devRate should throw an error if temperature and development rate inputs are not of same length ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_error(...) at test-auxiliary_functions_modelfitting.R:71:2
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:81:3'): start_vals_devRate should throw an error if model_name is not in available_models ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_error(...) at test-auxiliary_functions_modelfitting.R:81:2
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:88:3'): briere1 model gives a warning advising the use of generic starting values ──
+Error: $ operator is invalid for atomic vectors
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_warning(...) at test-auxiliary_functions_modelfitting.R:88:2
+ 2. │ └─testthat:::expect_condition_matching(...)
+ 3. │   └─testthat:::quasi_capture(...)
+ 4. │     ├─testthat (local) .capture(...)
+ 5. │     │ └─base::withCallingHandlers(...)
+ 6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+ 7. └─mappestRisk:::start_vals_devRate(...)
+── Error ('test-auxiliary_functions_modelfitting.R:100:3'): no achieved convergence in nls_multstart() from returns generic starting values from devRate::devRateEqStartVal ──
+Error in `model_name_translate("ssi")`: model name not available. Please check ?available_models
+Backtrace:
+    ▆
+ 1. └─mappestRisk:::model_name_translate("ssi") at test-auxiliary_functions_modelfitting.R:100:2
+── Error ('test-interactive_map.R:8:1'): (code run outside of `test_that()`) ───
+Error in `map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast)`: The argument `t_vals` must be a tibble or data.frame inherited
+from the output of `mappestRisk::therm_suit_bounds()` function.
+No modifications of columns of the `t_vals` data.frame are allowed in order
+to ensure a continuous workflow of the package functions
+Backtrace:
+    ▆
+ 1. └─mappestRisk::map_risk(t_vals = c(12.5, 21.4), t_rast = tavg_rast) at test-interactive_map.R:8:0
+── Error ('test-map_risk.R:25:3'): map_risk function works with default arguments ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(...) at test-map_risk.R:25:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-map_risk.R:77:3'): map_risk function works with a character vector region ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(t_vals = t_vals, region = region, path = tempdir()) at test-map_risk.R:77:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-map_risk.R:89:3'): map_risk works for multiple character regions ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(t_vals = t_vals, region = region, path = tempdir()) at test-map_risk.R:89:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-map_risk.R:149:3'): interactive html map is plotted in the Viewer when `interactive = TRUE` ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(...) at test-map_risk.R:149:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-map_risk.R:158:3'): `mask = FALSE` gives more cells with NA values than mask = TRUE ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(...) at test-map_risk.R:158:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-map_risk.R:176:3'): t_rast with EPSG: 3039 is converted to EPSG: 4326 for masking ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(...) at test-map_risk.R:176:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-map_risk.R:273:3'): resulting SpatRaster has two layers if t_vals has more than one row ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(...) at test-map_risk.R:273:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-map_risk.R:282:3'): resulting SpatRaster has two layers if t_vals has more than one row ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(...) at test-map_risk.R:282:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-map_risk.R:291:3'): resulting SpatRaster has two layers if t_vals has more than one row ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'geodata'
+Backtrace:
+    ▆
+ 1. ├─mappestRisk::map_risk(...) at test-map_risk.R:291:2
+ 2. └─base::loadNamespace(x)
+ 3.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 4.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 5.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-predict_curves.R:186:3'): predict_curves should issue a warning if `n_boots_samples` < 100 ──
+Error in `predict_curves(temp = seq(4, 40, 3), dev_rate = rate_sample, 
+    fitted_parameters = fitted_params_example, model_name_2boot = "lactin1", 
+    propagate_uncertainty = TRUE, n_boots_samples = 2)`: Bootstrapping failed for all the models provided in `model_name_2boot` due to convergence problems.
+         You may try other models fitted with `fit_devmodels()`. If this error persists after attempting all the
+         models obtained from `fit_devmodels()`,your data may not be appropriate for
+         projecting risk of pest occurrence with the models you have fitted.
+Backtrace:
+    ▆
+ 1. ├─testthat::capture_warnings(...) at test-predict_curves.R:186:2
+ 2. │ └─base::withCallingHandlers(...)
+ 3. └─mappestRisk::predict_curves(...)
+── Error ('test-predict_curves.R:224:3'): predict_curves output should be a tibble with some uncertainty curves ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'progress'
+Backtrace:
+    ▆
+ 1. ├─base::suppressWarnings(...) at test-predict_curves.R:224:2
+ 2. │ └─base::withCallingHandlers(...)
+ 3. ├─mappestRisk::predict_curves(...)
+ 4. └─base::loadNamespace(x)
+ 5.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 6.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 7.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-predict_curves.R:236:3'): predict_curves output should be a data.frame ──
+<packageNotFoundError/error/condition>
+Error in `loadNamespace(x)`: there is no package called 'progress'
+Backtrace:
+    ▆
+ 1. ├─base::suppressWarnings(...) at test-predict_curves.R:236:2
+ 2. │ └─base::withCallingHandlers(...)
+ 3. ├─mappestRisk::predict_curves(...)
+ 4. └─base::loadNamespace(x)
+ 5.   └─base::withRestarts(stop(cond), retry_loadNamespace = function() NULL)
+ 6.     └─base (local) withOneRestart(expr, restarts[[1L]])
+ 7.       └─base (local) doWithOneRestart(return(expr), restart)
+── Error ('test-thermal_suitability_bounds.R:10:1'): (code run outside of `test_that()`) ──
+Error in `fit_devmodels(temp = temp_example_typical, dev_rate = dev_rate_example_typical, 
+    model_name = "all", variance_model = "exp")`: unused argument (variance_model = "exp")
+
+[ FAIL 24 | WARN 2 | SKIP 0 | PASS 91 ]
+Error: Test failures
+Execution halted
+
+2 errors ✖ | 6 warnings ✖ | 3 notes ✖

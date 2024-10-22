@@ -119,7 +119,7 @@ plot_devmodels <- function(temp = NULL,
       dplyr::select(temp, model_name, model_AIC, n_params) |>
       dplyr::mutate(formula = formula_i) |>
       dplyr::mutate(preds = purrr::map_dbl(.x = temp,
-                                           .f = stats::reformulate(unique(formula_i)))) |>
+                                           .f = reformulate(unique(formula_i)))) |>
       dplyr::filter(preds >= 0) |>
       dplyr::select(-formula) |>
       dplyr::mutate(preds = dplyr::case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,

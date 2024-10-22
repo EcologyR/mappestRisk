@@ -1,3 +1,7 @@
+
+
+
+
 ### script with auxiliary functions for fit_devmodels()
 
 is_positive_integer <- function(x) {
@@ -62,13 +66,13 @@ sim_tpc_gridparams <- function(grid_parameters, temperature, model_name){
   params_i <- grid_parameters
   model_i <- model_name
   model_eq <- available_models |>
-    filter(model_name == model_i)
+    dplyr::filter(model_name == model_i)
   tpc_sim_i <- purrr::map(.x = temperature,
                           .f = reformulate(termlabels = unique(model_eq$params_formula))
   )
   tpc_sim_tbl <- tibble(temperature,
                         pred_devrate = tpc_sim_i) |>
-    mutate(pred_devrate = unlist(pred_devrate))
+    dplyr::mutate(pred_devrate = unlist(pred_devrate))
   return(tpc_sim_tbl)
 }
 

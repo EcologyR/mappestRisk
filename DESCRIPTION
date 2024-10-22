@@ -44,6 +44,7 @@ Imports:
     rTPC,
     devRate,
     boot,
-    khroma
+    khroma,
+    methods
 Remotes:
     rstudio/leaflet

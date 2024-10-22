@@ -64,6 +64,10 @@
 #'
 #' @import terra
 #'
+#' @importFrom graphics par
+#'
+#' @importFrom methods is
+#'
 #' @export
 #'
 #' @examples

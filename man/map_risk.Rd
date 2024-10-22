@@ -13,22 +13,25 @@ map_risk(
   mask = TRUE,
   verbose = FALSE,
   plot = TRUE,
-  interactive = TRUE
+  interactive = FALSE
 )
 }
 \arguments{
-\item{t_vals}{Numeric vector of length 2 or data frame with 2 columns
-specifying, respectively, the left (minimum) and right (maximum)
-temperature bounds for the development of the target species.}
+\item{t_vals}{a \code{data.frame} or \link[dplyr:reexports]{dplyr::tibble} inherited from \code{therm_suit_bounds()}
+function without any further modification. It must contain at least one row
+of numeric values. Additionally, the minimum ("left") thermal boundary or \code{tval_left}
+must be lower than the maximum ("right") one, or \code{tval_right} for all rows.
+Nominative columns must be present in the input (i.e., \code{model_name},
+\code{suitability}, \code{pred_suit} and \code{iter}).}
 
 \item{t_rast}{Optional 12-layer \link[terra:SpatRaster-class]{terra::SpatRaster} with monthly mean
 temperatures for (at least) the target 'region'. If not provided, global
-WorldClim raster layers will be (down)loaded and cropped to 'region'. Note
-that the download can be slow the first time you use the function in a new
-\code{path}. If you get a download error, consider running e.g.
-\link{options(timeout = 500)} (or more).}
+WorldClim raster layers will be automatically (down)loaded and cropped to
+'region' using \code{\link[geodata:worldclim]{geodata::worldclim_global()}}.
+Note that the download can be slow the first time you use the function in a new
+\code{path}. If you get a download error, consider running e.g \link{options(timeout = 500)} (or more).}
 
-\item{region}{Optional object specifying the region to map. Must overlap the
+\item{region}{Mandatory object specifying the region to map. Must overlap the
 extent of \code{t_rast} if both are provided. Can be a \link[terra:SpatVector-class]{terra::SpatVector}
 polygon map (obtained with \code{\link[terra:vect]{terra::vect()}}); or an \link[sf:sf]{sf::sf} polygon map
 (obtained with \code{\link[sf:st_as_sf]{sf::st_as_sf()}}), in which case it will be coerced with
@@ -36,14 +39,15 @@ polygon map (obtained with \code{\link[terra:vect]{terra::vect()}}); or an \link
 name(s) in English, in which case a countries map will be downloaded and
 subset to those countries; or a \link[terra:SpatExtent-class]{terra::SpatExtent} object (obtained with
 \code{\link[terra:ext]{terra::ext()}}); or a numeric vector of length 4 specifying the region
-coordinates in the order xmin, xmax, ymin, ymax. The latter two must be in
+coordinates as folows: \code{c(xmin, xmax, ymin, ymax)}. The latter two must be in
 the same CRS as\code{t_rast} if \code{t_rast} is provided, or in unprojected lon-lat
 coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will
 cover the entire \code{t_rast} if provided, or the entire world otherwise.}
 
 \item{res}{Argument to pass to \code{\link[geodata:worldclim]{geodata::worldclim_global()}} specifying
 the spatial resolution for the raster maps to download, if 't_rast' is not
-provided. The default is 2.5 arc-minutes.}
+provided. The default is 2.5 arc-minutes. Beware that lower values (e.g., 0.5)
+may lead to extremely heavy data sets and large computation times.}
 
 \item{path}{Argument to pass to \code{\link[geodata:worldclim]{geodata::worldclim_global()}} (if \code{t_rast}
 is not provided) and/or to \code{\link[geodata:world]{geodata::world()}} (if 'region' is a vector of
@@ -58,9 +62,12 @@ If FALSE, the entire rectangular extent of 'region' will be used.}
 what the function is doing at possibly slow steps. The default is FALSE.
 Setting it to TRUE can be useful for checking progress when maps are large.}
 
-\item{plot}{Logical value specifying whether to plot the results in a map. The default is TRUE.}
+\item{plot}{Logical value specifying whether to plot the results in a map.
+Defaults to TRUE. Note that the function will always return a \link[terra:SpatRaster-class]{terra::SpatRaster}
+object even if \code{plot = TRUE}.}
 
-\item{interactive}{Logical value specifying whether the plotted map should be interactive (if plot=TRUE). The default is TRUE if the 'leaflet' package is installed.}
+\item{interactive}{Logical value specifying whether the plotted map should be
+interactive (if plot=TRUE). The default is TRUE if the 'leaflet' package is installed.}
 }
 \value{
 This function returns a \link[terra:SpatRaster-class]{terra::SpatRaster} with up to 2 layers:
