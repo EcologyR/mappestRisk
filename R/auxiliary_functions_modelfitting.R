@@ -1,7 +1,3 @@
-
-
-
-
 ### script with auxiliary functions for fit_devmodels()
 
 is_positive_integer <- function(x) {
@@ -78,13 +74,17 @@ sim_tpc_gridparams <- function(grid_parameters, temperature, model_name){
 
 #### b) obtain start values for model fitting ----
 
-start_vals_devRate <- function(model_name_2fit, temperature, dev_rate){
-  if(model_name_2fit$model_name == "briere1"){start_vals_explore <- c(a = 2e-04, tmin = 8, tmax = 32)
-  message("poorly informative start values for Brière-1 model")} else {
+start_vals_devRate <- function (model_name_2fit, temperature, dev_rate) {
+  check_data(temp = temperature,
+             dev_rate)
+
+  if (model_name_2fit$model_name == "briere1") {
+    start_vals_explore <- c(a = 2e-04, tmin = 8, tmax = 32)
+  message("Poorly informative start values for Brière-1 model")
+  } else {
     model_name_devrate <- model_name_2fit$source_model_name
     devdata <- dplyr::tibble(temp = temperature,
                              rate_development = dev_rate)
-    set.seed(2023) #ensure reproducibility
     start_vals_prev <- devRate::devRateEqStartVal[[model_name_devrate]]
     names(start_vals_prev) <- startvals_names_translate_devrate(start_vals_prev,
                                                                 model_name = model_name_2fit$model_name)
@@ -102,7 +102,8 @@ start_vals_devRate <- function(model_name_2fit, temperature, dev_rate){
                                                        start_upper = start_upper_vals,
                                                        supp_errors = "Y")
     sum_start_vals_fit <- summary(multstart_vals_fit)
-    if(is.null(multstart_vals_fit)){
+
+    if (is.null(multstart_vals_fit)) {
       start_vals_explore <- dplyr::tibble(param_name = names(start_vals_prev),
                                           start_value = unlist(start_vals_prev),
                                           model_name = model_name_2fit$model_name) |>
