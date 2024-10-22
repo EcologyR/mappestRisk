@@ -66,8 +66,8 @@ sim_tpc_gridparams <- function(grid_parameters, temperature, model_name){
   tpc_sim_i <- purrr::map(.x = temperature,
                           .f = reformulate(termlabels = unique(model_eq$params_formula))
   )
-  tpc_sim_tbl <- tibble(temperature,
-                        pred_devrate = tpc_sim_i) |>
+  tpc_sim_tbl <- dplyr::tibble(temperature,
+                               pred_devrate = tpc_sim_i) |>
     dplyr::mutate(pred_devrate = unlist(pred_devrate))
   return(tpc_sim_tbl)
 }
@@ -80,7 +80,7 @@ start_vals_devRate <- function (model_name_2fit, temperature, dev_rate) {
 
   if (model_name_2fit$model_name == "briere1") {
     start_vals_explore <- c(a = 2e-04, tmin = 8, tmax = 32)
-  message("Poorly informative start values for Brière-1 model")
+  message("Poorly informative start values for briere1 model")
   } else {
     model_name_devrate <- model_name_2fit$source_model_name
     devdata <- dplyr::tibble(temp = temperature,

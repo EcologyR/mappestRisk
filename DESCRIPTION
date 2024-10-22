@@ -34,16 +34,10 @@ Config/testthat/edition: 3
 Imports: 
     dplyr,
     ggplot2,
-    htmlwidgets,
-    leafem,
-    leaflegend,
-    leaflet.opacity,
-    raster,
     terra,
     nls.multstart,
     rTPC,
     devRate,
-    boot,
     khroma,
     methods
 Remotes:

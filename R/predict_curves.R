@@ -57,6 +57,8 @@
 #'
 #' @importFrom stats coef formula na.exclude reformulate
 #'
+#' @importFrom car Boot
+#'
 #' @examples
 #' data("aphid")
 #'

@@ -5,7 +5,7 @@
 
 
 aphid <- readxl::read_xlsx("data-raw/satar_data.xlsx") |>
-  mutate(rate_value =  1/dev_days)
+  dplyr::mutate(rate_value =  1/dev_days)
 
 usethis::use_data(aphid,
                   overwrite = TRUE

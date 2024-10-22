@@ -65,7 +65,7 @@ test_that("start_vals_devRate should throw an error if dev_rate data is not nume
                                   dev_rate = rate_test,
                                   model_name_2fit = available_models |>
                                     dplyr::filter(model_name == "briere1")),
-               "Poorly informative start values for Brière-1 model")
+               "Poorly informative start values for briere1 model")
 })
 
 test_that("no achieved convergence in nls_multstart() from returns generic starting values from devRate::devRateEqStartVal", {
