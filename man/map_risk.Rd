@@ -83,33 +83,84 @@ produced by \link{therm_suit_bounds}), the output raster has two layers: mean
 and standard deviation.
 }
 \examples{
-# if you have temperature rasters for your region:
 
-tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
-tavg_rast <- terra::rast(tavg_file)
-terra:::plot(tavg_rast)
+data("aphid")
 
-therm_bounds <- data.frame(tval_left = c(12.5, 12.1, 13.2),
-                           tval_right = c(21.4, 21.2,  22.0))
-therm_bounds  # normally you would use the output of `therm_suit_bounds()`
+# 1. fit TPC models:
+fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
+                                        dev_rate = aphid$rate_value,
+                                        model_name = "all")
+# 2. plot them
+plot_devmodels(temp = aphid$temperature,
+               dev_rate = aphid$rate_value,
+               fitted_parameters = fitted_tpcs_aphid,
+               species = "Brachycaudus schwartzi",
+               life_stage = "Nymphs") #choose "lactin2"
 
-risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast)
+# 3. obtain predictions and uncertainties
 
-risk_rast <- map_risk(t_vals = therm_bounds, t_rast = tavg_rast, interactive = FALSE)
+tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
+                                             dev_rate = aphid$rate_value,
+                                             fitted_parameters = fitted_tpcs_aphid,
+                                             model_name_2boot = "lactin2",
+                                             propagate_uncertainty = TRUE,
+                                             n_boots_samples = 100)
 
+head(tpc_preds_boots_aphid)
 
+# 4. plot predictions and uncertainties
 
-\dontrun{
+plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
+                   temp = aphid$temperature,
+                   dev_rate = aphid$rate_value,
+                   species = "Brachycaudus schwartzi",
+                   life_stage = "Nymphs")
+
+# 5. Calculate thermal suitability boundaries
+
+boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
+                                             model_name = "lactin2",
+                                             suitability_threshold = 80)
+head(boundaries_aphid)
+
+6. Extract & Plot Risk maps
+
 # if you don't have temperature rasters for your region:
 
-risk_rast <- map_risk(t_vals = therm_bounds, path = "downloaded_maps",
-region = c("Portugal", "Spain"), verbose = TRUE)
+ risk_rast_morocco <- map_risk(t_vals = boundaries_aphid,
+                               path = temp.dir(), # directory to download data
+                               region = "Morocco",
+                               mask = TRUE,
+                               plot = TRUE,
+                               interactive = FALSE,
+                               verbose = TRUE)
 
+# Alternative 1: if you already have a raster of monthly average temperatures
+for your region of interest, you can use that as input for `t_rast`:
+   ## first, load it
+   tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 
-# to save output map(s) to disk:
+   ## second, rasterize it with `terra`
+ tavg_rast <- terra::rast(tavg_file)
 
-terra::writeRaster(risk_rast, "risk_map.tif")  # exported maps can
-be seen with GIS software
-}
+   ## third apply the function
+ risk_rast_luxembourg <- map_risk(t_vals = boundaries_aphid,
+                                  t_rast = tavg_rast,
+                                  mask = TRUE,
+                                  plot = TRUE,
+                                  interactive = FALSE,
+                                  verbose = TRUE)
+ Alternative 2: you can use your own spatial feature (sf) object for `region`
+ andalucia_sf <- readRDS(system.file("extdata",
+                                     "andalucia_sf.rds",
+                                     package = "mappestRisk"))
+
+ risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
+                                 region = andalucia_sf,
+                                 path = tempdir(),
+                                 mask = TRUE,
+                                 plot = TRUE,
+                                 interactive = FALSE,
+                                 verbose = TRUE)
 
 }
