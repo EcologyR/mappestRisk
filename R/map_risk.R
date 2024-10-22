@@ -64,6 +64,8 @@
 #'
 #' @import terra
 #'
+#' @import geodata
+#'
 #' @importFrom graphics par
 #'
 #' @importFrom methods is
