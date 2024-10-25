@@ -10,3 +10,5 @@
 ^docs$
 ^pkgdown$
 .Rprofile
+other/
+references.bib
