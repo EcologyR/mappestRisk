@@ -186,9 +186,9 @@ test_that("predict_curves should issue a warning if `n_boots_samples` < 100", {
   capt_warnings <- capture_warnings(predict_curves(temp = seq(4, 40, 3),
                                                    dev_rate = rate_sample,
                                                    fitted_parameters = fitted_params_example,
-                                                   model_name_2boot = "lactin1",
+                                                   model_name_2boot = "lactin2",
                                                    propagate_uncertainty = TRUE,
-                                                   n_boots_samples = 2))
+                                                   n_boots_samples = 10))
 expect_true(any(capt_warnings == "100 iterations might be desirable. Consider increasing `n_boots_samples` if possible"))
 })
 

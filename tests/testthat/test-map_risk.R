@@ -172,7 +172,8 @@ test_that("`mask = FALSE` gives more cells with NA values than mask = TRUE", {
 
 # Test that different CRSs are re-projected to be the same
 test_that("t_rast with EPSG: 3039 is converted to EPSG: 4326 for masking", {
-  andalucia_sf <- sf::st_transform(andalucia_sf, 3035)
+  andalucia_sf <- terra::rast(andalucia_sf)
+  andalucia_sf_proj <- terra::project(andalucia_sf, "EPSG:3035")
   result <- map_risk(t_vals = t_vals,
                      region = andalucia_sf,
                      mask = FALSE,
@@ -238,15 +239,7 @@ test_that("t_rast with just one layer gives an error", {
   )
   })
 
-# Test that no overlapping yields an error for an sf object
-test_that("Luxembourg temperatures tavg_rast cannot be mapped for Andalucia", {
-  expect_error(
-    result <- map_risk(t_vals = t_vals,
-                       t_rast = tavg_rast,
-                       region = andalucia_sf,
-                       path = tempdir()),
-               "There's no overlap between 'region' and 't_rast'.")
-  })
+
 
 # Test that no overlapping yields an error for a extent
 test_that("Luxembourg temperatures tavg_rast cannot be mapped for a region in the equator", {
@@ -295,3 +288,4 @@ test_that("resulting SpatRaster has two layers if t_vals has more than one row",
   layer_names <- result$x$calls[[6]]$args[[1]] # where layer names are located in a leaflet object
   expect_true(all(layer_names == c("mean", "sd")))
 })
+

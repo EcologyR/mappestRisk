@@ -66,6 +66,8 @@
 #'
 #' @import geodata
 #'
+#' @import progress
+#'
 #' @importFrom graphics par
 #'
 #' @importFrom methods is
@@ -113,12 +115,12 @@
 #'                                              suitability_threshold = 80)
 #' head(boundaries_aphid)
 #'
-#' 6. Extract & Plot Risk maps
+#' # 6. Extract and Plot Risk maps
 #'
 #' # if you don't have temperature rasters for your region:
 #'
 #'  risk_rast_morocco <- map_risk(t_vals = boundaries_aphid,
-#'                                path = temp.dir(), # directory to download data
+#'                                path = tempdir(), # directory to download data
 #'                                region = "Morocco",
 #'                                mask = TRUE,
 #'                                plot = TRUE,
@@ -126,7 +128,7 @@
 #'                                verbose = TRUE)
 #'
 #' # Alternative 1: if you already have a raster of monthly average temperatures
-#' for your region of interest, you can use that as input for `t_rast`:
+#' # for your region of interest, you can use that as input for `t_rast`:
 #'    ## first, load it
 #'    tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
 #'
@@ -140,7 +142,7 @@
 #'                                   plot = TRUE,
 #'                                   interactive = FALSE,
 #'                                   verbose = TRUE)
-#'  Alternative 2: you can use your own spatial feature (sf) object for `region`
+#'  # Alternative 2: you can use your own spatial feature (sf) object for `region`
 #'  andalucia_sf <- readRDS(system.file("extdata",
 #'                                      "andalucia_sf.rds",
 #'                                      package = "mappestRisk"))

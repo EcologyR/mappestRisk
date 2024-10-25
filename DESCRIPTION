@@ -34,12 +34,16 @@ Config/testthat/edition: 3
 Imports: 
     dplyr,
     ggplot2,
+    purrr,
+    minpack.lm,
+    tidyr,
     terra,
     nls.multstart,
     rTPC,
     devRate,
     khroma,
     methods,
-    geodata
-Remotes:
-    rstudio/leaflet
+    progress,
+    geodata,
+    leaflet
+
