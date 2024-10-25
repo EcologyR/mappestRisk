@@ -63,7 +63,7 @@ tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
                                              fitted_parameters = fitted_tpcs_aphid,
                                              model_name_2boot = "lactin2",
                                              propagate_uncertainty = TRUE,
-                                             n_boots_samples = 100)
+                                             n_boots_samples = 10)
 
 head(tpc_preds_boots_aphid)
 

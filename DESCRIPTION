@@ -42,8 +42,6 @@ Imports:
     rTPC,
     devRate,
     khroma,
-    methods,
     progress,
-    geodata,
-    leaflet
+    geodata
 

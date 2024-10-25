@@ -144,14 +144,14 @@ test_that("the function returns an error when providing an invalid character vec
                fixed = TRUE)
 })
 
-# Test that `interactive = TRUE` yields a leaflet object rather than a `SpatRaster`
-test_that("interactive html map is plotted in the Viewer when `interactive = TRUE`", {
-  result <- map_risk(t_vals = t_vals,
-                     region = "Spain",
-                     path = tempdir(),
-                     interactive = TRUE)
-  expect_true(any(class(result) == "leaflet"))
-  })
+# # Test that `interactive = TRUE` yields a leaflet object rather than a `SpatRaster`
+# test_that("interactive html map is plotted in the Viewer when `interactive = TRUE`", {
+#   result <- map_risk(t_vals = t_vals,
+#                      region = "Spain",
+#                      path = tempdir(),
+#                      interactive = TRUE)
+#   expect_true(any(class(result) == "leaflet"))
+#   })
 
 # Test that `mask = FALSE` is adjusted with the extent
 test_that("`mask = FALSE` gives more cells with NA values than mask = TRUE", {
@@ -279,13 +279,13 @@ test_that("resulting SpatRaster has two layers if t_vals has more than one row",
 })
 
 # Test that if more than one row are found, the output leaflet object has two layers
-test_that("resulting SpatRaster has two layers if t_vals has more than one row", {
-
-  result <- map_risk(t_vals = tvals_several,
-                     region = "Spain",
-                     path = tempdir(),
-                     interactive = TRUE)
-  layer_names <- result$x$calls[[6]]$args[[1]] # where layer names are located in a leaflet object
-  expect_true(all(layer_names == c("mean", "sd")))
-})
+# test_that("resulting SpatRaster has two layers if t_vals has more than one row", {
+#
+#   result <- map_risk(t_vals = tvals_several,
+#                      region = "Spain",
+#                      path = tempdir(),
+#                      interactive = TRUE)
+#   layer_names <- result$x$calls[[6]]$args[[1]] # where layer names are located in a leaflet object
+#   expect_true(all(layer_names == c("mean", "sd")))
+# })
 
