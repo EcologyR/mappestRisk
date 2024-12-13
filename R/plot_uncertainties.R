@@ -45,6 +45,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data("aphid")
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -74,6 +75,7 @@
 #'                    dev_rate = aphid$rate_value,
 #'                    species = "Brachycaudus schwartzi",
 #'                    life_stage = "Nymphs")
+#'                    }
 
 plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
                                temp,
