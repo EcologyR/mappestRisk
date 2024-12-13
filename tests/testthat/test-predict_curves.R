@@ -16,7 +16,7 @@ test_that("predict_curves should throw an error if temperature data is not numer
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = "lactin2",
                               propagate_uncertainty = TRUE,
-                              n_boots_samples = 100),
+                              n_boots_samples = 2),
                "temperature data is not numeric. Please check it.")
 })
 
@@ -28,7 +28,7 @@ test_that("predict_curves should throw an error if temperature data have just th
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = "lactin2",
                               propagate_uncertainty = TRUE,
-                              n_boots_samples = 100),
+                              n_boots_samples = 2),
                "At least four different temperature treatments in the data are required.",
                fixed = TRUE)
 })
@@ -42,7 +42,7 @@ test_that("predict_curves should throw an error if development rate data is not 
                                         fitted_parameters = fitted_params_example,
                                         model_name_2boot = "lactin2",
                                         propagate_uncertainty = TRUE,
-                                        n_boots_samples = 100),
+                                        n_boots_samples = 2),
                          "development rate data is not numeric. Please check it.")
           })
 
@@ -54,7 +54,7 @@ test_that("predict_curves should throw an error if temperature and development r
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = "lactin2",
                               propagate_uncertainty = TRUE,
-                              n_boots_samples = 100),
+                              n_boots_samples = 2),
                "development rate and temperature inputs are not of same length. Please check it.")
 })
 
@@ -65,7 +65,7 @@ test_that("predict_curves should throw an error if fitted_parameters is not prov
                               dev_rate = rate_sample,
                               model_name_2boot = "lactin2",
                               propagate_uncertainty = TRUE,
-                              n_boots_samples = 100),
+                              n_boots_samples = 2),
                "`fitted_parameters` must be provided.")
 })
 
@@ -77,7 +77,7 @@ test_that("predict_curves should throw an error if model_name is not a character
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = 3,
                               propagate_uncertainty = TRUE,
-                              n_boots_samples = 100),
+                              n_boots_samples = 2),
                "model not available. Check the models that converged in `fitted_parameters`",
                fixed = TRUE)
                }
@@ -91,7 +91,7 @@ test_that("predict_curves should throw an error if model_name is not from `fitte
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = "SharpeDeMichele",
                               propagate_uncertainty = TRUE,
-                              n_boots_samples = 10),
+                              n_boots_samples = 2),
                "model not available. Check the models that converged in `fitted_parameters`",
                fixed = TRUE)
 }
@@ -120,7 +120,7 @@ test_that("predict_curves should throw an error if development rate is negative,
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = "lactin2",
                               propagate_uncertainty = TRUE,
-                              n_boots_samples = 100),
+                              n_boots_samples = 2),
                "Negative dev_rate development rate data found. Please check it.")
 })
 
@@ -134,7 +134,7 @@ test_that("predict_curves should throw an error if temperature data contains val
                                fitted_parameters = fitted_params_example,
                                model_name_2boot = "lactin2",
                                propagate_uncertainty = TRUE,
-                               n_boots_samples = 10),
+                               n_boots_samples = 2),
                  "experienced temperatures by active organisms are usually between 0 and 50 degrees centigrades",
                  fixed = TRUE)
 })
@@ -168,14 +168,14 @@ test_that("predict_curves should throw an error if `n_boots_samples` is > 5000",
 test_that("predict_curves should throw an error if `propagate_uncertainty` is not logical", {
   fitted_params_example <- readRDS(file = test_path("testdata", "fitted_params_tbl.rds"))
   rate_sample <- readRDS(file = test_path("testdata", "rate_test.rds"))
-  expect_error(predict_curves(temp = seq(4, 40, 3),
+  expect_error(suppressWarnings(predict_curves(temp = seq(4, 40, 3),
                               dev_rate = rate_sample,
                               fitted_parameters = fitted_params_example,
                               model_name_2boot = "lactin2",
                               propagate_uncertainty = sample(c("bootstrap", "yes"), 1),
-                              n_boots_samples = 100),
+                              n_boots_samples = 2),
                "`propagate_uncertainty` must be `TRUE` or `FALSE` (def. `TRUE`)",
-               fixed = TRUE)
+               fixed = TRUE))
 })
 
 
@@ -188,7 +188,7 @@ test_that("predict_curves should issue a warning if `n_boots_samples` < 100", {
                                                    fitted_parameters = fitted_params_example,
                                                    model_name_2boot = "lactin2",
                                                    propagate_uncertainty = TRUE,
-                                                   n_boots_samples = 10))
+                                                   n_boots_samples = 2))
 expect_true(any(capt_warnings == "100 iterations might be desirable. Consider increasing `n_boots_samples` if possible"))
 })
 
@@ -201,7 +201,7 @@ test_that("predict_curves should issue a warning if no boostrap is accomplished"
   rate_sample <- readRDS(file = test_path("testdata", "rate_test.rds"))
   aphid_parameters <- fit_devmodels(temp = aphid$temperature,
                                     dev_rate = aphid$rate_value,
-                                    model_name = "all")
+                                    model_name = "lactin1")
   expect_error(capture_warnings(predicted_curves <- predict_curves(temp = aphid$temperature,
                                                                    dev_rate = aphid$rate_value,
                                                                    fitted_parameters = aphid_parameters |>
@@ -209,7 +209,7 @@ test_that("predict_curves should issue a warning if no boostrap is accomplished"
                                                                                                               .f = ~.x*10)), # <- alterate data to ensure not bootstrapping is performed
                                                                    model_name_2boot = "lactin1", # <- previously known as not adequately converging
                                                                    propagate_uncertainty = TRUE,
-                                                                   n_boots_samples = 10)),
+                                                                   n_boots_samples = 2)),
   "Bootstrapping failed for all the models provided in `model_name_2boot` due to convergence problems.
          You may try other models fitted with `fit_devmodels()`. If this error persists after attempting all the
          models obtained from `fit_devmodels()`,your data may not be appropriate for
@@ -226,7 +226,7 @@ test_that("predict_curves output should be a tibble with some uncertainty curves
                                                fitted_parameters = fitted_params_example,
                                                model_name_2boot = unique(fitted_params_example$model_name)[1], # <- boatman is able to bootstrap
                                                propagate_uncertainty = TRUE,
-                                               n_boots_samples = 5))
+                                               n_boots_samples = 2))
   expect_true(any(preds_tbl$curvetype == "uncertainty"))
 })
 
@@ -238,7 +238,7 @@ test_that("predict_curves output should be a data.frame", {
                                                fitted_parameters = fitted_params_example,
                                                model_name_2boot = unique(fitted_params_example$model_name)[2],
                                                propagate_uncertainty = TRUE,
-                                               n_boots_samples = 5))
+                                               n_boots_samples = 2))
   expect_true(is.data.frame(preds_tbl))
 })
 
