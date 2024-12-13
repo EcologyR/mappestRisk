@@ -60,6 +60,7 @@
 #' @importFrom car Boot
 #'
 #' @examples
+#' \dontrun{
 #' data("aphid")
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -81,6 +82,7 @@
 #'                                         n_boots_samples = 10)
 #'
 #' head(tpc_preds_boots_aphid)
+#' }
 
 predict_curves <- function(temp = NULL,
                            dev_rate = NULL,
