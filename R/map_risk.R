@@ -72,7 +72,7 @@
 #'
 #' @examplesIf interactive()
 #'
-#'
+#' \dontrun{
 #' data("aphid")
 #'
 #' # 1. fit TPC models:
@@ -140,18 +140,18 @@
 #'                                   interactive = FALSE,
 #'                                   verbose = TRUE)
 #'  # Alternative 2: you can use your own spatial feature (sf) object for `region`
- # andalucia_sf <- readRDS(system.file("extdata",
- #                                     "andalucia_sf.rds",
- #                                     package = "mappestRisk"))
- #
- # risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
- #                                 region = andalucia_sf,
- #                                 path = tempdir(),
- #                                 mask = TRUE,
- #                                 plot = TRUE,
- #                                 interactive = FALSE,
- #                                 verbose = TRUE)
-#'
+# andalucia_sf <- readRDS(system.file("extdata",
+#                                     "andalucia_sf.rds",
+#                                     package = "mappestRisk"))
+#
+# risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
+#                                 region = andalucia_sf,
+#                                 path = tempdir(),
+#                                 mask = TRUE,
+#                                 plot = TRUE,
+#                                 interactive = FALSE,
+#                                 verbose = TRUE)
+#'}
 
 map_risk <- function(t_vals = NULL,
                      t_rast = NULL,
@@ -162,7 +162,7 @@ map_risk <- function(t_vals = NULL,
                      verbose = FALSE,
                      plot = TRUE,
                      interactive = FALSE
-                     ) {
+) {
 
   if (!inherits(mask, "logical")) {
     stop("`mask` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
@@ -330,10 +330,10 @@ to ensure a continuous workflow of the package functions")
                     col = c(palette_bilbao)[5:100],
                     main = "Risk Map",
                     colNA = "white")
-        }
-     }
-    return(out)
+      }
     }
+    return(out)
+  }
   if (verbose) cat("\nFinished!\n\n")
 
 }
