@@ -116,9 +116,9 @@
 #'
 #' # if you don't have temperature rasters for your region:
 #'
-#'  risk_rast_morocco <- map_risk(t_vals = boundaries_aphid,
+#'  risk_rast_reunion <- map_risk(t_vals = boundaries_aphid,
 #'                                path = tempdir(), # directory to download data
-#'                                region = "Morocco",
+#'                                region = "Réunion",
 #'                                mask = TRUE,
 #'                                plot = TRUE,
 #'                                interactive = FALSE,
@@ -127,30 +127,31 @@
 #' # Alternative 1: if you already have a raster of monthly average temperatures
 #' # for your region of interest, you can use that as input for `t_rast`:
 #'    ## first, load it
-#'    tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+#'    tavg_file <- system.file("extdata/tavg_reunion.tif", package = "mappestRisk")
 #'
 #'    ## second, rasterize it with `terra`
 #'  tavg_rast <- terra::rast(tavg_file)
 #'
 #'    ## third apply the function
-#'  risk_rast_luxembourg <- map_risk(t_vals = boundaries_aphid,
-#'                                   t_rast = tavg_rast,
-#'                                   mask = TRUE,
-#'                                   plot = TRUE,
-#'                                   interactive = FALSE,
-#'                                   verbose = TRUE)
+#'  risk_rast_reunion <- map_risk(t_vals = boundaries_aphid,
+#'                                t_rast = tavg_rast,
+#'                                mask = TRUE,
+#'                                path = tempdir(),
+#'                                plot = TRUE,
+#'                                interactive = FALSE,
+#'                                verbose = TRUE)
 #'  # Alternative 2: you can use your own spatial feature (sf) object for `region`
-# andalucia_sf <- readRDS(system.file("extdata",
-#                                     "andalucia_sf.rds",
-#                                     package = "mappestRisk"))
-#
-# risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
-#                                 region = andalucia_sf,
-#                                 path = tempdir(),
-#                                 mask = TRUE,
-#                                 plot = TRUE,
-#                                 interactive = FALSE,
-#                                 verbose = TRUE)
+#' andalucia_sf <- readRDS(system.file("extdata",
+#'                                     "andalucia_sf.rds",
+#'                                     package = "mappestRisk"))
+#'
+#' risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
+#'                                 region = andalucia_sf,
+#'                                 path = tempdir(),
+#'                                 mask = TRUE,
+#'                                 plot = TRUE,
+#'                                 interactive = FALSE,
+#'                                 verbose = TRUE)
 #'}
 
 map_risk <- function(t_vals = NULL,
@@ -223,11 +224,13 @@ to ensure a continuous workflow of the package functions")
     }
     if (verbose) cat("\n(Down)loading countries map...\n")
     wrld <- geodata::world(path = path)
-    region <- wrld[wrld$NAME_0 %in% region, ]
+    region_borders <- wrld[wrld$NAME_0 %in% region, ]
     if (isFALSE(mask)) {
-      region <- terra::ext(region)
+      region_ext <- terra::ext(region_borders)
     }
-  }
+  } else if (is.null(region)) {
+    region_borders <- geodata::world(path = path)
+    }
 
   if (is.numeric(region)) {
     if (length(region) != 4) {
@@ -236,15 +239,14 @@ to ensure a continuous workflow of the package functions")
     region <- terra::ext(region)
   }
 
-  if (inherits(region, "sf")) {
-    region <- terra::vect(region)
-  }
-
   if (is.null(t_rast)) {
     if (verbose) cat("\n(Down)loading temperature rasters...\n")
-    t_rast <- geodata::worldclim_global(var = "tavg",
-                                        res = res,
-                                        path = path)
+    if(is.character(region) && all(region %in% country_names)){
+    t_rast <- geodata::worldclim_country(country = region,
+                                         var = "tavg",
+                                         res = res,
+                                         path = path)
+    }
   }
 
   if (is.null(region)) {
@@ -252,14 +254,23 @@ to ensure a continuous workflow of the package functions")
                           crs = terra::crs(t_rast))
   }
 
-  if (inherits(region, "SpatExtent")) {
+  if (inherits(region, "SpatExtent") |
+      inherits(region, "sf") |
+      is.numeric(region)) {
     mask <- FALSE  # pointless otherwise
-    region <- terra::vect(region, crs = "EPSG:4326")  # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
-  }
-
-  if (isFALSE(terra::same.crs(t_rast, region))) {
+    region <- terra::vect(region)  #
+    region_borders <- region
+    t_rast <- geodata::worldclim_tile(var = "tavg",
+                                      lon = mean(terra::ext(region)[1:2]),
+                                      lat = mean(terra::ext(region)[3:4]),
+                                      path = path,
+                                      res = res)
+     }
+  if (isFALSE(terra::same.crs(t_rast, terra::ext(region_borders)))) {
     if (verbose) cat("\nProjecting 'region' to 't_rast'...\n")
-    region <- terra::project(region, t_rast)
+    if(is.character(region)){
+      region <- terra::project(region_borders, t_rast)
+    } else {region <- terra::project(region, t_rast)}
   }
 
   if (is.null(terra::intersect(terra::ext(region), terra::ext(t_rast)))) {
