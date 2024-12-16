@@ -240,12 +240,11 @@ to ensure a continuous workflow of the package functions")
     region <- terra::vect(region)
   }
 
-  if (is.null(t_rast) && any(region %in% country_names)) {
+  if (is.null(t_rast)) {
     if (verbose) cat("\n(Down)loading temperature rasters...\n")
-    t_rast <- geodata::worldclim_country(country = region,
-                                         var = "tavg",
-                                         res = res,
-                                         path = path)
+    t_rast <- geodata::worldclim_global(var = "tavg",
+                                        res = res,
+                                        path = path)
   }
 
   if (is.null(region)) {
@@ -253,16 +252,10 @@ to ensure a continuous workflow of the package functions")
                           crs = terra::crs(t_rast))
   }
 
-  if(is.numeric(region) && length(region) == 4 |  #manually given spatial extent
-     inherits(region, "SpatExtent") | #spat extent obatined from terra::ext()
-     inherits(region, "SpatVector")) {  #spat vector from a sf object given by the user
+  if (inherits(region, "SpatExtent")) {
     mask <- FALSE  # pointless otherwise
     region <- terra::vect(region, crs = "EPSG:4326")  # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
-    t_rast <- geodata::worldclim_tile(country = region,
-                                           var = "tavg",
-                                           res = res,
-                                           path = path)
-    }
+  }
 
   if (isFALSE(terra::same.crs(t_rast, region))) {
     if (verbose) cat("\nProjecting 'region' to 't_rast'...\n")
@@ -278,7 +271,7 @@ to ensure a continuous workflow of the package functions")
     t_rast <- terra::crop(t_rast,
                           region,
                           mask = mask)
-    }
+  }
 
   if (verbose) cat("\nComputing summary layers...\n")
   t_rast_sum <- terra::rast(t_rast, nlyrs = nrow(t_vals))

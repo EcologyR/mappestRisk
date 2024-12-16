@@ -19,6 +19,18 @@ ext_region <- terra::ext(-10, 10, 30, 40)
 andalucia_sf <- readRDS(system.file("extdata", "andalucia_sf.rds",
                                     package = "mappestRisk"))
 
+
+# Test the function with default arguments:
+test_that("map_risk function works with default arguments", {
+  result <- map_risk(t_vals = t_vals,
+                     region =  "Spain",
+                     path = tempdir(),
+                     verbose = TRUE)
+  expect_true(is(result, "SpatRaster"))
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
+  })
+
 # Test the function with provided rasters:
 test_that("map_risk function works with provided rasters", {
   result <- map_risk(t_vals = t_vals,
@@ -57,6 +69,28 @@ test_that("map_risk function works with a numeric vector region", {
   expect_true(is(result, "SpatRaster"))
   expect_equal(terra::nlyr(result), 1)
   expect_true(names(result) == "mean")
+})
+
+# Test the function with a character region:
+region <- "Spain"
+test_that("map_risk function works with a character vector region", {
+  result <- map_risk(t_vals = t_vals,
+                     region = region,
+                     path = tempdir())
+  expect_true(is(result, "SpatRaster"))
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
+
+})
+
+# Test the function with multiple character regions:
+test_that("map_risk works for multiple character regions", {
+  region <- c("Spain", "Portugal")
+  result <- map_risk(t_vals = t_vals, region = region, path = tempdir())
+  expect_true(is(result, "SpatRaster"))
+  expect_equal(terra::nlyr(result), 1)
+  expect_true(names(result) == "mean")
+
 })
 
 
@@ -122,13 +156,12 @@ test_that("the function returns an error when providing an invalid character vec
 # Test that `mask = FALSE` is adjusted with the extent
 test_that("`mask = FALSE` gives more cells with NA values than mask = TRUE", {
   result <- map_risk(t_vals = t_vals,
-                     region = "Luxembourg",
-                     path = tempdir(),
-                     res = 10,
+                     region = "Spain",
                      mask = FALSE,
+                     path = tempdir(),
                      interactive = FALSE)
   result_masked <- map_risk(t_vals = t_vals,
-                            region = "Luxembourg",
+                            region = "Spain",
                             mask = TRUE,
                             path = tempdir(),
                             interactive = FALSE)
