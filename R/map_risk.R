@@ -161,8 +161,8 @@ map_risk <- function(t_vals = NULL,
                      mask = TRUE,
                      verbose = FALSE,
                      plot = TRUE,
-                     interactive = FALSE
-) {
+                     interactive = FALSE) {
+
 
   if (class(mask) != "logical" ) {
     stop("`mask` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
@@ -237,7 +237,8 @@ to ensure a continuous workflow of the package functions")
   }
   if(is.null(t_rast)){
     if (verbose) cat("\n(Down)loading temperature rasters...\n")
-    if (is.character(region) && region %in% country_names) {
+    if (is.character(region) &&
+        length(region) == 1) {
       t_rast <- geodata::worldclim_country(country = region,
                                            var = "tavg",
                                            path = path)
@@ -248,7 +249,7 @@ to ensure a continuous workflow of the package functions")
     } else if (is.character(region) && length(region) > 1 |
                inherits(region, "SpatExtent") |
                is.numeric(region) |
-               inherits(region, "sf")) {
+               inherits(region, "SpatVector")) {
     t_rast <- geodata::worldclim_global(var = "tavg",
                                         res = res,
                                         path = path)
@@ -269,7 +270,8 @@ to ensure a continuous workflow of the package functions")
                           crs = terra::crs(t_rast))
   }
 
-  if (inherits(region, "SpatExtent")) {
+  if (inherits(region, "SpatExtent") |
+      inherits(region, "sf")) {
     mask <- FALSE  # pointless otherwise
     region <- terra::vect(region, crs = "EPSG:4326")  # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
   }
@@ -317,11 +319,6 @@ to ensure a continuous workflow of the package functions")
     if (verbose) cat("\nPlotting map...\n")
     palette_bilbao <- khroma::color(palette = "bilbao",reverse = F)(100)
     palette_acton <- khroma::color(palette = "acton",reverse = T)(100)
-
-    if (interactive && !requireNamespace("leaflet", quietly = TRUE)) {
-      if (verbose) message("'interactive' requires having the 'leaflet' package installed. Plotting a static map instead.")
-      interactive <- FALSE
-    }
 
     if (interactive) {
       outmap <- terra::plet(out, y = names(out), collapse = FALSE,

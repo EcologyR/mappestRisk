@@ -154,12 +154,12 @@ head(boundaries_aphid)
                                interactive = FALSE,
                                verbose = TRUE)
  # Alternative 2: you can use your own spatial feature (sf) object for `region`
-andalucia_sf <- readRDS(system.file("extdata",
-                                    "andalucia_sf.rds",
-                                    package = "mappestRisk"))
+sobrarbe_sf <- readRDS(system.file("extdata",
+                                   "sobrarbe.rds",
+                                   package = "mappestRisk"))
 
 risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
-                                region = andalucia_sf,
+                                region = sobrarbe_sf,
                                 path = tempdir(),
                                 mask = TRUE,
                                 plot = TRUE,
