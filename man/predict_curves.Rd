@@ -54,6 +54,7 @@ called \code{iter}. In addition to the uncertainty TPCs, the estimated TPC is al
 Propagate parameter uncertainty of TPC fits using bootstrap with residual resampling
 }
 \examples{
+\dontrun{
 data("aphid")
 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -75,6 +76,7 @@ tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
                                         n_boots_samples = 10)
 
 head(tpc_preds_boots_aphid)
+}
 }
 \references{
 Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
