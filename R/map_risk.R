@@ -176,12 +176,7 @@ map_risk <- function(t_vals = NULL,
   if (class(interactive) != "logical" ) {
     stop("`interactive` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
-  if (!is.numeric(region) && !inherits(region, "SpatExtent") && length(region) > 1) {
-    stop("`region` must be defined by the user either with a vector of length 1 with a string from `country_names` or
-         input your own spatial feature object or your own extent. If you want to extract temperatures for
-         several countries, please first download their borders as a spatial feature elsewhere
-         and join them (e.g., `sf::st_union(sf1, sf2)`)")
-  }
+
   if (!any(class(t_vals) == "data.frame")){
     stop("The argument `t_vals` must be a tibble or data.frame inherited
 from the output of `mappestRisk::therm_suit_bounds()` function.
@@ -240,25 +235,33 @@ to ensure a continuous workflow of the package functions")
   if (inherits(region, "sf")) {
     region <- terra::vect(region)
   }
-  if(is.null(t_rast) && is.character(region) && region %in% country_names) {
-    t_rast <- geodata::worldclim_country(country = region,
-                                         var = "tavg",
-                                         path = path)
-    region <- wrld[wrld$NAME_0 %in% region, ]
-    if (isFALSE(mask)) {
-      region <- terra::ext(region)
-      }
-    } else if (is.null(t_rast) && !is.character(region)) {
+  if(is.null(t_rast)){
     if (verbose) cat("\n(Down)loading temperature rasters...\n")
-    t_rast <- geodata::worldclim_tile(var = "tavg",
-                                      lon = mean(terra::ext(region)[1:2]),
-                                      lat = mean(terra::ext(region)[3:4]),
-                                      res = res,
-                                      path = path)
+    if (is.character(region) && region %in% country_names) {
+      t_rast <- geodata::worldclim_country(country = region,
+                                           var = "tavg",
+                                           path = path)
+      region <- wrld[wrld$NAME_0 %in% region, ]
+      if (isFALSE(mask)) {
+        region <- terra::ext(region)
+      }
+    } else if (is.character(region) && length(region) > 1 |
+               inherits(region, "SpatExtent") |
+               is.numeric(region) |
+               inherits(region, "sf")) {
+    t_rast <- geodata::worldclim_global(var = "tavg",
+                                        res = res,
+                                        path = path)
+    if(is.character(region)) {
+      region <- wrld[wrld$NAME_0 %in% region, ]
+      } else {region}
+
     t_rast <- terra::crop(t_rast, terra::ext(region))
+
     if (isFALSE(mask)) {
       region <- terra::ext(region)
     }
+   }
   }
 
     if (is.null(region)) {
