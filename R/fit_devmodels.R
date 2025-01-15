@@ -57,8 +57,10 @@
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 #'                                         dev_rate = aphid$rate_value,
-#'                                         model_name = "c("lactin2", "briere2", "mod_weibull")
+#'                                         model_name = c("lactin2", "briere2", "mod_weibull")
+#'                                         )
 #' print(fitted_tpcs_aphid)
+#'
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,

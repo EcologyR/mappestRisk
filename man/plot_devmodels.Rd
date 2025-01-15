@@ -42,6 +42,19 @@ parameters is displayed. It's a \if{html}{\out{<ggplot>}} object, which can be a
 This function creates a plot showing the predicted development rates across temperatures
 based on fitted Thermal Performance Curves (TPCs) for one or several models displayed in facets.
 }
+\examples{
+data("aphid")
+
+fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
+                                        dev_rate = aphid$rate_value,
+                                        model_name = c("lactin2", "briere2", "mod_weibull"))
+
+plot_devmodels(temp = aphid$temperature,
+               dev_rate = aphid$rate_value,
+               fitted_parameters = fitted_tpcs_aphid,
+               species = "Brachycaudus schwartzi",
+               life_stage = "Nymphs")
+}
 \references{
 Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
 (for reading on model selection in TPC framework)

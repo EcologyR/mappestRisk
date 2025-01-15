@@ -164,20 +164,20 @@ map_risk <- function(t_vals = NULL,
                      interactive = FALSE) {
 
 
-  if (class(mask) != "logical" ) {
+  if (!inherits(mask, "logical")) {
     stop("`mask` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
-  if (class(verbose) != "logical" ) {
+  if (!inherits(verbose, "logical")) {
     stop("`verbose` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
-  if (class(plot) != "logical" ) {
+  if (!inherits(plot, "logical" )) {
     stop("`plot` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
-  if (class(interactive) != "logical" ) {
+  if (!inherits(interactive, "logical")) {
     stop("`interactive` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
 
-  if (!any(class(t_vals) == "data.frame")){
+  if (!inherits(t_vals, "data.frame")) {
     stop("The argument `t_vals` must be a tibble or data.frame inherited
 from the output of `mappestRisk::therm_suit_bounds()` function.
 No modifications of columns of the `t_vals` data.frame are allowed in order
