@@ -270,10 +270,15 @@ to ensure a continuous workflow of the package functions")
                           crs = terra::crs(t_rast))
   }
 
-  if (inherits(region, "SpatExtent") |
-      inherits(region, "sf")) {
+  if (inherits(region, "SpatExtent")) {
     mask <- FALSE  # pointless otherwise
-    region <- terra::vect(region, crs = "EPSG:4326")  # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
+    region <- terra::vect(region, crs = terra::crs(t_rast)) # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
+  }
+  if (inherits(region, "sf")){
+     region <- terra::vect(region, crs = terra::crs(t_rast))
+  }
+  if (inherits(region, "SpatVector")) {
+    region
   }
 
   if (terra::isFALSE(terra::same.crs(t_rast, region))) {
