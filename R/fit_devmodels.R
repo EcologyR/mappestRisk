@@ -76,6 +76,9 @@ fit_devmodels <- function(temp = NULL,
   if (!all(model_name %in% c("all", available_models$model_name))) {
     stop("model not available. For available model names, see `available_models`")
   }
+  if (!all(model_name %in% c("all", available_models$model_name))) {
+    stop("model not available. For available model names, see `available_models`")
+  }
 
   if (any(model_name == "all")) {
     models_2fit <- available_models |>
@@ -102,7 +105,7 @@ fit_devmodels <- function(temp = NULL,
 
     if (available_models$package[available_models$model_name == i] == "devRate") {
 
-      if (available_models$n_params[available_models$model_name == i] > length(temp)) {
+      if (available_models$n_params[available_models$model_name == i] >= length(temp)) {
         fit_nls <- NULL
       } else {
       start_vals <- start_vals_devRate(model_name_2fit = model_i,
