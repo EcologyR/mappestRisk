@@ -39,7 +39,6 @@ Imports:
     tidyr,
     terra,
     nls.multstart,
-    rTPC,
     devRate,
     khroma,
     progress,
