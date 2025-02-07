@@ -1,4 +1,14 @@
 url: https://ecologyr.github.io/mappestRisk/
 template:
   bootstrap: 5
+  bootswatch: minty
+  theme: ayu-light
+  math-rendering: mathjax
+  bslib:
+    base_font:
+      google: Be Vietnam Pro
+    heading_font:
+      google: Be Vietnam Pro
+    code_font:
+      google: Space Mono
 
