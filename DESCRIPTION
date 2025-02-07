@@ -39,9 +39,10 @@ Imports:
     tidyr,
     terra,
     nls.multstart,
-    rTPC,
     devRate,
     khroma,
     progress,
     geodata,
     sf
+Remotes: 
+  padpadpadpad/rTPC
