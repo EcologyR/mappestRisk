@@ -12,6 +12,7 @@ The package provides maps that forecast crop pest risk of occurrence in response
 Useful links:
 \itemize{
   \item \url{https://github.com/EcologyR/mappestRisk}
+  \item \url{https://ecologyr.github.io/mappestRisk/}
   \item Report bugs at \url{https://github.com/EcologyR/mappestRisk/issues}
 }
 
