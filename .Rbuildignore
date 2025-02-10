@@ -12,3 +12,4 @@
 .Rprofile
 other/
 references.bib
+^vignettes/articles$
