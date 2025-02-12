@@ -61,7 +61,9 @@ plot_devmodels(temp = aphid$temperature,
                life_stage = "Nymphs")
 ```
 
-Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures with *residual resampling*, following vignettes of `rTPC` package [@padfield2021]. This can be done with the function `predict_curves()` by setting the argument `propagate_uncertainty` to be `TRUE`. Resulting predictions can be plotted using `plot_uncertainties()`.
+For a more complete explanation and example of model fitting and visualization, see [TPCs model fitting](articles/tpcs-model-fitting.html) article.
+
+Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures with *residual resampling*, following vignettes of `rTPC` package [@padfield2021]. This can be done with the function `predict_curves()` by setting the argument `propagate_uncertainty` to be `TRUE`. Resulting predictions can be plotted using `plot_uncertainties()`. A detailed explanation is given in the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
 
 ```{r, warning=FALSE, fig.width=12, fig.height=5, dpi=300, out.width="100%"}
 preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
@@ -86,7 +88,6 @@ After the previous steps, the user can calculate the thermal boundaries of the o
 boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,       
                                       model_name = "lactin2",        
                                       suitability_threshold = 80) 
-print(boundaries_aphid)
 ```
 
 ### 3. Climatic data extraction and projection
@@ -96,7 +97,7 @@ These optimal thermal boundaries are used for spatial projection of pest risk. T
 ```{r, message = FALSE}
 risk_rast <- map_risk(t_vals = boundaries_aphid, 
                       path = "~/downloaded_maps", # directory to download data 
-                      region = "Lebanon",    
+                      region = "Réunion",    
                       mask = TRUE,
                       plot = TRUE,
                       interactive = FALSE,

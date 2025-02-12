@@ -38,12 +38,12 @@ fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 After running `fit_devmodels()`, a `tibble` (a specific case of `data.frame`) is created containing the most relevant statistical information of the modelled TPCs: model name, parameter information –name, estimates, standard error, AICs and listed model objects.To continue the package workflow, this output must be stored as an object (here we call it `fitted_tpcs_aphid`). This `tibble` has the following aspect:
 
 ```{r}
-print(fitted_tpcs_aphid,)
+print(fitted_tpcs_aphid)
 ```
 
 Despite the output yields a table with explicit statistical information and model objects with implicit additional information, selecting a model should better be guided by ecological, rather that only statistical criteria. This typically involves visualising the predictions of the fitted TPCs for further visual examination. A potential user of the package may use their expertise on thermal biology and ecology of the species to distinguish which of the fitted TPCs accomplish to approximate true temperature-development relationships. For example, a fitted TPC model yielding a critical thermal maximum beyond 50ºC –i.e., with a right-side vertical x-axis cutoff– may not be realistic, as most species do not encounter this temperatures. Similarly, models yielding quasi-symmetric TPCs or unexpected behaviors at some regions of the curve may also be further discarded. We strongly believe there is no a straightforward statistical strategy to select among TPC models; instead, comparing a large number of fitted TPCs with expertise ecological criteria may improve biological realism of model selection and reduce arbitrariety. Finally, accounting for the thermal regimes that the species will likely encounter in the region of interest to project risk may help select among curves by prioritizing curves with specific expected behaviors in theTPC regions corresponding to these thermal regimes.
 
-The `plot_devmodels()` function facilitates quick visualizations of predictions of the Thermal Performance Curves to guide model selection under ecological criteria. It takes as an input the resulting `tibble`/`data.frame` stored as an object from `fit_devmodels()`. It has also arguments to title and subtitle the figure with the species' name and the life stage evaluated, respectively.
+The `plot_devmodels()` function facilitates quick visualizations of predictions of the Thermal Performance Curves to guide model selection under ecological criteria. It takes as an input the resulting `tibble`/`data.frame` stored as an object from `fit_devmodels()`. It has also arguments to title and subtitle the figure with the species' name and the life stage evaluated, respectively. Since wrapped in the `ggplot2` approach, customization is available by adding new lines with compatible functions with `ggplot2`.
 
 Following the previous example:
 
@@ -56,3 +56,5 @@ plot_devmodels(temp = aphid$temperature,
 ```
 
 As you can see, the plot is faceted across TPC models included in `fitted_tpcs_aphid`.
+
+## References

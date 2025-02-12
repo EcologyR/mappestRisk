@@ -21,7 +21,6 @@ Description: mappestRisk has three different modules: (1) model fitting & select
              performance zone or suitability; and (3) climatic data extraction 
              & visualization with either exportable rasters, static map images
              or html, interactive maps.
-
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

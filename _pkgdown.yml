@@ -6,9 +6,9 @@ template:
   math-rendering: mathjax
   bslib:
     base_font:
-      google: Be Vietnam Pro
+      google: Lato
     heading_font:
-      google: Be Vietnam Pro
+      google: Lato
     code_font:
       google: Space Mono
 

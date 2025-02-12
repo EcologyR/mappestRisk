@@ -293,8 +293,11 @@ to ensure a continuous workflow of the package functions")
   if (terra::ext(region) < terra::ext(t_rast)) {
     if (verbose) cat("\nCropping temperature rasters to region...\n")
     t_rast <- terra::crop(t_rast,
-                          region,
-                          mask = mask)
+                          region)
+  }
+  if (inherits(region, "sf") || inherits(region, "SpatVector")) {
+    if (verbose) cat("\nMasking temperature rasters with region...\n")
+    t_rast <- terra::mask(t_rast, region)
   }
 
   if (verbose) cat("\nComputing summary layers...\n")

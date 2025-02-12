@@ -84,13 +84,18 @@ plot_devmodels(temp = aphid$temperature,
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
+For a more complete explanation and example of model fitting and
+visualization, see [TPCs model
+fitting](articles/tpcs-model-fitting.html) article.
+
 Additionally, we recommend here to propagate uncertainty in parameter
 estimation of the fitted and selected TPC models using bootstrap
 procedures with *residual resampling*, following vignettes of `rTPC`
 package (Padfield, O’Sullivan, and Pawar 2021). This can be done with
 the function `predict_curves()` by setting the argument
 `propagate_uncertainty` to be `TRUE`. Resulting predictions can be
-plotted using `plot_uncertainties()`.
+plotted using `plot_uncertainties()`. A detailed explanation is given in
+the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
 
 ``` r
 preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
@@ -127,21 +132,6 @@ selected under both ecological and statistical criteria, the the
 boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,       
                                       model_name = "lactin2",        
                                       suitability_threshold = 80) 
-print(boundaries_aphid)
-#> # A tibble: 102 × 6
-#>    model_name suitability tval_left tval_right pred_suit  iter
-#>    <chr>      <chr>           <dbl>      <dbl>     <dbl> <int>
-#>  1 lactin2    80 %             NA         NA      NA        NA
-#>  2 lactin2    80 %             21.5       47.5     0.118     1
-#>  3 lactin2    80 %             21         47.5     0.116     2
-#>  4 lactin2    80 %             21         47.5     0.115     3
-#>  5 lactin2    80 %             21         47.5     0.114     4
-#>  6 lactin2    80 %             21.5       47.5     0.115     5
-#>  7 lactin2    80 %             21.5       47.5     0.119     6
-#>  8 lactin2    80 %             22         47.5     0.117     7
-#>  9 lactin2    80 %             21.5       47.5     0.117     8
-#> 10 lactin2    80 %             21         47.5     0.111     9
-#> # ℹ 92 more rows
 ```
 
 ### 3. Climatic data extraction and projection
@@ -156,7 +146,7 @@ per year with highly suitable temperatures for pest development.
 ``` r
 risk_rast <- map_risk(t_vals = boundaries_aphid, 
                       path = "~/downloaded_maps", # directory to download data 
-                      region = "Lebanon",    
+                      region = "Réunion",    
                       mask = TRUE,
                       plot = TRUE,
                       interactive = FALSE,
@@ -167,6 +157,8 @@ risk_rast <- map_risk(t_vals = boundaries_aphid,
 #> (Down)loading temperature rasters...
 #> 
 #> Cropping temperature rasters to region...
+#> 
+#> Masking temperature rasters with region...
 #> 
 #> Computing summary layers...
 #> 
