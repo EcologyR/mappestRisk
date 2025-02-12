@@ -83,6 +83,8 @@ The workflow of the function is as follows:
 
 [^3]: We recommend to think carefully where to extract data since a simple call to `map_risk()` without a country name will download \~450MB of climate data with default conditions (`res = 2.5`). Note that the `path` argument must be given by the user. If the user desires to save the temperature data sourcing the map, this path should refer to somewhere in your device; otherwise, a `tempdir()` is recommended to avoid large data storage.
 
+The following sections show how to obtain risk rasters with default visualization given directly by `map_risk()`. Custom alternatives for map visualization are detailed in [Customizeyour Risk Maps](articles/custom-risk-maps.html) article.
+
 ### Risk map: country
 
 If we follow the workflow of the package in the examples elsewhere in this website, we can then create a risk map for a country. In this example, we will obtain it for Taiwan.
@@ -180,50 +182,6 @@ risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
                              plot = TRUE,
                              interactive = FALSE,
                              verbose = TRUE)
-```
-
-Similarly, a discrete *"iso-risk"* map can be generated using `terra::geom_spatraster_contour_filled()` with the previous approach as follows:
-
-```{r}
-breaks_levels <- purrr::map_chr(.x = seq(0, max_risk_andalucia),
-                            .f = ~paste0("[", .x, " ", .x+1,")")) |> 
-  forcats::as_factor()
-
-ggplot2::ggplot()+
-    ggplot2::geom_sf(data = worldmap_sf, # <- countries background
-                     fill = "gray85")+
-    ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
-                  y = c(bbox_rast[2], bbox_rast[4]))+
-    tidyterra::geom_spatraster_contour_filled(data = risk_rast_andalucia_epsg25830,
-                                              breaks = seq(0, 12),
-                                              maxcell = Inf)+
-  ggplot2::geom_sf(data = worldmap_sf,
-                   fill = NA,
-                   color = "lightblue4")+
-  ggplot2::scale_fill_manual(values = my_risk_palette,
-                             labels = breaks_levels)+
-  theme_bw()+
-    theme(legend.position = "bottom")+
-    labs(title = "Risk Map for Andalucía",
-         subtitle = species_name_italics,
-         caption = "Climate data from WorldClim Historical data set",
-         fill = "Annual Risk Months")+
-    theme(legend.position = "bottom")+
-    theme(plot.title = element_text(face = "bold"))+
-  geom_sf(data = extremadura_sf, fill = "gray85",
-          color = NA)+
-  geom_sf(data = clm_sf, fill = "gray85",
-          color = NA)+
-  geom_sf(data = murcia_sf, fill = "gray85",
-          color = NA)+
-  geom_sf(data = portugal_sf, fill = "gray85",
-          color = NA)+
-  geom_sf(data = andalucia_sf, 
-          color = "#060d0e",
-          fill = NA)+
-  geom_sf(data = bath_spain,
-          fill = "#060d0e",
-          color = "#060d0e")
 ```
 
 ## References
