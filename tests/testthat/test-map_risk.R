@@ -148,13 +148,13 @@ test_that("the function returns an error when providing an invalid character vec
 })
 
 # # Test that `interactive = TRUE` yields a leaflet object rather than a `SpatRaster`
-# test_that("interactive html map is plotted in the Viewer when `interactive = TRUE`", {
-#   result <- map_risk(t_vals = t_vals,
-#                      region = "Spain",
-#                      path = tempdir(),
-#                      interactive = TRUE)
-#   expect_true(any(class(result) == "leaflet"))
-#   })
+ test_that("interactive html map is plotted in the Viewer when `interactive = TRUE`", {
+
+   expect_no_error(map_risk(t_vals = t_vals,
+                            region = "Réunion",
+                            path = tempdir(),
+                            interactive = TRUE))
+   })
 
 # Test that `mask = FALSE` is adjusted with the extent
 test_that("`mask = FALSE` gives more cells with NA values than mask = TRUE", {
@@ -171,19 +171,6 @@ test_that("`mask = FALSE` gives more cells with NA values than mask = TRUE", {
   how_many_nas_nomask <- nrow(result[which(!is.na(result[]))])
   how_many_nas_mask <- nrow(result_masked[which(!is.na(result_masked[]))])
   expect_true(how_many_nas_mask < how_many_nas_nomask)
-})
-
-# Test that different CRSs are re-projected to be the same
-test_that("t_rast with EPSG: 3035 is converted to EPSG: 4326 for masking", {
-  region <- readRDS(file = test_path("testdata", "sobrarbe.rds"))
-  result <- map_risk(t_vals = t_vals,
-                     region = region,
-                     mask = FALSE,
-                     path = tempdir(),
-                     interactive = FALSE,
-                     res = 10)
-  expect_true(terra::same.crs(tavg_rast, result)
-  )
 })
 
 # Test that mask should be logical

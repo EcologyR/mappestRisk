@@ -70,9 +70,8 @@
 #'
 #' @export
 #'
-#' @examplesIf interactive()
+#' @examples
 #'
-#' \dontrun{
 #' data("aphid")
 #'
 #' # 1. fit TPC models:
@@ -152,7 +151,6 @@
 #'                                 plot = TRUE,
 #'                                 interactive = FALSE,
 #'                                 verbose = TRUE)
-#'}
 map_risk <- function(t_vals = NULL,
                      t_rast = NULL,
                      region = NULL,

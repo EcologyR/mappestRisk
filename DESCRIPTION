@@ -41,14 +41,14 @@ Imports:
     purrr,
     minpack.lm,
     tidyr,
-    rTPC,
-    terra,
+    rTPC (>= 1.0.7),
+    terra (>= 1.8-23),
     nls.multstart,
     devRate,
-    rTPC,
     khroma,
     progress,
     geodata,
+    sf
 Remotes: 
-  padpadpadpad/rTPC
+    padpadpadpad/rTPC
 Config/Needs/website: rmarkdown

@@ -83,9 +83,7 @@ produced by \code{\link[=therm_suit_bounds]{therm_suit_bounds()}}), the output r
 and standard deviation.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 
-\dontrun{
 data("aphid")
 
 # 1. fit TPC models:
@@ -165,6 +163,4 @@ risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
                                 plot = TRUE,
                                 interactive = FALSE,
                                 verbose = TRUE)
-}
-\dontshow{\}) # examplesIf}
 }
