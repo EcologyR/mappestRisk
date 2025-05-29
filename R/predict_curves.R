@@ -141,7 +141,7 @@ predict_curves <- function(temp = NULL,
     ##predict based on parameters
     explore_preds <- dplyr::tibble(temp = seq(min(devdata$temp) - 20,
                                        max(devdata$temp) + 15,
-                                       .5),
+                                       .1),
                             model_name = model_name_i,
                             model_fit = model_fit_i[1],
                             model_AIC = model_AIC_i[1],
