@@ -48,7 +48,8 @@ Imports:
     khroma,
     progress,
     geodata,
-    sf
+    sf,
+    leaflet
 Remotes: 
     padpadpadpad/rTPC
 Config/Needs/website: rmarkdown

@@ -152,12 +152,12 @@ arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
                                  half_right <- pred_tbl_i |>
                                    dplyr::filter(temp >= topt_pred)
                                  therm_suit_left <- half_left |>
-                                   dplyr::slice(max(which(half_left$pred <= devrate_max_i*0.01*suitability_threshold),
-                                                    na.rm = TRUE)) |>
+                                   dplyr::filter(pred <= q80_thresh) |>
+                                   dplyr::slice_tail(n = 1) |>
                                    dplyr::pull(temp)
                                  therm_suit_right <- half_right |>
-                                   dplyr::slice(max(which(half_right$pred <= devrate_max_i*0.01*suitability_threshold),
-                                                    na.rm = TRUE)) |>
+                                   dplyr::filter(pred <= q80_thresh) |>
+                                   dplyr::slice_head(n = 1) |>
                                    dplyr::pull(temp)
                                  dev_rate_suit <- devrate_max_i*0.01*suitability_threshold
                                  }),
