@@ -147,16 +147,17 @@ arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
                                  suppressWarnings({topt_pred <- pred_tbl_i |> #the custom error message is more informative than this warning
                                    dplyr::slice_max(pred) |>
                                    dplyr::pull(temp)
+                                 q_threshold <- devrate_max_i * 0.01 * suitability_threshold
                                  half_left <- pred_tbl_i |>
                                    dplyr::filter(temp < topt_pred)
                                  half_right <- pred_tbl_i |>
                                    dplyr::filter(temp >= topt_pred)
                                  therm_suit_left <- half_left |>
-                                   dplyr::filter(pred <= q80_thresh) |>
+                                   dplyr::filter(pred <= q_threshold) |>
                                    dplyr::slice_tail(n = 1) |>
                                    dplyr::pull(temp)
                                  therm_suit_right <- half_right |>
-                                   dplyr::filter(pred <= q80_thresh) |>
+                                   dplyr::filter(pred <= q_threshold) |>
                                    dplyr::slice_head(n = 1) |>
                                    dplyr::pull(temp)
                                  dev_rate_suit <- devrate_max_i*0.01*suitability_threshold
