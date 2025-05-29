@@ -167,6 +167,9 @@ arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
       therm_suit_right <- NA
       therm_suit_left <- NA
     }
+    if (length(therm_suit_right) == 0) {
+      therm_suit_right <- NA_real_
+    }
     if(is.na(therm_suit_right) |
        is.na(therm_suit_left)) {
       warning(paste("Simulation", iter_i, "yielded NA value and then has been discarded for thermal suitability"))
