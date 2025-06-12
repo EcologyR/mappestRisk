@@ -1,4 +1,4 @@
-#' <b><i>Brachycaudus schwartzi</i> whole life cycle development rate across temperatures</b>
+#' <i>Brachycaudus schwartzi</i> whole life cycle development rate across temperatures
 #'
 #' A modified data set from Table 1 in Satar and Yokomi (2002) on days of development
 #' for *Brachycaudus schwartzi* across different constant temperatures and life stages
@@ -36,7 +36,7 @@
 "country_names"
 
 
-#' <b>Available Models Table</b>
+#' Available Models Table
 #'
 #' This data.frame, called `available_models` in your environment once the package is loaded,
 #' contains the available models to fit using [fit_devmodels()]. It is useful for the user to know it

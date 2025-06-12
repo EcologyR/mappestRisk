@@ -3,7 +3,7 @@
 \docType{data}
 \name{aphid}
 \alias{aphid}
-\title{\if{html}{\out{<b>}}\if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} whole life cycle development rate across temperatures\if{html}{\out{</b>}}}
+\title{\if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} whole life cycle development rate across temperatures}
 \format{
 \subsection{\code{aphid}}{
 

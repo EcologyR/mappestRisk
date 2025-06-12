@@ -45,6 +45,7 @@ A tibble with six columns:
 This function calculates thermal boundaries that define the suitable region of a Thermal Performance Curve (TPC) corresponding to a user-defined optimal performance level.
 }
 \examples{
+ \dontrun{
 data("aphid")
 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -80,6 +81,7 @@ boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
                                              model_name = "lactin2",
                                              suitability_threshold = 80)
 head(boundaries_aphid)
+}
 }
 \references{
 Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.

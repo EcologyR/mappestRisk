@@ -1,4 +1,5 @@
 
+
 # functions developed based on devRate formulas
 wang <- function(temp, k, r, topt, tmin, tmax, a){
   est <- (k/(1 + exp(-r * (temp - topt)))) * (1 - exp(-(temp - tmin)/a)) *

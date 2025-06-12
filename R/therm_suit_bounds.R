@@ -48,6 +48,7 @@
 #' @export
 #'
 #' @examples
+#'  \dontrun{
 #' data("aphid")
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -83,6 +84,7 @@
 #'                                              model_name = "lactin2",
 #'                                              suitability_threshold = 80)
 #' head(boundaries_aphid)
+#' }
 
 therm_suit_bounds <- function(preds_tbl = NULL,
                               model_name = NULL,
