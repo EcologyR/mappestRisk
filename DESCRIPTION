@@ -3,15 +3,16 @@ Title: Create Maps Forecasting Risk of Pest Occurrence
 Version: 0.0.9
 Authors@R: 
   c(
-    person("Darío", "San-Segundo  Molina", ,"dario.ssm2@gmail.com", role = c("cre"),
-           comment = c(ORCID = "0000-0002-7831-9623")),
-    person("A. Márcia", "Barbosa", , role = c("aut"), comment = c(ORCID = "0000-0001-8972-7713")),
-    person("Antonio Jesús", "Pérez-Luque", , "ajpelu@gmail.com", role = c("aut"),
-           comment = c(ORCID = "0000-0002-1747-0469")),
-    person("Francisco", "Rodríguez-Sánchez", , "f.rodriguez.sanc@gmail.com", role = c("aut"),
-           comment = c(ORCID = "0000-0002-7981-1599"))
-           )
-Description: mappestRisk has three different modules: (1) model fitting & selection
+    person("Darío", "San-Segundo  Molina", role = c("aut", "cre"), 
+      email = "dario.ssm2@gmail.com", comment = c(ORCID = "0000-0002-7831-9623")),
+    person("A. Márcia", "Barbosa", role = c("aut"), 
+      comment = c(ORCID = "0000-0001-8972-7713")),
+    person("Antonio Jesús", "Pérez-Luque", role = c("aut"),
+      email = "ajpelu@gmail.com", comment = c(ORCID = "0000-0002-1747-0469")),
+    person("Francisco", "Rodríguez-Sánchez", role = c("aut"),
+      email = "f.rodriguez.sanc@gmail.com", comment = c(ORCID = "0000-0002-7981-1599"))
+  )
+Description: 'mappestRisk' has three different modules: (1) model fitting & selection
              using a set of the most commonly used equations describing developmental 
              responses to temperature helped by already existing R packages 
              using equation helpers from rTPC(Padfield and O’Sullivan 2023),
@@ -36,20 +37,20 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
-    dplyr,
-    ggplot2,
-    purrr,
-    minpack.lm,
-    tidyr,
-    rTPC (>= 1.0.7),
-    terra,
-    nls.multstart,
     devRate,
-    khroma,
-    progress,
+    dplyr,
     geodata,
+    ggplot2,
+    khroma,
+    leaflet,
+    minpack.lm,
+    nls.multstart,
+    progress,
+    purrr,
+    rTPC (>= 1.0.7),
     sf,
-    leaflet
+    terra,
+    tidyr
 Remotes: 
     padpadpadpad/rTPC
 Config/Needs/website: rmarkdown
