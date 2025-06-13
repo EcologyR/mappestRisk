@@ -199,6 +199,9 @@ fit_devmodels <- function(temp = NULL,
   if (length(list_param) == 0) {
     warning("no model converged adequately for fitting your data")
   }
+
+  ## TODO: keep only model_fit for the first row in each model, otherwise NULL
+
   return(list_param)
 }
 
