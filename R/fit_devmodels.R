@@ -1,8 +1,8 @@
-#' Fits nonlinear regression models to data representing how development rate changes
-#' with temperature (known as Thermal Performance Curves).
+#' Fit Thermal Performance Curves
 #'
 #' @description
-#' Fits nonlinear regression models (or Thermal Performance Curves) based on
+#' Fit nonlinear regression models to data representing how development rate changes
+#' with temperature (known as Thermal Performance Curves), based on
 #' [nls.multstart::nls_multstart()] approach to development rate data across temperatures.
 #' The fitting procedure is built upon previous packages for starting values estimation,
 #' namely `rTPC` and `devRate`.
@@ -20,12 +20,14 @@
 #' fitting the Thermal Performance Curves. Options include "all" or specific
 #' models listed in [available_models]. These models typically exhibit a common unimodal, left-skewed shape.
 #'
-#' @returns returns a table in `tibble` format with estimates and
-#' standard errors for each parameter of the models specified by the user that have adequately
+#' @returns A table in `tibble` format with estimates and standard errors
+#' for each parameter of the models specified by the user that have adequately
 #' converged. Models are sorted based on their Akaike Information Criterion (AIC) values,
-#' with the best fitting models shown first. Fitted models are also provided in list format and
-#' can be accessed using `your_parameters_tbl$fit[[x]]` with `x` refers to the desired row in the table.
-#' It's important to consider ecological criteria alongside statistical information. For additional help in model selection,
+#' with the best fitting models shown first. Fitted models are also provided in list format
+#' in the `model_list` column and can be accessed using [get_fitted_model()] for
+#' for further inspection.
+#' It is important to consider ecological criteria alongside statistical information.
+#' For additional help in model selection,
 #' we recommend using [plot_devmodels()] and consulting relevant literature.
 #'
 #' @source
@@ -56,10 +58,10 @@
 #' data("aphid")
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                         dev_rate = aphid$rate_value,
-#'                                         model_name = c("lactin2", "briere2", "mod_weibull")
-#'                                         )
-#' print(fitted_tpcs_aphid)
+#'                                    dev_rate = aphid$rate_value,
+#'                                    model_name = c("lactin2", "briere2", "mod_weibull")
+#'                                    )
+#' fitted_tpcs_aphid
 #'
 
 fit_devmodels <- function(temp = NULL,
@@ -76,9 +78,6 @@ fit_devmodels <- function(temp = NULL,
   if (!all(model_name %in% c("all", available_models$model_name))) {
     stop("model not available. For available model names, see `available_models`")
   }
-  if (!all(model_name %in% c("all", available_models$model_name))) {
-    stop("model not available. For available model names, see `available_models`")
-  }
 
   if (any(model_name == "all")) {
     models_2fit <- available_models |>
@@ -89,11 +88,11 @@ fit_devmodels <- function(temp = NULL,
   }
 
   list_fit_models <- vector("list", length = length(models_2fit))
-  list_param <- dplyr::tibble(param_name = NULL,
+  list_param <- dplyr::tibble(model_name = NULL,
+                              param_name = NULL,
                               start_vals = NULL,
                               param_est = NULL,
                               param_se = NULL,
-                              model_name = NULL,
                               model_AIC = NULL,
                               model_BIC = NULL,
                               model_fit = NULL)
@@ -108,80 +107,82 @@ fit_devmodels <- function(temp = NULL,
       if (available_models$n_params[available_models$model_name == i] >= length(temp)) {
         fit_nls <- NULL
       } else {
-      start_vals <- start_vals_devRate(model_name_2fit = model_i,
-                                       temperature = temp,
-                                       dev_rate = dev_rate)
+        start_vals <- start_vals_devRate(model_name_2fit = model_i,
+                                         temperature = temp,
+                                         dev_rate = dev_rate)
 
-      possible_error <- tryCatch(expr = {
-        devdata <- dplyr::tibble(temp, dev_rate)
-        start_upper_vals <- purrr::map(.x = start_vals,
-                                       .f = ~.x + abs(.x/2))
-        start_lower_vals <- purrr::map(.x = start_vals,
-                                       .f = ~.x - abs(.x/2))
-        fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
-                                                      termlabels = unique(model_i$formula)),
-                                 data = devdata,
-                                 iter = 500,
-                                 start_lower = start_lower_vals,
-                                 start_upper = start_upper_vals,
-                                 supp_errors = "Y")
-        list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
-        sum_fit_nls <- summary(fit_nls)
-        list_param_tbl <- dplyr::tibble(param_name = extract_param_names(fit_nls),
-                                        start_vals = tidyr::replace_na(start_vals, 0),
-                                        param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                        param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                        model_name = i,
-                                        model_AIC = AIC(fit_nls),
-                                        model_BIC = BIC(fit_nls),
-                                        model_fit = list(fit_nls))
-      }, # <- inside tryCatch
-      error = function(e) e)
-      if (inherits(possible_error, "error")) {
-        fit_nls <- NULL
-      }
-      if (is.null(fit_nls)) {
-        list_param <- list_param
-      } else {
-        list_param <- list_param |>
-        dplyr::bind_rows(list_param_tbl)
+        possible_error <- tryCatch(expr = {
+          devdata <- dplyr::tibble(temp, dev_rate)
+          start_upper_vals <- purrr::map(.x = start_vals,
+                                         .f = ~.x + abs(.x/2))
+          start_lower_vals <- purrr::map(.x = start_vals,
+                                         .f = ~.x - abs(.x/2))
+          fit_nls <- nls.multstart::nls_multstart(
+            formula = stats::reformulate(response = "dev_rate",
+                                         termlabels = unique(model_i$formula)),
+            data = devdata,
+            iter = 500,
+            start_lower = start_lower_vals,
+            start_upper = start_upper_vals,
+            supp_errors = "Y")
+
+          list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
+          sum_fit_nls <- summary(fit_nls)
+          list_param_tbl <- dplyr::tibble(model_name = i,
+                                          param_name = extract_param_names(fit_nls),
+                                          start_vals = tidyr::replace_na(start_vals, 0),
+                                          param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+                                          param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+                                          model_AIC = AIC(fit_nls),
+                                          model_BIC = BIC(fit_nls),
+                                          model_fit = list(fit_nls))
+        }, # <- inside tryCatch
+        error = function(e) e)
+        if (inherits(possible_error, "error")) {
+          fit_nls <- NULL
+        }
+        if (is.null(fit_nls)) {
+          list_param <- list_param
+        } else {
+          list_param <- list_param |>
+            dplyr::bind_rows(list_param_tbl)
         }
       }
-     }
+    }
     # end of devRate
 
     if (available_models$package[available_models$model_name == i] == "rTPC") {
       possible_error <- tryCatch(expr = {start_vals <- rTPC::get_start_vals(x = temp,
-                                           y = dev_rate,
-                                           model_name = model_name_translate(i))
-        devdata <- dplyr::tibble(temp, dev_rate)
-        start_upper_vals <- purrr::map(.x = start_vals,
-                                       .f = ~.x + abs(.x/2))
-        start_lower_vals <- purrr::map(.x = start_vals,
-                                       .f = ~.x - abs(.x/2))
-        fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
-                                                      termlabels = unique(model_i$formula)),
-                                 data = devdata,
-                                 iter = 500,
-                                 start_lower = start_lower_vals,
-                                 start_upper = start_upper_vals,
-                                 lower = rTPC::get_lower_lims(devdata$temp,
-                                                              devdata$dev_rate,
-                                                              model_name = model_name_translate(i)),
-                                 upper = rTPC::get_upper_lims(devdata$temp,
-                                                              devdata$dev_rate,
-                                                              model_name = model_name_translate(i)),
-                                 supp_errors = "Y")
-        list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
-        sum_fit_nls <- summary(fit_nls)
-        list_param_tbl <- dplyr::tibble(param_name = extract_param_names(fit_nls),
-                                        start_vals = tidyr::replace_na(start_vals, 0),
-                                        param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                        param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                        model_name = i,
-                                        model_AIC = AIC(fit_nls),
-                                        model_BIC = BIC(fit_nls),
-                                        model_fit = list(fit_nls))
+                                                                            y = dev_rate,
+                                                                            model_name = model_name_translate(i))
+      devdata <- dplyr::tibble(temp, dev_rate)
+      start_upper_vals <- purrr::map(.x = start_vals,
+                                     .f = ~.x + abs(.x/2))
+      start_lower_vals <- purrr::map(.x = start_vals,
+                                     .f = ~.x - abs(.x/2))
+      fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
+                                                                           termlabels = unique(model_i$formula)),
+                                              data = devdata,
+                                              iter = 500,
+                                              start_lower = start_lower_vals,
+                                              start_upper = start_upper_vals,
+                                              lower = rTPC::get_lower_lims(devdata$temp,
+                                                                           devdata$dev_rate,
+                                                                           model_name = model_name_translate(i)),
+                                              upper = rTPC::get_upper_lims(devdata$temp,
+                                                                           devdata$dev_rate,
+                                                                           model_name = model_name_translate(i)),
+                                              supp_errors = "Y")
+      list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
+      sum_fit_nls <- summary(fit_nls)
+      list_param_tbl <- dplyr::tibble(model_name = i,
+                                      param_name = extract_param_names(fit_nls),
+                                      start_vals = tidyr::replace_na(start_vals, 0),
+                                      param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+                                      param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+                                      model_AIC = AIC(fit_nls),
+                                      model_BIC = BIC(fit_nls),
+                                      model_fit = list(fit_nls))
       }, # <- inside tryCatch
       error = function(e) e)
       if (inherits(possible_error, "error")) {
@@ -194,10 +195,10 @@ fit_devmodels <- function(temp = NULL,
     }
     # end of rTPC processing
 
-    } # <- loop ends
-    if (length(list_param) == 0) {
-      warning("no model converged adequately for fitting your data")
-    }
-    return(list_param)
+  } # <- loop ends
+  if (length(list_param) == 0) {
+    warning("no model converged adequately for fitting your data")
   }
+  return(list_param)
+}
 
