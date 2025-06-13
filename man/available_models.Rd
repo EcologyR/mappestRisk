@@ -3,7 +3,7 @@
 \docType{data}
 \name{available_models}
 \alias{available_models}
-\title{\if{html}{\out{<b>}}Available Models Table\if{html}{\out{</b>}}}
+\title{Available Models Table}
 \format{
 \subsection{\code{available_models}}{
 

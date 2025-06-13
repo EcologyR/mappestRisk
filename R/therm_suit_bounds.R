@@ -48,12 +48,12 @@
 #' @export
 #'
 #' @examples
+#'  \dontrun{
 #' data("aphid")
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 #'                                         dev_rate = aphid$rate_value,
-#'                                         model_name = "all")
-#'
+#'                                         model_name = c("lactin2", "briere2", "mod_weibull"))
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
 #'                fitted_parameters = fitted_tpcs_aphid,
@@ -84,6 +84,7 @@
 #'                                              model_name = "lactin2",
 #'                                              suitability_threshold = 80)
 #' head(boundaries_aphid)
+#' }
 
 therm_suit_bounds <- function(preds_tbl = NULL,
                               model_name = NULL,
@@ -148,17 +149,18 @@ arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
                                  suppressWarnings({topt_pred <- pred_tbl_i |> #the custom error message is more informative than this warning
                                    dplyr::slice_max(pred) |>
                                    dplyr::pull(temp)
+                                 q_threshold <- devrate_max_i * 0.01 * suitability_threshold
                                  half_left <- pred_tbl_i |>
                                    dplyr::filter(temp < topt_pred)
                                  half_right <- pred_tbl_i |>
                                    dplyr::filter(temp >= topt_pred)
                                  therm_suit_left <- half_left |>
-                                   dplyr::slice(max(which(half_left$pred <= devrate_max_i*0.01*suitability_threshold),
-                                                    na.rm = TRUE)) |>
+                                   dplyr::filter(pred <= q_threshold) |>
+                                   dplyr::slice_tail(n = 1) |>
                                    dplyr::pull(temp)
                                  therm_suit_right <- half_right |>
-                                   dplyr::slice(max(which(half_right$pred <= devrate_max_i*0.01*suitability_threshold),
-                                                    na.rm = TRUE)) |>
+                                   dplyr::filter(pred <= q_threshold) |>
+                                   dplyr::slice_head(n = 1) |>
                                    dplyr::pull(temp)
                                  dev_rate_suit <- devrate_max_i*0.01*suitability_threshold
                                  }),
@@ -167,6 +169,13 @@ arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
       therm_suit_right <- NA
       therm_suit_left <- NA
     }
+    if (length(therm_suit_right) == 0) {
+      therm_suit_right <- NA_real_
+    }
+    if (length(therm_suit_left) == 0) {
+      therm_suit_left <- NA_real_
+    }
+
     if(is.na(therm_suit_right) |
        is.na(therm_suit_left)) {
       warning(paste("Simulation", iter_i, "yielded NA value and then has been discarded for thermal suitability"))

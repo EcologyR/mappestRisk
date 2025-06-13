@@ -6,12 +6,13 @@
 \alias{mappestRisk-package}
 \title{mappestRisk: Create Maps Forecasting Risk of Pest Occurrence}
 \description{
-The package provides maps that forecast crop pest risk of occurrence in response to experienced temperature. It takes as input development data parameterised in controlled conditions (i.e. constant or fluctuating temperatures) for different life stages of a species. The output map or raster represent the predicted incidence of the pest measured as number of months with optimal temperature for its development.
+mappestRisk has three different modules: (1) model fitting & selection using a set of the most commonly used equations describing developmental responses to temperature helped by already existing R packages using equation helpers from rTPC(Padfield and O’Sullivan 2023), with visualization of model predictions to guide ecological criteria for model selection; (2) calculation of suitability thermal limits, which consist on a temperature interval delimiting the optimal performance zone or suitability; and (3) climatic data extraction & visualization with either exportable rasters, static map images or html, interactive maps.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/EcologyR/mappestRisk}
+  \item \url{https://ecologyr.github.io/mappestRisk/}
   \item Report bugs at \url{https://github.com/EcologyR/mappestRisk/issues}
 }
 

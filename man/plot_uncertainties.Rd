@@ -43,6 +43,7 @@ curves as a ribbon. Each model is represented in a facet, and data points are al
 Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty bands in parameter estimation of TPC fitting
 }
 \examples{
+\dontrun{
 data("aphid")
 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -72,6 +73,7 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
                    dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
+                   }
 }
 \references{
 Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.

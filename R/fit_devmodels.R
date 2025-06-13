@@ -57,8 +57,10 @@
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 #'                                         dev_rate = aphid$rate_value,
-#'                                         model_name = "all")
+#'                                         model_name = c("lactin2", "briere2", "mod_weibull")
+#'                                         )
 #' print(fitted_tpcs_aphid)
+#'
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
@@ -71,6 +73,9 @@ fit_devmodels <- function(temp = NULL,
   if (!is.character(model_name)){
     stop("model_name must be a string in ?available_models")}
 
+  if (!all(model_name %in% c("all", available_models$model_name))) {
+    stop("model not available. For available model names, see `available_models`")
+  }
   if (!all(model_name %in% c("all", available_models$model_name))) {
     stop("model not available. For available model names, see `available_models`")
   }
@@ -100,7 +105,7 @@ fit_devmodels <- function(temp = NULL,
 
     if (available_models$package[available_models$model_name == i] == "devRate") {
 
-      if (available_models$n_params[available_models$model_name == i] > length(temp)) {
+      if (available_models$n_params[available_models$model_name == i] >= length(temp)) {
         fit_nls <- NULL
       } else {
       start_vals <- start_vals_devRate(model_name_2fit = model_i,

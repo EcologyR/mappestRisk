@@ -44,8 +44,10 @@ data("aphid")
 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
                                         dev_rate = aphid$rate_value,
-                                        model_name = "all")
+                                        model_name = c("lactin2", "briere2", "mod_weibull")
+                                        )
 print(fitted_tpcs_aphid)
+
 }
 \references{
 Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.

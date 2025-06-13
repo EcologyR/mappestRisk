@@ -1,0 +1,230 @@
+---
+title: "Customize your Risk Maps"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(mappestRisk)
+```
+
+## Customize your risk map
+
+The `map_risk()` function will usually serve to explore risk projections. However, the raw configuration of the plots in `terra::plot()` does not offer many possibilities to customize visualization for professional purposes. Since, the output of `map_risk()` that come across with the standard plot is a `SpatRaster`, this raster can be then exported using `terra::writeRaster` in *\*.tiff* format or it can be visualized using R packages for raster visualization such as `tidyterra` [@tidyterra] –under `ggplot2` [@ggplot2] logic– or `rasterVis` [@rasterVis], among others.
+
+Here we provide an example of customization with `tidyterra` for the latest risk raster obtained in the [Generating Risk Maps](articles/generate-risk-maps.html) article.
+
+```{r, message = FALSE, warning=FALSE, echo=FALSE, include=FALSE}
+
+# STEP 1: Fit TPCs
+data("aphid")
+fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
+                                   dev_rate = aphid$rate_value,
+                                   model_name = "all")
+## optional: show predictions
+
+# plot_devmodels(temp = aphid$temperature,
+#                dev_rate = aphid$rate_value,
+#                fitted_parameters = fitted_tpcs_aphid,
+#                species = "Brachycaudus schwartzi",
+#                life_stage = "nymphs")
+
+# STEP 2: Obtain predictions and bootstrapped TPCs
+
+preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
+                                   dev_rate = aphid$rate_value,
+                                   fitted_parameters = fitted_tpcs_aphid,
+                                   model_name_2boot = c("briere2", "lactin2"),
+                                   propagate_uncertainty = TRUE,
+                                   n_boots_samples = 100)
+# optional: show simulated curves:
+# plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
+#                    temp = aphid$temperature,
+#                    dev_rate = aphid$rate_value,
+#                    species = "Brachycaudus schwartzi",
+#                    life_stage = "Nymphs")
+
+# STEP 3: Calculate thermal suitability boundaries
+
+boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,       
+                                      model_name = "lactin2",        
+                                      suitability_threshold = 80) 
+print(boundaries_aphid)
+
+andalucia_sf <- mapSpain::esp_get_ccaa(ccaa = "Andalucía")
+
+risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid, 
+                             path = tempdir(), # directory to download data 
+                             region = andalucia_sf,    
+                             mask = TRUE,
+                             plot = TRUE,
+                             interactive = FALSE,
+                             verbose = TRUE)
+```
+
+. First, let's select the *risk* layer (if we don't specifically select it, the latest –sd– is used by default[^1]).
+
+[^1]: Please, note that if the aim is to generate a custom map for risk uncertainty –i.e., the *uncertainty sd layer*, it must be selected and, accordingly, one may need to manually adjust the breaks of the color palettes and its related code.
+
+```{r}
+library(ggplot2)
+risk_layer_andalucia <- risk_rast_andalucia |> 
+  tidyterra::select("mean") # or alternatively, risk_layer_andalucia <- risk_rast_andalucia["mean"]
+```
+
+First, we will obtain an `sf` for the world map using `rnaturalearth` [@rnaturalearthpackage] and EPSG: 3035 as CRS to place underneath the risk map:
+
+```{r}
+worldmap_sf <- rnaturalearth::ne_countries(scale = 10,
+                                           type = "countries",
+                                           returnclass = "sf") |>
+  sf::st_transform(25830) # <- from default EPSG: 4326 to target EPSG:3035
+```
+
+Then, we will crop it using the boundaries of our risk raster without `NAs`. However, we must project the raster to the target CRS (in this case: EPSG:3035)
+
+```{r}
+noNA_risk_rast <- risk_layer_andalucia |> 
+  tidyterra::drop_na()
+risk_rast_andalucia_epsg25830 <- terra::project(x = noNA_risk_rast,
+                                               "EPSG:25830")
+bbox_rast <- sf::st_bbox(risk_rast_andalucia_epsg25830)
+```
+
+Then, we will use a custom palette based on *magma* palette from `viridis` package with a custom color for `0`'s:
+
+```{r}
+my_risk_palette <- c("#AFC8C8", viridis::magma(12, direction = -1))
+                      
+```
+
+For now, the map with these custom options and `tidyterra::geom_spatraster()` function will look as follows:
+
+```{r}
+max_risk_andalucia <- terra::minmax(risk_rast_andalucia_epsg25830)[2] # for manual scale fill visualization 
+
+aphid_risk_map <- ggplot2::ggplot()+
+    ggplot2::geom_sf(data = worldmap_sf, # <- countries background
+                     fill = "gray85")+
+    ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
+                  y = c(bbox_rast[2], bbox_rast[4]))+
+    tidyterra::geom_spatraster(data = risk_rast_andalucia_epsg25830, 
+                               maxcell = Inf)+
+  ggplot2::geom_sf(data = worldmap_sf,
+                   fill = NA,
+                   color = "lightblue4")+
+  ggplot2::scale_fill_gradientn(colours = my_risk_palette[1:(max_risk_andalucia+1)], # to preserve the scales
+                         na.value = "transparent",
+                         breaks = seq(0, 12, by = 1))
+print(aphid_risk_map)
+```
+
+We can improve the legend visualization using `ggplot2::guides()` is not correct, but we may correct it:
+
+```{r}
+     aphid_risk_map <- aphid_risk_map+
+       guides(fill = guide_legend(ncol = 13, #from 0 to 12 possible values
+                                 nrow = 1, 
+                                 byrow = TRUE))+
+       theme(legend.position = "bottom")
+     print(aphid_risk_map)
+```
+
+We can further improve visualization by changing the theme, adding titles and avoid borders overlapping with cells using bathymetry and adjacent region polygons:
+
+```{r}
+bath_spain <- mapSpain::esp_get_hypsobath() |> 
+  sf::st_transform(25830) |> 
+  dplyr::filter(val_sup <= 0)
+
+andalucia_sf <- mapSpain::esp_get_ccaa("Andalucia") |> 
+  sf::st_transform(25830)
+
+#and borders:
+clm_sf <- mapSpain::esp_get_ccaa("Castilla-La Mancha") |> 
+  sf::st_transform(25830)
+
+extremadura_sf <- mapSpain::esp_get_ccaa("Extremadura") |> 
+  sf::st_transform(25830)
+murcia_sf <- mapSpain::esp_get_ccaa("Murcia") |> 
+  sf::st_transform(25830)
+portugal_sf <- worldmap_sf |> 
+  dplyr::filter(geounit == "Portugal")
+
+species_name_italics <- expression(italic("Brachycaudus schwatzi"))
+
+aphid_risk_map+
+    theme_bw()+
+    theme(legend.position = "bottom")+
+    labs(title = "Risk Map for Andalucía",
+         subtitle = species_name_italics,
+         caption = "Climate data from WorldClim Historical data set",
+         fill = "Annual Risk Months")+
+    theme(legend.position = "bottom")+
+    theme(plot.title = element_text(face = "bold"))+
+  geom_sf(data = extremadura_sf, fill = "gray85",
+          color = NA)+
+  geom_sf(data = clm_sf, fill = "gray85",
+          color = NA)+
+  geom_sf(data = murcia_sf, fill = "gray85",
+          color = NA)+
+  geom_sf(data = portugal_sf, fill = "gray85",
+          color = NA)+
+  geom_sf(data = andalucia_sf, 
+          color = "#060d0e",
+          fill = NA)+
+  geom_sf(data = bath_spain,
+          fill = "#060d0e",
+          color = "#060d0e")
+```
+
+Similarly, a discrete *"iso-risk"* map can be generated using `terra::geom_spatraster_contour_filled()` with the previous approach as follows:
+
+```{r}
+breaks_levels <- purrr::map_chr(.x = seq(0, max_risk_andalucia),
+                            .f = ~paste0("[", .x, " ", .x+1,")")) |> 
+  forcats::as_factor()
+
+ggplot2::ggplot()+
+    ggplot2::geom_sf(data = worldmap_sf, # <- countries background
+                     fill = "gray85")+
+    ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
+                  y = c(bbox_rast[2], bbox_rast[4]))+
+    tidyterra::geom_spatraster_contour_filled(data = risk_rast_andalucia_epsg25830,
+                                              breaks = seq(0, 12),
+                                              maxcell = Inf)+
+  ggplot2::geom_sf(data = worldmap_sf,
+                   fill = NA,
+                   color = "lightblue4")+
+  ggplot2::scale_fill_manual(values = my_risk_palette,
+                             labels = breaks_levels)+
+  theme_bw()+
+    theme(legend.position = "bottom")+
+    labs(title = "Risk Map for Andalucía",
+         subtitle = species_name_italics,
+         caption = "Climate data from WorldClim Historical data set",
+         fill = "Annual Risk Months")+
+    theme(legend.position = "bottom")+
+    theme(plot.title = element_text(face = "bold"))+
+  geom_sf(data = extremadura_sf, fill = "gray85",
+          color = NA)+
+  geom_sf(data = clm_sf, fill = "gray85",
+          color = NA)+
+  geom_sf(data = murcia_sf, fill = "gray85",
+          color = NA)+
+  geom_sf(data = portugal_sf, fill = "gray85",
+          color = NA)+
+  geom_sf(data = andalucia_sf, 
+          color = "#060d0e",
+          fill = NA)+
+  geom_sf(data = bath_spain,
+          fill = "#060d0e",
+          color = "#060d0e")
+```
+
+## References

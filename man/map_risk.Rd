@@ -83,9 +83,7 @@ produced by \code{\link[=therm_suit_bounds]{therm_suit_bounds()}}), the output r
 and standard deviation.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-
-
+\dontrun{
 data("aphid")
 
 # 1. fit TPC models:
@@ -129,9 +127,9 @@ head(boundaries_aphid)
 
 # if you don't have temperature rasters for your region:
 
- risk_rast_morocco <- map_risk(t_vals = boundaries_aphid,
+ risk_rast_reunion <- map_risk(t_vals = boundaries_aphid,
                                path = tempdir(), # directory to download data
-                               region = "Morocco",
+                               region = "Réunion",
                                mask = TRUE,
                                plot = TRUE,
                                interactive = FALSE,
@@ -140,18 +138,30 @@ head(boundaries_aphid)
 # Alternative 1: if you already have a raster of monthly average temperatures
 # for your region of interest, you can use that as input for `t_rast`:
    ## first, load it
-   tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+   tavg_file <- system.file("extdata/tavg_reunion.tif", package = "mappestRisk")
 
    ## second, rasterize it with `terra`
  tavg_rast <- terra::rast(tavg_file)
 
    ## third apply the function
- risk_rast_luxembourg <- map_risk(t_vals = boundaries_aphid,
-                                  t_rast = tavg_rast,
-                                  mask = TRUE,
-                                  plot = TRUE,
-                                  interactive = FALSE,
-                                  verbose = TRUE)
+ risk_rast_reunion <- map_risk(t_vals = boundaries_aphid,
+                               t_rast = tavg_rast,
+                               mask = TRUE,
+                               path = tempdir(),
+                               plot = TRUE,
+                               interactive = FALSE,
+                               verbose = TRUE)
  # Alternative 2: you can use your own spatial feature (sf) object for `region`
-\dontshow{\}) # examplesIf}
+sobrarbe_sf <- readRDS(system.file("extdata",
+                                   "sobrarbe.rds",
+                                   package = "mappestRisk"))
+
+risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
+                                region = sobrarbe_sf,
+                                path = tempdir(),
+                                mask = TRUE,
+                                plot = TRUE,
+                                interactive = FALSE,
+                                verbose = TRUE)
+}
 }

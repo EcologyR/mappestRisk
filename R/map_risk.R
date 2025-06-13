@@ -70,9 +70,8 @@
 #'
 #' @export
 #'
-#' @examplesIf interactive()
-#'
-#'
+#' @examples
+#' \dontrun{
 #' data("aphid")
 #'
 #' # 1. fit TPC models:
@@ -116,9 +115,9 @@
 #'
 #' # if you don't have temperature rasters for your region:
 #'
-#'  risk_rast_morocco <- map_risk(t_vals = boundaries_aphid,
+#'  risk_rast_reunion <- map_risk(t_vals = boundaries_aphid,
 #'                                path = tempdir(), # directory to download data
-#'                                region = "Morocco",
+#'                                region = "Réunion",
 #'                                mask = TRUE,
 #'                                plot = TRUE,
 #'                                interactive = FALSE,
@@ -127,32 +126,32 @@
 #' # Alternative 1: if you already have a raster of monthly average temperatures
 #' # for your region of interest, you can use that as input for `t_rast`:
 #'    ## first, load it
-#'    tavg_file <- system.file("extdata/tavg_lux.tif", package = "mappestRisk")
+#'    tavg_file <- system.file("extdata/tavg_reunion.tif", package = "mappestRisk")
 #'
 #'    ## second, rasterize it with `terra`
 #'  tavg_rast <- terra::rast(tavg_file)
 #'
 #'    ## third apply the function
-#'  risk_rast_luxembourg <- map_risk(t_vals = boundaries_aphid,
-#'                                   t_rast = tavg_rast,
-#'                                   mask = TRUE,
-#'                                   plot = TRUE,
-#'                                   interactive = FALSE,
-#'                                   verbose = TRUE)
+#'  risk_rast_reunion <- map_risk(t_vals = boundaries_aphid,
+#'                                t_rast = tavg_rast,
+#'                                mask = TRUE,
+#'                                path = tempdir(),
+#'                                plot = TRUE,
+#'                                interactive = FALSE,
+#'                                verbose = TRUE)
 #'  # Alternative 2: you can use your own spatial feature (sf) object for `region`
- # andalucia_sf <- readRDS(system.file("extdata",
- #                                     "andalucia_sf.rds",
- #                                     package = "mappestRisk"))
- #
- # risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
- #                                 region = andalucia_sf,
- #                                 path = tempdir(),
- #                                 mask = TRUE,
- #                                 plot = TRUE,
- #                                 interactive = FALSE,
- #                                 verbose = TRUE)
+#' sobrarbe_sf <- readRDS(system.file("extdata",
+#'                                    "sobrarbe.rds",
+#'                                    package = "mappestRisk"))
 #'
-
+#' risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
+#'                                 region = sobrarbe_sf,
+#'                                 path = tempdir(),
+#'                                 mask = TRUE,
+#'                                 plot = TRUE,
+#'                                 interactive = FALSE,
+#'                                 verbose = TRUE)
+#' }
 map_risk <- function(t_vals = NULL,
                      t_rast = NULL,
                      region = NULL,
@@ -161,8 +160,8 @@ map_risk <- function(t_vals = NULL,
                      mask = TRUE,
                      verbose = FALSE,
                      plot = TRUE,
-                     interactive = FALSE
-                     ) {
+                     interactive = FALSE) {
+
 
   if (!inherits(mask, "logical")) {
     stop("`mask` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
@@ -170,12 +169,13 @@ map_risk <- function(t_vals = NULL,
   if (!inherits(verbose, "logical")) {
     stop("`verbose` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
-  if (!inherits(plot, "logical")) {
+  if (!inherits(plot, "logical" )) {
     stop("`plot` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
   if (!inherits(interactive, "logical")) {
     stop("`interactive` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
+
   if (!inherits(t_vals, "data.frame")) {
     stop("The argument `t_vals` must be a tibble or data.frame inherited
 from the output of `mappestRisk::therm_suit_bounds()` function.
@@ -194,7 +194,6 @@ to ensure a continuous workflow of the package functions")
          No modifications of columns of the `t_vals` data.frame are allowed in order
          to ensure a continuous workflow of the package functions")
   }
-
   t_vals <- t_vals |>
     dplyr::select(tval_left, tval_right) |>
     tidyr::drop_na()
@@ -223,11 +222,7 @@ to ensure a continuous workflow of the package functions")
     }
     if (verbose) cat("\n(Down)loading countries map...\n")
     wrld <- geodata::world(path = path)
-    region <- wrld[wrld$NAME_0 %in% region, ]
-    if (isFALSE(mask)) {
-      region <- terra::ext(region)
     }
-  }
 
   if (is.numeric(region)) {
     if (length(region) != 4) {
@@ -239,25 +234,53 @@ to ensure a continuous workflow of the package functions")
   if (inherits(region, "sf")) {
     region <- terra::vect(region)
   }
-
-  if (is.null(t_rast)) {
+  if(is.null(t_rast)){
     if (verbose) cat("\n(Down)loading temperature rasters...\n")
+    if (is.character(region) &&
+        length(region) == 1) {
+      t_rast <- geodata::worldclim_country(country = region,
+                                           var = "tavg",
+                                           path = path)
+      region <- wrld[wrld$NAME_0 %in% region, ]
+      if (isFALSE(mask)) {
+        region <- terra::ext(region)
+      }
+    } else if (is.character(region) && length(region) > 1 |
+               inherits(region, "SpatExtent") |
+               is.numeric(region) |
+               inherits(region, "SpatVector")) {
     t_rast <- geodata::worldclim_global(var = "tavg",
                                         res = res,
                                         path = path)
+    if(is.character(region)) {
+      region <- wrld[wrld$NAME_0 %in% region, ]
+      } else {region}
+
+    t_rast <- terra::crop(t_rast, terra::ext(region))
+
+    if (isFALSE(mask)) {
+      region <- terra::ext(region)
+    }
+   }
   }
 
-  if (is.null(region)) {
+    if (is.null(region)) {
     region <- terra::vect(terra::ext(t_rast),
                           crs = terra::crs(t_rast))
   }
 
   if (inherits(region, "SpatExtent")) {
     mask <- FALSE  # pointless otherwise
-    region <- terra::vect(region, crs = "EPSG:4326")  # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
+    region <- terra::vect(region, crs = terra::crs(t_rast)) # needed for checking CRS match with 't_rast' below; input extents are required to be in this EPSG
+  }
+  if (inherits(region, "sf")){
+     region <- terra::vect(region, crs = terra::crs(t_rast))
+  }
+  if (inherits(region, "SpatVector")) {
+    region
   }
 
-  if (isFALSE(terra::same.crs(t_rast, region))) {
+  if (terra::isFALSE(terra::same.crs(t_rast, region))) {
     if (verbose) cat("\nProjecting 'region' to 't_rast'...\n")
     region <- terra::project(region, t_rast)
   }
@@ -269,8 +292,11 @@ to ensure a continuous workflow of the package functions")
   if (terra::ext(region) < terra::ext(t_rast)) {
     if (verbose) cat("\nCropping temperature rasters to region...\n")
     t_rast <- terra::crop(t_rast,
-                          region,
-                          mask = mask)
+                          region)
+  }
+  if (inherits(region, "sf") || inherits(region, "SpatVector")) {
+    if (verbose) cat("\nMasking temperature rasters with region...\n")
+    t_rast <- terra::mask(t_rast, region)
   }
 
   if (verbose) cat("\nComputing summary layers...\n")
@@ -314,7 +340,7 @@ to ensure a continuous workflow of the package functions")
       out_mean <- out["mean"]
       if(nrow(t_vals) > 1) {
         sd_mean <- out["sd"]
-        graphics::par(mfrow = c(1, 2))
+        par(mfrow = c(1, 2))
         terra::plot(out_mean,
                     col = c(palette_bilbao)[5:100],
                     main = "Risk Map",
@@ -330,11 +356,10 @@ to ensure a continuous workflow of the package functions")
                     col = c(palette_bilbao)[5:100],
                     main = "Risk Map",
                     colNA = "white")
-        }
-     }
-    return(out)
+      }
     }
+    return(out)
+  }
   if (verbose) cat("\nFinished!\n\n")
 
 }
-
