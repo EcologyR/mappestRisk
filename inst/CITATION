@@ -1,31 +1,22 @@
-citHeader("To cite mappestRisk in publications use:")
-
-citEntry(
-  entry    = "Manual",
-  title    = "mappestRisk",
-  author   = personList(
-    person("Darío", "San-Segundo  Molina",
-      email = "dario.ssm2@gmail.com",
-      role = c("cre"),
-      comment = c(ORCID = "0000-0002-7831-9623")),
-    person("A. Márcia", "Barbosa",
-      role = c("aut"),
+bibentry(
+  bibtype  = "Manual",
+  title    = "mappestRisk: An R package for modelling and mapping risk of pest development based on
+  known thermal limits",
+  author   =  c(
+    person("Darío", "San-Segundo  Molina", role = c("aut", "cre"),
+      email = "dario.ssm2@gmail.com", comment = c(ORCID = "0000-0002-7831-9623")),
+    person("A. Márcia", "Barbosa", role = c("aut"),
       comment = c(ORCID = "0000-0001-8972-7713")),
-    person("Antonio Jesús", "Pérez-Luque",
-      email = "ajpelu@gmail.com",
-      role = c("aut"),
-      comment = c(ORCID = "0000-0002-7981-1599")),
-    person("Francisco", "Rodríguez-Sánchez",
-      email = "f.rodriguez.sanc@gmail.com",
-      role = c("aut"),
-      comment = c(ORCID = "0000-0002-1747-0469"))
-      ),
-  # journal  = ,
-  year     = "2024",
-  # volume   = ,
-  # number   = ,
-  # pages    = ,
-  url      = "https://ecologyr.github.io/templateRpackage/mappestRisk",
-  textVersion = paste("San Segundo Molina, D., Barbosa, A.M., Pérez-Luque, A.J. & Rodríguez-Sánchez, F. 2024. mappestRisk: An R package for modelling and mapping risk of pest development based on known thermal limits",
-                      "https://ecologyr.github.io/templateRpackage/mappestRisk")
+    person("Antonio Jesús", "Pérez-Luque", role = c("aut"),
+      email = "ajpelu@gmail.com", comment = c(ORCID = "0000-0002-1747-0469")),
+    person("Francisco", "Rodríguez-Sánchez", role = c("aut"),
+      email = "f.rodriguez.sanc@gmail.com", comment = c(ORCID = "0000-0002-7981-1599"))
+  ),
+#  journal  = ,
+  year     = "2025",
+#  volume   = ,
+#  number   = ,
+#  pages    = ,
+#  doi      =
+  url = "https://ecologyr.github.io/mappestRisk"
 )
