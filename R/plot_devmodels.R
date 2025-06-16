@@ -44,7 +44,7 @@
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 #'                                    dev_rate = aphid$rate_value,
-#'                                    model_name = c("lactin2", "briere2", "mod_weibull"))
+#'                                    model_name = c("lactin2", "briere2", "ratkowsky"))
 #'
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
@@ -156,7 +156,7 @@ plot_devmodels <- function(temp = NULL,
                         color = "darkslategray",
                         alpha = .8,
                         size = 1.5) +
-    ggplot2::facet_wrap(~factor(model_name, levels = aic_order)) +
+    ggplot2::facet_wrap(~factor(model_name)) +
     ggplot2::theme_bw() +
     ggplot2::theme(legend.position = "none") +
     ggplot2::labs(x = "Temperature",
