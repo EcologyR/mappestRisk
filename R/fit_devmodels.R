@@ -87,7 +87,6 @@ fit_devmodels <- function(temp = NULL,
     models_2fit <- model_name
   }
 
-  list_fit_models <- vector("list", length = length(models_2fit))
   list_param <- dplyr::tibble(model_name = NULL,
                               param_name = NULL,
                               start_vals = NULL,
@@ -126,7 +125,6 @@ fit_devmodels <- function(temp = NULL,
             start_upper = start_upper_vals,
             supp_errors = "Y")
 
-          list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
           sum_fit_nls <- summary(fit_nls)
           list_param_tbl <- dplyr::tibble(model_name = i,
                                           param_name = extract_param_names(fit_nls),
@@ -173,7 +171,6 @@ fit_devmodels <- function(temp = NULL,
                                                                            devdata$dev_rate,
                                                                            model_name = model_name_translate(i)),
                                               supp_errors = "Y")
-      list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
       sum_fit_nls <- summary(fit_nls)
       list_param_tbl <- dplyr::tibble(model_name = i,
                                       param_name = extract_param_names(fit_nls),
