@@ -144,7 +144,7 @@
 #'                                    "sobrarbe.rds",
 #'                                    package = "mappestRisk"))
 #'
-#' risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid,
+#' risk_rast_sobrarbe <- map_risk(t_vals = boundaries_aphid,
 #'                                 region = sobrarbe_sf,
 #'                                 path = tempdir(),
 #'                                 mask = TRUE,

@@ -4,6 +4,15 @@
 # mappestRisk
 
 <!-- badges: start -->
+
+[![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
+[![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
+[![](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Project Status: Active - The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+
 <!-- badges: end -->
 
 ## Aims of the package
@@ -12,12 +21,12 @@ The goal of `mappestRisk` package is to facilitate the transition from
 development data of arthropod crop-pests’ thermal biology obtained in
 lab-controlled conditions to understandable forecasts assessing risk of
 pest occurrence in a given region. Closing this gap usually involves two
-key steps: (1) to fit and select nonlinear regression models and derived
-thermal traits under ecological criteria, and (2) to project these
-traits onto interest regions for pest risk assessment by extracting
-climate data. However, most data producers from physiology labs have
-limited opportunities and time to develop their R programming skills, so
-address these two steps may not be straightforward.
+key steps: (1) fitting and selecting nonlinear regression models and
+derived thermal traits under ecological criteria, and (2) projecting
+these traits onto interest regions for pest risk assessment by
+extracting climate data. However, most data producers from physiology
+labs have limited opportunities and time to develop their R programming
+skills, so addressing these two steps may not be straightforward.
 
 For this purpose, `mappestRisk` intends to facilitate this workflow for
 any researcher with minimal, basic R programming skills. This package
@@ -32,8 +41,8 @@ life-history trait in experimental approaches and it has major
 contributions to fitness dependence on temperature (Pawar et al. 2024)
 and it also allows to predict phenologies (Schmalensee et al. 2021).
 
-Therefore, mappestRisk has three different modules: *(1) model fitting &
-selection* using a set of the most commonly used equations describing
+Therefore, `mappestRisk` has three different modules: *(1) model fitting
+& selection* using a set of the most commonly used equations describing
 developmental responses to temperature under the `nls.multstart`
 framework (Padfield and Matheson 2020) using equation helpers from
 `rTPC`(Padfield and O’Sullivan 2023) and `devRate` (Francois Rebaudo and
@@ -46,17 +55,19 @@ map figures.
 
 ## Installation
 
-`mappestRisk` package can be installed from the GitHub repository:
+`mappestRisk` package can be installed from the
+[r-universe](https://ecologyr.r-universe.dev/mappestRisk):
 
 ``` r
-#remotes::install_github("EcologyR/mappestRisk")  
-#library(mappestRisk) 
-devtools::load_all() #for now, provisionally 
+install.packages('mappestRisk', repos = c('https://ecologyr.r-universe.dev', 'https://cloud.r-project.org')) 
 ```
 
-If you want to clone or fork the repository or open and read some
-issues, you can find the code
-[here](https://github.com/EcologyR/mappestRisk).
+Or from the [GitHub
+repository](https://github.com/EcologyR/mappestRisk):
+
+``` r
+remotes::install_github("EcologyR/mappestRisk")  
+```
 
 ## Example: `mappestRisk` workflow
 
@@ -70,10 +81,11 @@ output of fitted models, and how to visualize them for selecting curves
 using `plot_devmodels()`.
 
 ``` r
+library("mappestRisk")
 data("aphid") 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,  
                                    dev_rate = aphid$rate_value, 
-                                   model_name = c("briere2", "lactin2", "flextpc"))
+                                   model_name = c("briere2", "lactin2", "ratkowsky"))
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
@@ -82,7 +94,7 @@ plot_devmodels(temp = aphid$temperature,
                life_stage = "Nymphs")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 For a more complete explanation and example of model fitting and
 visualization, see [TPCs model
@@ -98,10 +110,10 @@ plotted using `plot_uncertainties()`. A detailed explanation is given in
 the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
 
 ``` r
-preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
+preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2", "flextpc"),
+                                   model_name_2boot = c("briere2", "lactin2", "ratkowsky"),
                                    propagate_uncertainty = TRUE,
                                    n_boots_samples = 100)
 #> Loading required namespace: boot
@@ -117,19 +129,21 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
                    life_stage = "Nymphs")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 ### 2. Calculate thermal suitability bounds:
 
 After the previous steps, the user can calculate the thermal boundaries
 of the optimal zone of the TPC –i.e., those temperature values yielding
-the Y-th quantile of the development rate (default to $\mathrm{Q}_{75}$)
-at both sides of the curve peak or $R_\max$. Once a model have been
-selected under both ecological and statistical criteria, the the
-`thermal_suitability_bounds()` function calculates these values:
+the Y-th quantile of the development rate (default to
+$`\mathrm{Q}_{75}`$) at both sides of the curve peak or $`R_\max`$. Once
+a model has been selected under both ecological and statistical
+criteria, the `thermal_suitability_bounds()` function calculates these
+values:
 
 ``` r
-boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,       
+boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid |>
+                                        dplyr::filter(model_name == "lactin2"),       
                                       model_name = "lactin2",        
                                       suitability_threshold = 80) 
 ```
@@ -145,9 +159,8 @@ per year with highly suitable temperatures for pest development.
 
 ``` r
 risk_rast <- map_risk(t_vals = boundaries_aphid, 
-                      path = "~/downloaded_maps", # directory to download data 
+                      path = tempdir(), # directory to download data 
                       region = "Réunion",    
-                      mask = TRUE,
                       plot = TRUE,
                       interactive = FALSE,
                       verbose = TRUE)
@@ -165,7 +178,7 @@ risk_rast <- map_risk(t_vals = boundaries_aphid,
 #> Plotting map...
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ### Citation
 
@@ -195,7 +208,7 @@ A BibTeX entry for LaTeX users is
 The development of this software has been funded by Fondo Europeo de
 Desarrollo Regional (FEDER) and Consejería de Transformación Económica,
 Industria, Conocimiento y Universidades of Junta de Andalucía (proyecto
-US-1381388 led by Francisco Rodríguez Sánchez, Universidad de Sevilla).
+US-1381388, Universidad de Sevilla).
 
 ![](https://ecologyr.github.io/workshop/images/logos.png)
 
