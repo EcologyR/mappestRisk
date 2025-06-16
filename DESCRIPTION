@@ -47,10 +47,9 @@ Imports:
     nls.multstart,
     progress,
     purrr,
-    rTPC (>= 1.0.7),
+    rTPC,
     sf,
     terra,
     tidyr
 Remotes: 
-    padpadpadpad/rTPC
 Config/Needs/website: rmarkdown
