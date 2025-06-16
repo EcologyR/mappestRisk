@@ -79,7 +79,7 @@
 #'                                         fitted_parameters = fitted_tpcs_aphid,
 #'                                         model_name_2boot = "lactin2",
 #'                                         propagate_uncertainty = TRUE,
-#'                                         n_boots_samples = 10)
+#'                                         n_boots_samples = 100)
 #'
 #' head(tpc_preds_boots_aphid)
 #' }
@@ -141,7 +141,7 @@ predict_curves <- function(temp = NULL,
     ##predict based on parameters
     explore_preds <- dplyr::tibble(temp = seq(min(devdata$temp) - 20,
                                        max(devdata$temp) + 15,
-                                       .1),
+                                       .01),
                             model_name = model_name_i,
                             model_fit = model_fit_i[1],
                             model_AIC = model_AIC_i[1],

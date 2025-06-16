@@ -198,6 +198,12 @@ fit_devmodels <- function(temp = NULL,
   }
 
   ## TODO: keep only model_fit for the first row in each model, otherwise NULL
+  list_param <-   list_param |>
+    dplyr::group_by(model_name) |>
+    dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
+                                             model_fit,
+                                             list(NULL)))  |>
+    dplyr::ungroup()
 
   return(list_param)
 }
