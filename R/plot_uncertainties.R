@@ -2,7 +2,7 @@
 #'
 #' @param bootstrap_uncertainties_tpcs a `tibble` A tibble object output by [predict_curves()], containing TPCs
 #' with uncertainty bands. Each TPC consists of predictions for temperatures ranging from `temp - 20` to `temp + 15`
-#' with a resolution of 0.1°C. The tibble also includes an estimate TPC.
+#' with a resolution of 0.01°C. The tibble also includes an estimate TPC.
 #'
 #' @param temp a vector of temperatures used in the experiment.
 #' It should have at least four different temperatures and must contain only numbers
