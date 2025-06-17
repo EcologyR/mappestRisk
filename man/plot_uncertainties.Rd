@@ -60,7 +60,8 @@ plot_devmodels(temp = aphid$temperature,
 tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
                                              dev_rate = aphid$rate_value,
                                              fitted_parameters = fitted_tpcs_aphid,
-                                             model_name_2boot = c("lactin2", "briere2", "ratkowsky"),
+                                             model_name_2boot = c("lactin2",
+                                              "briere2", "ratkowsky"),
                                              propagate_uncertainty = TRUE,
                                              n_boots_samples = 100)
 

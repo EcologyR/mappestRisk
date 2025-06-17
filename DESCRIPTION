@@ -33,7 +33,9 @@ Depends:
 LazyData: true
 Suggests: 
     covr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    leaflet,
+    sf
 Config/testthat/edition: 3
 Imports: 
     devRate,
