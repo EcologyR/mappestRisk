@@ -74,7 +74,7 @@ Additionally, we recommend here to propagate uncertainty in parameter estimation
 preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2", "ratkowsky"),
+                                   model_name_2boot = c("briere2", "lactin2"),
                                    propagate_uncertainty = TRUE,
                                    n_boots_samples = 100)
 
@@ -90,9 +90,8 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
 After the previous steps, the user can calculate the thermal boundaries of the optimal zone of the TPC –i.e., those temperature values yielding the Y-th quantile of the development rate (default to $`\mathrm{Q}_{75}`$) at both sides of the curve peak or $`R_\max`$. Once a model has been selected under both ecological and statistical criteria, the `thermal_suitability_bounds()` function calculates these values:
 
 ```{r, warning=FALSE}
-boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid |>
-                                        dplyr::filter(model_name == "lactin2"),       
-                                      model_name = "lactin2",        
+boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
+                                      model_name = "briere2",        
                                       suitability_threshold = 80) 
 ```
 

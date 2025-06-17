@@ -113,14 +113,15 @@ the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
 preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2", "ratkowsky"),
+                                   model_name_2boot = c("briere2", "lactin2"),
                                    propagate_uncertainty = TRUE,
                                    n_boots_samples = 100)
-#> Loading required namespace: boot
 #> 
 #> ADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`
 #> 
-#>  Bootstrapping simulations completed
+#>  Bootstrapping simulations completed for briere2 
+#> 
+#>  Bootstrapping simulations completed for lactin2
 
 plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
                    temp = aphid$temperature,
@@ -142,9 +143,8 @@ criteria, the `thermal_suitability_bounds()` function calculates these
 values:
 
 ``` r
-boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid |>
-                                        dplyr::filter(model_name == "lactin2"),       
-                                      model_name = "lactin2",        
+boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
+                                      model_name = "briere2",        
                                       suitability_threshold = 80) 
 ```
 
@@ -186,20 +186,21 @@ If using this package, please cite it:
 
 ``` r
 citation("mappestRisk") 
-To cite mappestRisk in publications use:
+To cite package 'mappestRisk' in publications use:
 
-  San Segundo Molina, D., Barbosa, A.M., Pérez-Luque, A.J. &
-  Rodríguez-Sánchez, F. 2024. mappestRisk: An R package for modelling
-  and mapping risk of pest development based on known thermal limits
-  https://ecologyr.github.io/templateRpackage/mappestRisk
+  San-Segundo Molina D, Barbosa A, Pérez-Luque A, Rodríguez-Sánchez F
+  (2025). _mappestRisk: An R package for modelling and mapping risk of
+  pest development based on known thermal limits_.
+  <https://ecologyr.github.io/mappestRisk>.
 
 A BibTeX entry for LaTeX users is
 
   @Manual{,
-    title = {mappestRisk},
+    title = {mappestRisk: An R package for modelling and mapping risk of pest development based on
+  known thermal limits},
     author = {Darío {San-Segundo  Molina} and A. Márcia Barbosa and Antonio Jesús Pérez-Luque and Francisco Rodríguez-Sánchez},
-    year = {2024},
-    url = {https://ecologyr.github.io/templateRpackage/mappestRisk},
+    year = {2025},
+    url = {https://ecologyr.github.io/mappestRisk},
   }
 ```
 
