@@ -30,10 +30,11 @@
 #'
 #'
 #' @returns A tibble object with as many curves (TPCs) as the number of iterations provided
-#' in the `n_boots_samples` argument if `propagate_uncertainty = TRUE`. Otherwise, it returns just one prediction TPC
-#' from model fit estimates. Each resampled TPC consists of a collection of predictions for
-#' a set of temperatures from `temp - 20` to `temp + 15` with a resolution of 0.1°C and a unique identifier
-#' called `iter`. In addition to the uncertainty TPCs, the estimated TPC is also explicit in the output tibble.
+#' in the `n_boots_samples` argument if `propagate_uncertainty = TRUE` minus the bootstrap samples that
+#' could not be fitted (i.e., new nonlinear regression models did not converge for them).
+#' Otherwise, it returns just one prediction TPC from model fit estimates. Each resampled TPC consists of a collection of
+#' predictions for a set of temperatures from `temp - 20` to `temp + 15` with a resolution of 0.1°C and a unique identifier
+#' called `boots_iter`. In addition to the uncertainty TPCs, the estimated TPC is also explicit in the output tibble.
 #'
 #' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows, and
 #'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
@@ -56,8 +57,6 @@
 #' @export
 #'
 #' @importFrom stats coef formula na.exclude reformulate
-#'
-#' @importFrom car Boot
 #'
 #' @examples
 #' \dontrun{
