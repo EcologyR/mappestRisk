@@ -63,7 +63,7 @@ test_that("plot_devmodels should throw an error if fitted_parameters is not inhe
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
                               dev_rate = rate_test,
                               fitted_parameters = fitted_params_example |> dplyr::select(-model_AIC)),
-               "The argument `fitted_parameters` must be a tibble or data.frame inherited from the output of `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering or subsetting by rows if desired.",
+               "The argument `fitted_parameters` must be a tibble or data.frame as produced by `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters are allowed, but you can subset observations by filtering or subsetting by rows if desired.",
                fixed=TRUE)
   })
 
@@ -82,7 +82,7 @@ test_that("plot_devmodels should throw an error if fitted_parameters is not a da
   expect_error(plot_devmodels(temp = seq(4, 40, 3),
                               dev_rate = rate_test,
                               fitted_parameters = list(fitted_params_example)),
-               "The argument `fitted_parameters` must be a tibble or data.frame inherited from the output of `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters data.frame are allowed, but you can subset observations by filtering or subsetting by rows if desired.",
+               "The argument `fitted_parameters` must be a tibble or data.frame as produced by `mappestRisk::fit_devmodels()` function. No modifications of columns of the fitted_parameters are allowed, but you can subset observations by filtering or subsetting by rows if desired.",
                fixed=TRUE)
 })
 

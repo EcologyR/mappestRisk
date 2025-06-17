@@ -11,17 +11,18 @@
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 #'                                    dev_rate = aphid$rate_value,
-#'                                    model_name = c("lactin2", "briere2", "mod_weibull")
+#'                                    model_name = c("lactin2", "briere2", "ratkowsky")
 #'                                    )
 #' get_fitted_model(fitted_tpcs_aphid, "briere2")
 get_fitted_model <- function(fitted_df = NULL, model_name = NULL) {
 
-  stopifnot(inherits(df, "data.frame"))
+  stopifnot(inherits(fitted_df, "data.frame"))
   stopifnot(is.character(model_name) & length(model_name) == 1)
-  if (!model_name %in% unique(df$model_name)) {
+  if (!model_name %in% unique(fitted_df$model_name)) {
     stop(model_name, " does not appear in the table of fitted models.")
   }
 
-  df$model_fit[df$model_name == model_name][[1]]
+  fitted_df$model_fit[fitted_df$model_name == model_name][[1]]
 
 }
+class(fitted_tpcs_aphid)

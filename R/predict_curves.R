@@ -56,7 +56,7 @@
 #'
 #' @export
 #'
-#' @importFrom stats coef formula na.exclude reformulate
+#' @importFrom stats df fitted residuals coef formula na.exclude reformulate
 #'
 #' @examples
 #' \dontrun{
@@ -212,7 +212,8 @@ predict_curves <- function(temp = NULL,
 
     for (iter in 1:n_boots_samples) {
       resid_resampled_i <- resampled_data_resid |>
-        dplyr::filter(boot_sample_id == iter)
+        dplyr::filter(boot_sample_id == iter) |>
+        dplyr::filter(response_var >= 0)
 
       resid_fitted_tpc_iter <- suppressMessages(
         fit_devmodels(temp = resid_resampled_i$predict_var,
@@ -228,7 +229,7 @@ predict_curves <- function(temp = NULL,
                                          0.01)
       model_fit_boot_iter <- resid_fitted_tpc_iter$model_fit[[1]]
       params_i <- stats::coef(model_fit_boot_iter)
-      resid_predictive_tbl_iter <- tibble::tibble(
+      resid_predictive_tbl_iter <- dplyr::tibble(
         resid_predictions_temp_iter,
         preds_rate =  purrr::map_dbl(.x = resid_predictions_temp_iter,
                                      .f = stats::reformulate(formula_i))

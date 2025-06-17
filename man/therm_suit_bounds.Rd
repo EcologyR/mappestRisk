@@ -77,7 +77,8 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
 
 #5. Calculate Q80 thermal bounds
 
-boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
+boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid |>
+                                         dplyr::filter(model_name_iter == "lactin2"),
                                              model_name = "lactin2",
                                              suitability_threshold = 80)
 head(boundaries_aphid)

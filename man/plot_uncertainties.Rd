@@ -18,7 +18,7 @@ plot_uncertainties(
 \arguments{
 \item{bootstrap_uncertainties_tpcs}{a \code{tibble} A tibble object output by \code{\link[=predict_curves]{predict_curves()}}, containing TPCs
 with uncertainty bands. Each TPC consists of predictions for temperatures ranging from \code{temp - 20} to \code{temp + 15}
-with a resolution of 0.1°C. The tibble also includes an estimate TPC.}
+with a resolution of 0.01°C. The tibble also includes an estimate TPC.}
 
 \item{temp}{a vector of temperatures used in the experiment.
 It should have at least four different temperatures and must contain only numbers
@@ -60,7 +60,7 @@ plot_devmodels(temp = aphid$temperature,
 tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
                                              dev_rate = aphid$rate_value,
                                              fitted_parameters = fitted_tpcs_aphid,
-                                             model_name_2boot = "lactin2",
+                                             model_name_2boot = c("lactin2", "briere2", "ratkowsky"),
                                              propagate_uncertainty = TRUE,
                                              n_boots_samples = 100)
 
@@ -73,7 +73,7 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
                    dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
-                   }
+}
 }
 \references{
 Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.

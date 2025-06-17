@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_devmodels.R
 \name{plot_devmodels}
 \alias{plot_devmodels}
-\title{Plot predictions of fitted thermal performance curves to your data}
+\title{Plot fitted thermal performance curves}
 \source{
 The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
 }
@@ -25,29 +25,34 @@ These rates are calculated as the inverse of the number of days to complete the 
 from the beginning of a certain life stage to the beginning of the following at each temperature.
 It must be numeric and of the same length as \code{temp}.}
 
-\item{fitted_parameters}{a \code{tibble} obtained with \code{\link[=fit_devmodels]{fit_devmodels()}} function, including parameter names,
-estimates, standard errors, AICs, and \if{html}{\out{<nls>}} objects (fitted_models) using the \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach.}
+\item{fitted_parameters}{a \code{tibble} obtained with \code{\link[=fit_devmodels]{fit_devmodels()}},
+including parameter names, estimates, standard errors, AICs, and
+\if{html}{\out{<nls>}} objects (fitted_models) using the \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach.}
 
-\item{species}{\if{html}{\out{<optional>}} a string of the target species that will constitute the plot title. Must be of type "character".}
+\item{species}{\if{html}{\out{<optional>}} a string of the target species that
+will constitute the plot title. Must be of type "character".}
 
-\item{life_stage}{\if{html}{\out{<optional>}} a string of the target life stage that will constitute the plot subtitle. Must be of type "character".}
+\item{life_stage}{\if{html}{\out{<optional>}} a string of the target life stage that
+will constitute the plot subtitle. Must be of type "character".}
 }
 \value{
-A plot with predicted values (development rate) across temperatures for models that have adequately converged
-using \code{\link[=fit_devmodels]{fit_devmodels()}} function. The facets of the resulting plots are automatically sorted by lowest
-AIC values in descending order, and additional information such as the number of
-parameters is displayed. It's a \if{html}{\out{<ggplot>}} object, which can be assigned to a user-defined object.
+A plot with predicted values (development rate) across temperatures
+for models that have adequately converged using \code{\link[=fit_devmodels]{fit_devmodels()}} function.
+The facets of the resulting plots are automatically sorted by lowest AIC values
+in descending order, and additional information such as the number of parameters
+is displayed. It's a \if{html}{\out{<ggplot>}} object, which can be assigned to a user-defined object.
 }
 \description{
-This function creates a plot showing the predicted development rates across temperatures
-based on fitted Thermal Performance Curves (TPCs) for one or several models displayed in facets.
+Plot the predicted development rates across temperatures
+based on fitted Thermal Performance Curves (TPCs)
+for one or several models displayed in facets.
 }
 \examples{
 data("aphid")
 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                        dev_rate = aphid$rate_value,
-                                        model_name = c("lactin2", "briere2", "mod_weibull"))
+                                   dev_rate = aphid$rate_value,
+                                   model_name = c("lactin2", "briere2", "ratkowsky"))
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
@@ -66,5 +71,5 @@ Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-depende
 Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae). \if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
 }
 \seealso{
-\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data, which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}..
+\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data, which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}.
 }

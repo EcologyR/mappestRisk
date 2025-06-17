@@ -41,13 +41,10 @@ Imports:
     geodata,
     ggplot2,
     khroma,
-    leaflet,
-    minpack.lm,
     nls.multstart,
     progress,
     purrr,
     rTPC,
-    sf,
     terra,
     tidyr
 Remotes: 

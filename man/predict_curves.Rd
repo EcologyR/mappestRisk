@@ -45,10 +45,11 @@ uncertainty, as increasing \code{n_boots_samples} will increase computation time
 }
 \value{
 A tibble object with as many curves (TPCs) as the number of iterations provided
-in the \code{n_boots_samples} argument if \code{propagate_uncertainty = TRUE}. Otherwise, it returns just one prediction TPC
-from model fit estimates. Each resampled TPC consists of a collection of predictions for
-a set of temperatures from \code{temp - 20} to \code{temp + 15} with a resolution of 0.1°C and a unique identifier
-called \code{iter}. In addition to the uncertainty TPCs, the estimated TPC is also explicit in the output tibble.
+in the \code{n_boots_samples} argument if \code{propagate_uncertainty = TRUE} minus the bootstrap samples that
+could not be fitted (i.e., new nonlinear regression models did not converge for them).
+Otherwise, it returns just one prediction TPC from model fit estimates. Each resampled TPC consists of a collection of
+predictions for a set of temperatures from \code{temp - 20} to \code{temp + 15} with a resolution of 0.1°C and a unique identifier
+called \code{boots_iter}. In addition to the uncertainty TPCs, the estimated TPC is also explicit in the output tibble.
 }
 \description{
 Propagate parameter uncertainty of TPC fits using bootstrap with residual resampling
@@ -71,9 +72,9 @@ plot_devmodels(temp = aphid$temperature,
 tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
                                         dev_rate = aphid$rate_value,
                                         fitted_parameters = fitted_tpcs_aphid,
-                                        model_name_2boot = "lactin2",
+                                        model_name_2boot = c("lactin2", "briere2", "ratkowsky"),
                                         propagate_uncertainty = TRUE,
-                                        n_boots_samples = 10)
+                                        n_boots_samples = 100)
 
 head(tpc_preds_boots_aphid)
 }
