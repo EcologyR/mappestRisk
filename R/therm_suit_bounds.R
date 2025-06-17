@@ -80,7 +80,8 @@
 #'
 #' #5. Calculate Q80 thermal bounds
 #'
-#' boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
+#' boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid |>
+#'                                          dplyr::filter(model_name_iter == "lactin2"),
 #'                                              model_name = "lactin2",
 #'                                              suitability_threshold = 80)
 #' head(boundaries_aphid)
@@ -99,8 +100,8 @@ therm_suit_bounds <- function(preds_tbl = NULL,
   }
 
   if (!is.data.frame(preds_tbl) |
-      suppressWarnings(any(!c("model_name", "iter",
-                              "temp", "pred",
+      suppressWarnings(any(!c("model_name_iter", "boots_iter",
+                              "temp", "preds",
                               "curvetype") %in% colnames(preds_tbl)))) {
     stop("`preds_tbl` must be a  `data.frame` inherited   from the output of `mappestRisk::predict_curves()` function")
   }
@@ -125,7 +126,7 @@ risk of thermal tolerance at each location rather than risk of optimal performan
 Please use this function repetedly for each of your models one by one.")
   }
 
-  if(!is.null(model_name) && any(!model_name %in% unique(preds_tbl$model_name))) {
+  if(!is.null(model_name) && any(!model_name %in% unique(preds_tbl$model_name_iter))) {
     stop(paste("Model", model_name, "did not fitted well to your data or is not available. Try using another fitted model in your table instead"))
   }
 
@@ -142,12 +143,12 @@ arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
                          suitability = paste(suitability_threshold, "%"),
                          iter = NULL)
 
-  for(iter_i in unique(preds_tbl$iter)){
-    pred_tbl_i <- preds_tbl[preds_tbl$iter == iter_i, ]
-    devrate_max_i <- max(pred_tbl_i$pred, na.rm = TRUE)
+  for(iter_i in unique(preds_tbl$boots_iter)){
+    pred_tbl_i <- preds_tbl[preds_tbl$boots_iter == iter_i, ]
+    devrate_max_i <- max(pred_tbl_i$preds, na.rm = TRUE)
     possible_error <- tryCatch(expr =
                                  suppressWarnings({topt_pred <- pred_tbl_i |> #the custom error message is more informative than this warning
-                                   dplyr::slice_max(pred) |>
+                                   dplyr::slice_max(preds) |>
                                    dplyr::pull(temp)
                                  q_threshold <- devrate_max_i * 0.01 * suitability_threshold
                                  half_left <- pred_tbl_i |>
@@ -155,11 +156,11 @@ arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
                                  half_right <- pred_tbl_i |>
                                    dplyr::filter(temp >= topt_pred)
                                  therm_suit_left <- half_left |>
-                                   dplyr::filter(pred <= q_threshold) |>
+                                   dplyr::filter(preds <= q_threshold) |>
                                    dplyr::slice_tail(n = 1) |>
                                    dplyr::pull(temp)
                                  therm_suit_right <- half_right |>
-                                   dplyr::filter(pred <= q_threshold) |>
+                                   dplyr::filter(preds <= q_threshold) |>
                                    dplyr::slice_head(n = 1) |>
                                    dplyr::pull(temp)
                                  dev_rate_suit <- devrate_max_i*0.01*suitability_threshold

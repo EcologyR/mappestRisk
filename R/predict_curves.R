@@ -77,7 +77,7 @@
 #' tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
 #'                                         dev_rate = aphid$rate_value,
 #'                                         fitted_parameters = fitted_tpcs_aphid,
-#'                                         model_name_2boot = "lactin2",
+#'                                         model_name_2boot = c("lactin2", "briere2", "ratkowsky"),
 #'                                         propagate_uncertainty = TRUE,
 #'                                         n_boots_samples = 100)
 #'
@@ -92,7 +92,6 @@ predict_curves <- function(temp = NULL,
                            n_boots_samples = 100) {
 
   check_data(temp, dev_rate)
-
   if(is.null(fitted_parameters)) {
     stop("`fitted_parameters` must be provided.")
   }
@@ -174,132 +173,95 @@ predict_curves <- function(temp = NULL,
     return(tpc_estimate)
 
   } else {
-    boot_2fill <- dplyr::tibble(temp = NULL,
-                       model_name = NULL,
-                       model_AIC = NULL,
-                       n_params = NULL,
-                       model_fit = NULL,
-                       preds = NULL,
-                       data = NULL,
-                       coefs = NULL,
-                       bootstrap = NULL)
-
-  for (model_i in model_name_2boot){
+    cat("\nADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`\n")
+    sim_boots_tpcs <- tibble()
+     for (model_i in model_name_2boot){
     predict_model_i <- predict2fill_complete |>
-      dplyr::filter(model_name == model_i)
+      dplyr::filter(model_name == model_i) |>
+      dplyr::filter(preds >= 0)
     coefs_i <- purrr::as_vector(unique(predict_model_i$coefs))
     temp_data_i <- devdata
     formula_i <- available_models |>
       dplyr::filter(model_name == model_i) |>
-      dplyr::pull(formula)
-
-    ## avoid errors when wrapping Boot
-    assign("model_i", model_i, envir=.GlobalEnv)
-    assign("predict_model_i", predict_model_i, envir = .GlobalEnv)
-    assign("coefs_i", coefs_i, envir=.GlobalEnv)
-    assign("temp_data_i", temp_data_i, envir=.GlobalEnv)
-    assign("formula_i", formula_i, envir=.GlobalEnv)
-    possible_error <- tryCatch(expr = {
-        temp_fit <- suppressWarnings(minpack.lm::nlsLM(formula = reformulate(response = "dev_rate",
-                                                            termlabels = formula_i),
-                                                       data = temp_data_i,
-                                                       na.action = na.exclude,
-                                                       start = coefs_i))
-      assign("temp_fit", temp_fit, envir=.GlobalEnv)
-      suppressPackageStartupMessages(library(car)) # <- necessary for "residual" method of car::Boot() to work
-
-      # now bootstrap is performed to each model fit and listed
-      boot <- suppressWarnings(car::Boot(temp_fit,
-                                         method = 'residual',
-                                         R = n_boots_samples)
-                               )
-      boot_2fill_i <- predict_model_i |>
-        dplyr::mutate(bootstrap = list(boot))
-    }, # <- inside tryCatch
-    error = function(e) e)
-    if (inherits(possible_error, "error")) {
-      temp_fit <- NULL
-      boot <- NA
-      boot_2fill_i <- predict_model_i |>
-        dplyr::mutate(bootstrap = list(boot))
-    }
-    boot_2fill <- dplyr::bind_rows(boot_2fill, boot_2fill_i)
-  }
-  rm("model_i", "predict_model_i", "coefs_i", "temp_data_i", "formula_i", "temp_fit",
-     envir = .GlobalEnv)
-
-  boot_2fill_clean <- boot_2fill |>
-    dplyr::filter(!is.na(bootstrap)) # avoid errors from NAs
-
-  if(nrow(boot_2fill_clean) == 0) {
-    stop("Bootstrapping failed for all the models provided in `model_name_2boot` due to convergence problems.
-         You may try other models fitted with `fit_devmodels()`. If this error persists after attempting all the
-         models obtained from `fit_devmodels()`,your data may not be appropriate for
-         projecting risk of pest occurrence with the models you have fitted.")
-  }
-  #get the raw values of each bootstrap. These raw values represent the estimates
-  #  generated from each bootstrap sample for further analysis, such as computing confidence intervals
-  tpc_fits_boot <- boot_2fill_clean |>
-    dplyr::group_by(model_name) |>
-    dplyr::mutate(output_boot = purrr::map(.x = bootstrap,
-                                           .f = ~purrr::pluck(.x, "t")))
-
-  bootstrap_tpcs_all <- dplyr::tibble(model_name = NULL,
-                               iter = NULL,
-                               temp = NULL,
-                               pred = NULL,
-                               curvetype = NULL)
-  #preds boot with a for loop
-  cat("\nADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`\n")
-  pb <- progress::progress_bar$new(
-    format = "Predicting bootstrapped TPCs [:bar] :percent",
-    total = length(tpc_fits_boot$output_boot),
-    clear = F)
-  for (temp_model_i in 1:length(tpc_fits_boot$output_boot)){
-    boot_preds_i <- tpc_fits_boot[temp_model_i,]
-    model_name_boot_i <- boot_preds_i$model_name
-    boot_coefs_i <- boot_preds_i |>
-      tidyr::unnest_wider(col = coefs)
-    formula_i <- available_models |>
-      dplyr::filter(model_name == model_name_boot_i) |>
       dplyr::pull(working_formula)
-    output_boot_df <- as.data.frame(boot_preds_i$output_boot) |>
-      dplyr::mutate(iter = 1:dplyr::n()) |>
-      dplyr::tibble()
+    model_fit_i <- predict_model_i$model_fit[[1]]
+    # extract the residuals and the fitted values
+    resids_i <- residuals(model_fit_i)
+    fit_vals_i <- fitted(model_fit_i)
 
-    tpc_bootpreds <- dplyr::tibble(model_name = NULL,
-                            iter = NULL,
-                            temp = NULL,
-                            pred = NULL,
-                            curvetype = NULL)
-    for (boot_iter in 1:nrow(output_boot_df)){
-      params_i <- output_boot_df[boot_iter, 1:boot_preds_i$n_params] |>
-        purrr::as_vector()
-      tpc_boot_iter_temp <- dplyr::tibble(model_name = model_name_boot_i,
-                                   iter = boot_iter,
-                                   temp = boot_preds_i$temp,
-                                   pred = purrr::map_dbl(.x = temp,
-                                                  .f = stats::reformulate(formula_i)),
-                                   curvetype = "uncertainty")
-      tpc_bootpreds <- dplyr::bind_rows(tpc_bootpreds, tpc_boot_iter_temp)
+    ## residual resampling
+    resampled_data_resid <- tibble()
+    pb <- progress::progress_bar$new(
+      format = paste0(model_i,": Predicting bootstrapped TPCs [:bar] :percent"),
+      total = n_boots_samples,
+      clear = F)
+
+    for(n_boot_sample in 1:n_boots_samples) {
+      resampled_resids_i <- sample(resids_i,
+                                   size = length(resids_i),
+                                   replace = TRUE)
+      resampled_obs_i <- fit_vals_i + resampled_resids_i
+      resampled_data_i <- dplyr::tibble(
+        predict_var = devdata$temp,
+        response_var = resampled_obs_i,
+        boot_sample_id = n_boot_sample,
+        model_name = model_i
+      )
+      resampled_data_resid <- dplyr::bind_rows(resampled_data_resid, resampled_data_i)
     }
-    bootstrap_tpcs_all <- dplyr::bind_rows(bootstrap_tpcs_all, tpc_bootpreds) |>
-      dplyr::filter(pred >= 0)
-    central_curve <- tpc_fits_boot |>
+    # Then fit TPC to each bootstrapped iterated with residual resampling data set and get predictions similarly as before
+    predicted_boots_resid <- tibble()
+
+    for (iter in 1:n_boots_samples) {
+      resid_resampled_i <- resampled_data_resid |>
+        dplyr::filter(boot_sample_id == iter)
+
+      resid_fitted_tpc_iter <- suppressMessages(
+        fit_devmodels(temp = resid_resampled_i$predict_var,
+                      dev_rate = resid_resampled_i$response_var,
+                      model_name = model_i))
+
+      if (nrow(resid_fitted_tpc_iter) == 0) {
+        next  # skip this iteration
+      }
+
+      resid_predictions_temp_iter <- seq(min(predict_var, na.rm = TRUE) - 20,
+                                         max(predict_var, na.rm = TRUE) + 15,
+                                         0.01)
+      model_fit_boot_iter <- resid_fitted_tpc_iter$model_fit[[1]]
+      params_i <- stats::coef(model_fit_boot_iter)
+      resid_predictive_tbl_iter <- tibble::tibble(
+        resid_predictions_temp_iter,
+        preds_rate =  purrr::map_dbl(.x = resid_predictions_temp_iter,
+                                     .f = stats::reformulate(formula_i))
+        ) |>
+        dplyr::filter(preds_rate >= 0) |>
+        dplyr::mutate(boots_iter = iter) |>
+        dplyr::mutate(model_name_iter = model_i) |>
+        dplyr::mutate(curvetype = "uncertainty") |>
+        dplyr::rename(temp = resid_predictions_temp_iter,
+                      preds = preds_rate)
+
+      predicted_boots_resid <- dplyr::bind_rows(predicted_boots_resid, resid_predictive_tbl_iter)
+      pb$tick()
+    } # <- bootstrapped simulations for each model equation
+    cat(paste0("\n Bootstrapping simulations completed for ", model_i, " \n"))
+    estimated_tpc_i <- predict_model_i |>
       dplyr::select(temp, preds, model_name) |>
-      dplyr::mutate(iter = NA) |>
-      dplyr::rename(pred = preds) |>
-      dplyr::mutate(curvetype = "estimate")
-    central_and_bootstrap_tpcs <- bootstrap_tpcs_all |>
-      dplyr::bind_rows(central_curve)
-    pb$tick()
-    }
-  cat("\n Bootstrapping simulations completed \n")
-  }
-  if(!any(central_and_bootstrap_tpcs$curvetype == "uncertainty")){
+      dplyr::mutate(boots_iter = NULL,
+                    curvetype = "estimate") |>
+      dplyr::rename(model_name_iter = model_name)
+
+    predicted_boots_resid <- dplyr::bind_rows(predicted_boots_resid, estimated_tpc_i)
+
+    ## end of loop for each model TPC simulations
+    sim_boots_tpcs <- dplyr::bind_rows(sim_boots_tpcs, predicted_boots_resid)
+     } ## end of model equation simulation loop
+if(!any(sim_boots_tpcs$curvetype == "uncertainty")){
    warning("No bootstrap was accomplished. Your model might not be suitable for bootstrapping
 due to convergence problems")
   }
-      return(central_and_bootstrap_tpcs)
+ } # end of condition for `uncertainty == TRUE`
+      return(sim_boots_tpcs)
 }
 

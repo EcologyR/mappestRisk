@@ -30,7 +30,6 @@ URL: https://github.com/EcologyR/mappestRisk, https://ecologyr.github.io/mappest
 BugReports: https://github.com/EcologyR/mappestRisk/issues
 Depends: 
     R (>= 4.3.0),
-    car
 LazyData: true
 Suggests: 
     covr,

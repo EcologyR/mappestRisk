@@ -195,15 +195,14 @@ fit_devmodels <- function(temp = NULL,
   } # <- loop ends
   if (length(list_param) == 0) {
     warning("no model converged adequately for fitting your data")
-  }
-
-  list_param <-   list_param |>
+  } else {
+    list_param <-   list_param |>
     dplyr::group_by(model_name) |>
     dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
                                              model_fit,
                                              list(NULL)))  |>
     dplyr::ungroup()
-
+    }
   return(list_param)
 }
 

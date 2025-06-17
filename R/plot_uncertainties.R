@@ -64,7 +64,7 @@
 #'                                              fitted_parameters = fitted_tpcs_aphid,
 #'                                              model_name_2boot = c("lactin2", "briere2", "ratkowsky"),
 #'                                              propagate_uncertainty = TRUE,
-#'                                              n_boots_samples = 10)
+#'                                              n_boots_samples = 100)
 #'
 #' print(tpc_preds_boots_aphid)
 #'
@@ -75,7 +75,7 @@
 #'                    dev_rate = aphid$rate_value,
 #'                    species = "Brachycaudus schwartzi",
 #'                    life_stage = "Nymphs")
-#'                    }
+#' }
 
 plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
                                temp,
@@ -100,7 +100,7 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
     inherited from the output of `mappestRisk::predict_curves()` function with
     `propagate_uncertainty = TRUE` and `n_boots_samples > 0`.")
   }
-  if(suppressWarnings(any(!c("model_name", "iter", "temp", "pred", "curvetype") %in% colnames(bootstrap_uncertainties_tpcs)))){
+  if(suppressWarnings(any(!c("model_name_iter", "boots_iter", "temp", "preds", "curvetype") %in% colnames(bootstrap_uncertainties_tpcs)))){
     stop("`bootstrap_uncertainties_tpcs` must be a  `data.frame` or `tibble` inherited from the
     output of `mappestRisk::predict_curves()` function with
     `propagate_uncertainty = TRUE` and `n_boots_samples > 0`.")
@@ -125,20 +125,20 @@ plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
   plot_boot_tpcs <- ggplot2::ggplot() +
     ggplot2::geom_line(data = uncertainty_curves,
                        ggplot2::aes(x = temp,
-                                    y = pred,
-                                    group = iter),
+                                    y = preds,
+                                    group = boots_iter),
                        col = "#0E4D62", #'#586A64',
                        alpha = 0.08,
                        linewidth = 0.32) +
     ggplot2::geom_line(data = central_curve,
                        ggplot2::aes(x = temp,
-                                    y = pred),
+                                    y = preds),
                        col = "#CF8143", #'#B1492E',
                        linewidth = .85) +
     ggplot2::geom_point(data = devdata,
                         ggplot2::aes(temp, dev_rate),
                         size = 2) +
-    ggplot2::facet_wrap(~model_name, scales = "free")+
+    ggplot2::facet_wrap(~model_name_iter, scales = "free")+
     ggplot2::scale_x_continuous(limits = c(0, 50))+
     ggplot2::scale_y_continuous(limits = c(0, 1.5*max(devdata$dev_rate, na.rm = TRUE)))+
     ggplot2::theme_bw(base_size = 12) +
