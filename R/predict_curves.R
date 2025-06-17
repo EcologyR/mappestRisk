@@ -90,7 +90,6 @@ predict_curves <- function(temp = NULL,
                            model_name_2boot = NULL,
                            propagate_uncertainty = TRUE,
                            n_boots_samples = 100) {
-
   check_data(temp, dev_rate)
   if(is.null(fitted_parameters)) {
     stop("`fitted_parameters` must be provided.")
@@ -161,7 +160,7 @@ predict_curves <- function(temp = NULL,
     dplyr::mutate(tidyr::nest(devdata)) |>
     dplyr::mutate(coefs = purrr::map(.x = model_fit,
                                      .f = stats::coef))
-
+  if(nrow(predict2fill_complete) == 0) {stop("No bootstrap was attempted. Check your model(s)")}
   if (propagate_uncertainty == FALSE) {
     tpc_estimate <- dplyr::tibble(model_name = predict2fill_complete$model_name,
                            iter = rep(NA, nrow(predict2fill_complete)),
@@ -174,9 +173,9 @@ predict_curves <- function(temp = NULL,
 
   } else {
     cat("\nADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`\n")
-    sim_boots_tpcs <- tibble()
+    sim_boots_tpcs <- dplyr::tibble()
      for (model_i in model_name_2boot){
-    predict_model_i <- predict2fill_complete |>
+      predict_model_i <- predict2fill_complete |>
       dplyr::filter(model_name == model_i) |>
       dplyr::filter(preds >= 0)
     coefs_i <- purrr::as_vector(unique(predict_model_i$coefs))
@@ -190,7 +189,7 @@ predict_curves <- function(temp = NULL,
     fit_vals_i <- fitted(model_fit_i)
 
     ## residual resampling
-    resampled_data_resid <- tibble()
+    resampled_data_resid <- dplyr::tibble()
     pb <- progress::progress_bar$new(
       format = paste0(model_i,": Predicting bootstrapped TPCs [:bar] :percent"),
       total = n_boots_samples,
@@ -210,7 +209,7 @@ predict_curves <- function(temp = NULL,
       resampled_data_resid <- dplyr::bind_rows(resampled_data_resid, resampled_data_i)
     }
     # Then fit TPC to each bootstrapped iterated with residual resampling data set and get predictions similarly as before
-    predicted_boots_resid <- tibble()
+    predicted_boots_resid <- dplyr::tibble()
 
     for (iter in 1:n_boots_samples) {
       resid_resampled_i <- resampled_data_resid |>
@@ -225,8 +224,8 @@ predict_curves <- function(temp = NULL,
         next  # skip this iteration
       }
 
-      resid_predictions_temp_iter <- seq(min(predict_var, na.rm = TRUE) - 20,
-                                         max(predict_var, na.rm = TRUE) + 15,
+      resid_predictions_temp_iter <- seq(min(devdata$temp, na.rm = TRUE) - 20,
+                                         max(devdata$temp, na.rm = TRUE) + 15,
                                          0.01)
       model_fit_boot_iter <- resid_fitted_tpc_iter$model_fit[[1]]
       params_i <- stats::coef(model_fit_boot_iter)
