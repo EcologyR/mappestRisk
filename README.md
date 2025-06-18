@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mappestRisk
+# mappestRisk <a href="https://ecologyr.github.io/mappestRisk/"><img src="man/figures/logo.png" alt="mappestRisk website" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
