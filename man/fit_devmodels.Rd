@@ -2,8 +2,7 @@
 % Please edit documentation in R/fit_devmodels.R
 \name{fit_devmodels}
 \alias{fit_devmodels}
-\title{Fits nonlinear regression models to data representing how development rate changes
-with temperature (known as Thermal Performance Curves).}
+\title{Fit Thermal Performance Curves}
 \source{
 The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
 }
@@ -25,16 +24,19 @@ fitting the Thermal Performance Curves. Options include "all" or specific
 models listed in \link{available_models}. These models typically exhibit a common unimodal, left-skewed shape.}
 }
 \value{
-returns a table in \code{tibble} format with estimates and
-standard errors for each parameter of the models specified by the user that have adequately
+A table in \code{tibble} format with estimates and standard errors
+for each parameter of the models specified by the user that have adequately
 converged. Models are sorted based on their Akaike Information Criterion (AIC) values,
-with the best fitting models shown first. Fitted models are also provided in list format and
-can be accessed using \code{your_parameters_tbl$fit[[x]]} with \code{x} refers to the desired row in the table.
-It's important to consider ecological criteria alongside statistical information. For additional help in model selection,
+with the best fitting models shown first. Fitted models are also provided in list format
+in the \code{model_list} column and can be accessed using \code{\link[=get_fitted_model]{get_fitted_model()}} for
+for further inspection.
+It is important to consider ecological criteria alongside statistical information.
+For additional help in model selection,
 we recommend using \code{\link[=plot_devmodels]{plot_devmodels()}} and consulting relevant literature.
 }
 \description{
-Fits nonlinear regression models (or Thermal Performance Curves) based on
+Fit nonlinear regression models to data representing how development rate changes
+with temperature (known as Thermal Performance Curves), based on
 \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach to development rate data across temperatures.
 The fitting procedure is built upon previous packages for starting values estimation,
 namely \code{rTPC} and \code{devRate}.
@@ -43,10 +45,10 @@ namely \code{rTPC} and \code{devRate}.
 data("aphid")
 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                        dev_rate = aphid$rate_value,
-                                        model_name = c("lactin2", "briere2", "mod_weibull")
-                                        )
-print(fitted_tpcs_aphid)
+                                   dev_rate = aphid$rate_value,
+                                   model_name = c("lactin2", "briere2", "mod_weibull")
+                                   )
+fitted_tpcs_aphid
 
 }
 \references{

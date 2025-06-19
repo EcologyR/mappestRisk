@@ -87,7 +87,6 @@ fit_devmodels <- function(temp = NULL,
     models_2fit <- model_name
   }
 
-  list_fit_models <- vector("list", length = length(models_2fit))
   list_param <- dplyr::tibble(model_name = NULL,
                               param_name = NULL,
                               start_vals = NULL,
@@ -126,7 +125,6 @@ fit_devmodels <- function(temp = NULL,
             start_upper = start_upper_vals,
             supp_errors = "Y")
 
-          list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
           sum_fit_nls <- summary(fit_nls)
           list_param_tbl <- dplyr::tibble(model_name = i,
                                           param_name = extract_param_names(fit_nls),
@@ -173,7 +171,6 @@ fit_devmodels <- function(temp = NULL,
                                                                            devdata$dev_rate,
                                                                            model_name = model_name_translate(i)),
                                               supp_errors = "Y")
-      list_fit_models[[which(available_models$model_name == i)]] <- fit_nls
       sum_fit_nls <- summary(fit_nls)
       list_param_tbl <- dplyr::tibble(model_name = i,
                                       param_name = extract_param_names(fit_nls),
@@ -198,10 +195,14 @@ fit_devmodels <- function(temp = NULL,
   } # <- loop ends
   if (length(list_param) == 0) {
     warning("no model converged adequately for fitting your data")
-  }
-
-  ## TODO: keep only model_fit for the first row in each model, otherwise NULL
-
+  } else {
+    list_param <-   list_param |>
+    dplyr::group_by(model_name) |>
+    dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
+                                             model_fit,
+                                             list(NULL)))  |>
+    dplyr::ungroup()
+    }
   return(list_param)
 }
 

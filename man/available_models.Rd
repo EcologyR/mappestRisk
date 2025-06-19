@@ -7,23 +7,28 @@
 \format{
 \subsection{\code{available_models}}{
 
-A data.frame/tibble with 13 rows and 6 columns. This package contain the equation names of the models that are
-able to be fitted with \code{\link[=fit_devmodels]{fit_devmodels()}} and the equivalent names in their respective
-source packages underlying the start value exploration function and formulas used in-code to fit models.
-These models come from two packages that are already published:
-\if{html}{\out{<a href="https://github.com/frareb/devRate">}}\code{devRate} \if{html}{\out{</a>}} and \if{html}{\out{<a href="https://github.com/padpadpadpad/rTPC">}}\code{rTPC} \if{html}{\out{</a>}}. \if{html}{\out{</br>}}
+A data.frame/tibble with 13 rows and 6 columns:
 
 \describe{
-\item{model_name}{This is the name of the model equations that the user can use as input in the package functions.}
-\item{package}{names of the packages used by \code{\link[=fit_devmodels]{fit_devmodels()}} to obtain appropriate start values for the user-providen data.
-When the package is \if{html}{\out{<a href="https://github.com/padpadpadpad/rTPC">}}rTPC package\if{html}{\out{</a>}}, start values are
-automatically computed with \code{\link[rTPC:get_start_vals]{rTPC::get_start_vals()}}, which in turn relies on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}. When the package is  \if{html}{\out{<a href="https://github.com/frareb/devRate">}}devRate package\if{html}{\out{</a>}},
-iterative starting values are computed using \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}, using the parameters published in
-\code{\link[devRate:devRateEqStartVal]{devRate::devRateEqStartVal()}} as first attempts to iterate. As an exception, if \code{model_name == "briere1"},
-generic starting values are provided and advised to the user due to unrealistic value of some parameters in the
+
+\item{model_name}{Model name to be used within \code{\link[=fit_devmodels]{fit_devmodels()}}.}
+
+\item{package}{names of the packages used by \code{\link[=fit_devmodels]{fit_devmodels()}} to obtain
+appropriate start values for the user-provided data.
+When the package is \if{html}{\out{<a href="https://padpadpadpad.github.io/rTPC/">}}rTPC package\if{html}{\out{</a>}},
+start values are automatically computed with \code{\link[rTPC:get_start_vals]{rTPC::get_start_vals()}},
+which in turn relies on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}.
+When the package is \if{html}{\out{<a href="https://github.com/frareb/devRate">}}devRate package\if{html}{\out{</a>}},
+iterative starting values are computed using \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}},
+using the parameters published in \code{\link[devRate:devRateEqStartVal]{devRate::devRateEqStartVal()}}
+as first attempts to iterate.
+As an exception, if \code{model_name == "briere1"}, generic starting values are provided
+and advised to the user due to the unrealistic value of some parameters in the
 \link{devRate} data set.}
-\item{source_model_name}{function name in source packages used in the background of this package}
-\item{formula, working formula, params_formula}{formulas allowing automation of model fitting, with no information of interest for the user}
+
+\item{source_model_name}{name of the function in the source packages \code{rTPC} and \code{devRate}.}
+
+\item{formula, working_formula, n_params}{formulas used for model fitting.}
 }
 }
 }
@@ -38,8 +43,9 @@ performance curves in r. Methods Ecol Evol. 12: 1138-1143 \url{https://doi.org/1
 data("available_models")
 }
 \description{
-This data.frame, called \code{available_models} in your environment once the package is loaded,
-contains the available models to fit using \code{\link[=fit_devmodels]{fit_devmodels()}}. It is useful for the user to know it
-before applying functions in the package.
+Table containing the available models to be fit using \code{\link[=fit_devmodels]{fit_devmodels()}}.
+These models come from two other packages:
+\if{html}{\out{<a href="https://cran.r-project.org/package=devRate">}}\code{devRate} \if{html}{\out{</a>}} and
+\if{html}{\out{<a href="https://padpadpadpad.github.io/rTPC/">}}\code{rTPC} \if{html}{\out{</a>}}.
 }
 \keyword{datasets}

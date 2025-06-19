@@ -25,6 +25,13 @@ utils::globalVariables(c("available_models", # <- fit_devmodels(),  model_name_t
                          "formula", # <- predict_curves() and start_vals_devRate()
                          "bootstrap", # <- predict_curves()
                          "coefs", # <- predict_curves()
+                         "boot_sample_id", # <- predict_curves()
+                         "boots_iter", # <- predict_curves()
+                         "df", # <- predict_curves()
+                         "residuals", # <- predict_curves()
+                         "fitted", # <- predict_curves()
+                         "response_var", # <- predict_curves()
+                         "preds_rate", # <- predict_curves()
                          "temp", # <- therm_suit_bounds(),
                          "pred_devrate", # <- sim_tpc_gridparams()
                          "start_value" # <- start_vals_devRate()

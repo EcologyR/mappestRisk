@@ -86,7 +86,7 @@ test_that("plot_uncertainties should throw an error if `bootstrap_uncertainties_
             boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
             temp_test <- seq(4, 40, 3)
             expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example |>
-                                    dplyr::select(-iter),
+                                    dplyr::select(-boots_iter),
                                   temp = temp_test,
                                   dev_rate = rate_test,
                                   species = "Brachycaudus schwartzi",

@@ -14,14 +14,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# mappestRisk
+# mappestRisk <a href="https://ecologyr.github.io/mappestRisk/"><img src="man/figures/logo.png" alt="mappestRisk website" align="right" height="139"/></a>
 
 <!-- badges: start -->
-`r badger::badge_cran_release()`
-![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
-[![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
-`r badger::badge_lifecycle("stable")`
-`r badger::badge_repostatus("Active")`
+
+`r badger::badge_cran_release()` ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk) [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml) `r badger::badge_lifecycle("stable")` `r badger::badge_repostatus("Active")`
+
 <!-- badges: end -->
 
 ## Aims of the package
@@ -46,7 +44,6 @@ Or from the [GitHub repository](https://github.com/EcologyR/mappestRisk):
 remotes::install_github("EcologyR/mappestRisk")  
 ```
 
-
 ## Example: `mappestRisk` workflow
 
 ### 1. Fit thermal performance curves (TPC) to your data and plot results and parameter uncertainty:
@@ -60,7 +57,7 @@ library("mappestRisk")
 data("aphid") 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,  
                                    dev_rate = aphid$rate_value, 
-                                   model_name = c("briere2", "lactin2", "flextpc"))
+                                   model_name = c("briere2", "lactin2", "ratkowsky"))
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
@@ -77,7 +74,7 @@ Additionally, we recommend here to propagate uncertainty in parameter estimation
 preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2", "flextpc"),
+                                   model_name_2boot = c("briere2", "lactin2"),
                                    propagate_uncertainty = TRUE,
                                    n_boots_samples = 100)
 
@@ -93,8 +90,8 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
 After the previous steps, the user can calculate the thermal boundaries of the optimal zone of the TPC –i.e., those temperature values yielding the Y-th quantile of the development rate (default to $`\mathrm{Q}_{75}`$) at both sides of the curve peak or $`R_\max`$. Once a model has been selected under both ecological and statistical criteria, the `thermal_suitability_bounds()` function calculates these values:
 
 ```{r, warning=FALSE}
-boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,       
-                                      model_name = "lactin2",        
+boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
+                                      model_name = "briere2",        
                                       suitability_threshold = 80) 
 ```
 
@@ -104,9 +101,8 @@ These optimal thermal boundaries are used for spatial projection of pest risk. T
 
 ```{r, message = FALSE}
 risk_rast <- map_risk(t_vals = boundaries_aphid, 
-                      path = "~/downloaded_maps", # directory to download data 
+                      path = tempdir(), # directory to download data 
                       region = "Réunion",    
-                      mask = TRUE,
                       plot = TRUE,
                       interactive = FALSE,
                       verbose = TRUE)

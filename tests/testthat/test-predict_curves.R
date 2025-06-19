@@ -210,10 +210,7 @@ test_that("predict_curves should issue a warning if no boostrap is accomplished"
                                                                    model_name_2boot = "lactin1", # <- previously known as not adequately converging
                                                                    propagate_uncertainty = TRUE,
                                                                    n_boots_samples = 2)),
-  "Bootstrapping failed for all the models provided in `model_name_2boot` due to convergence problems.
-         You may try other models fitted with `fit_devmodels()`. If this error persists after attempting all the
-         models obtained from `fit_devmodels()`,your data may not be appropriate for
-         projecting risk of pest occurrence with the models you have fitted.",
+  "No bootstrap was attempted. Check your model(s)",
   fixed = TRUE)
 })
 
