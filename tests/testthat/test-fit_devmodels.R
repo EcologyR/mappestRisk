@@ -126,6 +126,18 @@ test_that("nls object is retrieved and of correct class", {
 
 })
 
+## test message for exclusion of ratkwosky, wang and mod_polynomial
+test_that("nls object is retrieved and of correct class", {
+  rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
+  expect_message(fit_devmodels(temp = seq(4, 40, 3),
+                               dev_rate = rate_test,
+                               model_name = "all"),
+                 "By default, all models are fitted except `ratkowsky`, `mod_polynomial` and `wang` due to
+unrealistic behavior at some TPC regions. If you still want to fit them, please write all model names manually")
+
+
+})
+
 ## test that a fitted model summary is accessible
 test_that("nls object and its summary and table of parameters and statistics are correct", {
   rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))

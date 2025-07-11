@@ -6,6 +6,8 @@
 \alias{mappestRisk-package}
 \title{mappestRisk: Create Maps Forecasting Risk of Pest Occurrence}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 'mappestRisk' has three different modules: (1) model fitting & selection using a set of the most commonly used equations describing developmental responses to temperature helped by already existing R packages using equation helpers from rTPC(Padfield and O’Sullivan 2023), with visualization of model predictions to guide ecological criteria for model selection; (2) calculation of suitability thermal limits, which consist on a temperature interval delimiting the optimal performance zone or suitability; and (3) climatic data extraction & visualization with either exportable rasters, static map images or html, interactive maps.
 }
 \seealso{

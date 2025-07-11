@@ -215,13 +215,23 @@ predict_curves <- function(temp = NULL,
         dplyr::filter(boot_sample_id == iter) |>
         dplyr::filter(response_var >= 0)
 
-      resid_fitted_tpc_iter <- suppressMessages(
-        fit_devmodels(temp = resid_resampled_i$predict_var,
-                      dev_rate = resid_resampled_i$response_var,
-                      model_name = model_i))
+      # Attempt to fit the model and catch any errors
+      resid_fitted_tpc_iter <- tryCatch({
+        suppressMessages(
+          fit_devmodels(
+            temp = resid_resampled_i$predict_var,
+            dev_rate = resid_resampled_i$response_var,
+            model_name = model_i
+          )
+        )
+      }, error = function(e) {
+        message(paste("bootstrap iteration", iter, "was not accomplished"))
+        return(NULL)
+      })
 
-      if (nrow(resid_fitted_tpc_iter) == 0) {
-        next  # skip this iteration
+      # Skip if model fitting failed or returned empty result
+      if (is.null(resid_fitted_tpc_iter) || nrow(resid_fitted_tpc_iter) == 0) {
+        next
       }
 
       resid_predictions_temp_iter <- seq(min(devdata$temp, na.rm = TRUE) - 20,

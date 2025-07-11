@@ -80,7 +80,10 @@ fit_devmodels <- function(temp = NULL,
   }
 
   if (any(model_name == "all")) {
+    message("By default, all models are fitted except `ratkowsky`, `mod_polynomial` and `wang` due to
+unrealistic behavior at some TPC regions. If you still want to fit them, please write all model names manually")
     models_2fit <- available_models |>
+      dplyr::filter(!model_name %in% c("ratkowsky", "mod_polynomial", "wang")) |>
       dplyr::filter(n_params <= dplyr::n_distinct(temp)) |>
       dplyr::pull(model_name)
   } else {

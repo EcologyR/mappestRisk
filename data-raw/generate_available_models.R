@@ -1,13 +1,13 @@
 model_names <- c("beta", "boatman","briere1", "briere2", # "flextpc",
-                 "joehnk", "kamykowski", "lactin1", "lactin2", #"lrf",
+                 "joehnk", "kamykowski", "lactin1", "lactin2", "lrf", #"lrf",
                  "mod_polynomial", "mod_weibull", "oneill", "pawar",
-                 "ratkowsky", "regniere", "schoolfield",  "thomas", "wang")
+                 "ratkowsky", "schoolfield",  "thomas", "wang")
 
 pkg_model_names <- c("beta_2012","boatman_2017", "briere1_99", "briere2_1999", #"flextpc_2024",
                      "joehnk_2008", "kamykowski_1985",
-                     "lactin1_95", "lactin2_1995", #"rosso_1993",
+                     "lactin1_95", "lactin2_1995", "lrf_1991", #"rosso_1993",
                      "poly4", "weibull_1995", "oneill_1972", "pawar_2018",
-                     "ratkowsky_1983", "regniere_12", "sharpeschoolfull_1981",
+                     "ratkowsky_1983", "sharpeschoolfull_1981",
                      "thomas_2012", "wang_82")
 
 available_models <- dplyr::tibble(model_name = model_names) |>
@@ -26,18 +26,18 @@ available_models <- dplyr::tibble(model_name = model_names) |>
                                            model_name == "kamykowski" ~ "rTPC::kamykowski_1985(temp, tmin, tmax, a, b, c)",
                                            model_name == "lactin1" ~ "lactin1(temp, a, tmax, delta_t)",
                                            model_name == "lactin2" ~ "rTPC::lactin2_1995(temp, a, b, tmax, delta_t)",
+                                           model_name == "lrf" ~ "rTPC::rTPC::lrf_1991(temp, rmax, topt, tmin, tmax)",
                                            #model_name == "lrf" ~ "rTPC::rosso_1993(temp, rmax, topt, tmin, tmax)",
                                            model_name == "mod_weibull" ~ "rTPC::weibull_1995(temp, a, topt, b, c)",
                                            model_name == "mod_polynomial" ~ "mod_polynomial(temp, a_0, a_1, a_2, a_3, a_4)",
                                            model_name == "oneill" ~ "rTPC::oneill_1972(temp, rmax, ctmax, topt, q10)",
                                            model_name == "pawar" ~ "rTPC::pawar_2018(temp, r_tref, e, eh, topt, tref = 25)",
                                            model_name == "ratkowsky" ~ "rTPC::ratkowsky_1983(temp, tmin, tmax, a, b)",
-                                           model_name == "regniere" ~ "regniere(temp, tmin, tmax, phi, delta_b, delta_m, b)",
                                            model_name == "schoolfield" ~ "rTPC::sharpeschoolfull_1981(temp, rtref, e, el, tl, eh, th, tref = 25)",
                                            model_name == "thomas" ~ "rTPC::thomas_2012(temp, a, b, c, topt)",
                                            model_name == "wang" ~ "wang(temp, k, r, topt, tmin, tmax, a)",
   )) |>
-  dplyr::mutate(working_formula = dplyr::case_when(model_name == "beta" ~  "rTPC::beta_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
+  dplyr::mutate(fitting_formula = dplyr::case_when(model_name == "beta" ~  "rTPC::beta_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
                                      model_name == "boatman" ~ "rTPC::boatman_2017(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
                                      model_name == "briere1" ~  "briere1(.x, start_vals[1], start_vals[2], start_vals[3])",
                                      model_name == "briere2" ~ "rTPC::briere2_1999(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
@@ -46,6 +46,7 @@ available_models <- dplyr::tibble(model_name = model_names) |>
                                      model_name == "kamykowski" ~ "rTPC::kamykowski_1985(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
                                      model_name == "lactin1" ~ "lactin1(.x, start_vals[1], start_vals[2], start_vals[3])",
                                      model_name == "lactin2" ~ "rTPC::lactin2_1995(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
+                                     model_name == "lrf" ~ "rTPC::lrf_1991(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
                                      #model_name == "lrf" ~ "rTPC::rosso_1993(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
                                      model_name == "mod_weibull" ~ "rTPC::weibull_1995(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
                                      model_name == "mod_polynomial" ~ "mod_polynomial(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5])",
@@ -53,7 +54,6 @@ available_models <- dplyr::tibble(model_name = model_names) |>
                                      model_name == "pawar" ~ "rTPC::pawar_2018(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], tref = 25)",
                                      model_name == "ratkowsky" ~ "rTPC::ratkowsky_1983(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
                                      model_name == "schoolfield" ~ "rTPC::sharpeschoolfull_1981(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6], tref = 25)",
-                                     model_name == "regniere" ~ "regniere(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6])",
                                      model_name == "thomas" ~ "rTPC::thomas_2012(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4])",
                                      model_name == "wang" ~ "wang(.x, start_vals[1], start_vals[2], start_vals[3], start_vals[4], start_vals[5], start_vals[6])"
   )) |>
@@ -66,6 +66,7 @@ available_models <- dplyr::tibble(model_name = model_names) |>
                                      model_name == "kamykowski" ~ "rTPC::kamykowski_1985(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
                                      model_name == "lactin1" ~ "lactin1(.x, params_i[1], params_i[2], params_i[3])",
                                      model_name == "lactin2" ~ "rTPC::lactin2_1995(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
+                                     model_name == "lrf" ~ "rTPC::lrf(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
                                      #model_name == "lrf" ~ "rTPC::rosso_1993(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
                                      model_name == "mod_weibull" ~ "rTPC::weibull_1995(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
                                      model_name == "mod_polynomial" ~ "mod_polynomial(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5])",
@@ -73,7 +74,6 @@ available_models <- dplyr::tibble(model_name = model_names) |>
                                      model_name == "pawar" ~ "rTPC::pawar_2018(.x, params_i[1], params_i[2], params_i[3], params_i[4], tref = 25)",
                                      model_name == "ratkowsky" ~ "rTPC::ratkowsky_1983(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
                                      model_name == "schoolfield" ~ "rTPC::sharpeschoolfull_1981(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6], tref = 25)",
-                                     model_name == "regniere" ~ "regniere(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6])",
                                      model_name == "thomas" ~ "rTPC::thomas_2012(.x, params_i[1], params_i[2], params_i[3], params_i[4])",
                                      model_name == "wang" ~ "wang(.x, params_i[1], params_i[2], params_i[3], params_i[4], params_i[5], params_i[6])"
   )) |>
@@ -86,14 +86,13 @@ available_models <- dplyr::tibble(model_name = model_names) |>
                                 model_name == "kamykowski" ~ 5,
                                 model_name == "lactin1" ~ 3,
                                 model_name == "lactin2" ~ 4,
-                                #model_name == "lrf" ~ 4,
+                                model_name == "lrf" ~ 4,
                                 model_name == "mod_weibull" ~ 4,
                                 model_name == "mod_polynomial" ~ 5,
                                 model_name == "oneill" ~ 4,
                                 model_name == "pawar" ~ 4,
                                 model_name == "ratkowsky" ~ 4,
                                 model_name == "schoolfield" ~ 6,
-                                model_name == "regniere" ~ 6,
                                 model_name == "thomas" ~ 4,
                                 model_name == "wang" ~  6)
          )

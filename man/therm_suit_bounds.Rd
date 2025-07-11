@@ -50,7 +50,7 @@ data("aphid")
 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
                                         dev_rate = aphid$rate_value,
-                                        model_name = c("lactin2", "briere2", "mod_weibull"))
+                                        model_name = c("lactin2", "briere2", "ratkowsky"))
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
                fitted_parameters = fitted_tpcs_aphid,
@@ -61,9 +61,10 @@ plot_devmodels(temp = aphid$temperature,
 tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
                                              dev_rate = aphid$rate_value,
                                              fitted_parameters = fitted_tpcs_aphid,
-                                             model_name_2boot = "lactin2",
+                                             model_name_2boot = c("lactin2",
+                                              "briere2", "ratkowsky"),
                                              propagate_uncertainty = TRUE,
-                                             n_boots_samples = 10)
+                                             n_boots_samples = 100)
 
 head(tpc_preds_boots_aphid)
 
@@ -77,8 +78,7 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
 
 #5. Calculate Q80 thermal bounds
 
-boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid |>
-                                         dplyr::filter(model_name_iter == "lactin2"),
+boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
                                              model_name = "lactin2",
                                              suitability_threshold = 80)
 head(boundaries_aphid)
