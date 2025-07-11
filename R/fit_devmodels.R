@@ -135,8 +135,14 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
                                           param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
                                           param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
                                           model_AIC = AIC(fit_nls),
-                                          model_BIC = BIC(fit_nls),
-                                          model_fit = list(fit_nls))
+                                          model_BIC = BIC(fit_nls))
+          ## Keep model fit only in first row
+          list_param_tbl <- list_param_tbl |>
+            dplyr::group_by(model_name) |>
+            dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
+                                                     list(fit_nls),
+                                                     list(NULL))) |>
+            dplyr::ungroup()
         }, # <- inside tryCatch
         error = function(e) e)
         if (inherits(possible_error, "error")) {
@@ -153,36 +159,44 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
     # end of devRate
 
     if (available_models$package[available_models$model_name == i] == "rTPC") {
-      possible_error <- tryCatch(expr = {start_vals <- rTPC::get_start_vals(x = temp,
-                                                                            y = dev_rate,
-                                                                            model_name = model_name_translate(i))
-      devdata <- dplyr::tibble(temp, dev_rate)
-      start_upper_vals <- purrr::map(.x = start_vals,
-                                     .f = ~.x + abs(.x/2))
-      start_lower_vals <- purrr::map(.x = start_vals,
-                                     .f = ~.x - abs(.x/2))
-      fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
-                                                                           termlabels = unique(model_i$formula)),
-                                              data = devdata,
-                                              iter = 500,
-                                              start_lower = start_lower_vals,
-                                              start_upper = start_upper_vals,
-                                              lower = rTPC::get_lower_lims(devdata$temp,
-                                                                           devdata$dev_rate,
-                                                                           model_name = model_name_translate(i)),
-                                              upper = rTPC::get_upper_lims(devdata$temp,
-                                                                           devdata$dev_rate,
-                                                                           model_name = model_name_translate(i)),
-                                              supp_errors = "Y")
-      sum_fit_nls <- summary(fit_nls)
-      list_param_tbl <- dplyr::tibble(model_name = i,
-                                      param_name = extract_param_names(fit_nls),
-                                      start_vals = tidyr::replace_na(start_vals, 0),
-                                      param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                      param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                      model_AIC = AIC(fit_nls),
-                                      model_BIC = BIC(fit_nls),
-                                      model_fit = list(fit_nls))
+      possible_error <- tryCatch(expr = {
+        start_vals <- rTPC::get_start_vals(x = temp,
+                                           y = dev_rate,
+                                           model_name = model_name_translate(i))
+        devdata <- dplyr::tibble(temp, dev_rate)
+        start_upper_vals <- purrr::map(.x = start_vals,
+                                       .f = ~.x + abs(.x/2))
+        start_lower_vals <- purrr::map(.x = start_vals,
+                                       .f = ~.x - abs(.x/2))
+        fit_nls <- nls.multstart::nls_multstart(
+          formula = stats::reformulate(response = "dev_rate",
+                                       termlabels = unique(model_i$formula)),
+          data = devdata,
+          iter = 500,
+          start_lower = start_lower_vals,
+          start_upper = start_upper_vals,
+          lower = rTPC::get_lower_lims(devdata$temp,
+                                       devdata$dev_rate,
+                                       model_name = model_name_translate(i)),
+          upper = rTPC::get_upper_lims(devdata$temp,
+                                       devdata$dev_rate,
+                                       model_name = model_name_translate(i)),
+          supp_errors = "Y")
+        sum_fit_nls <- summary(fit_nls)
+        list_param_tbl <- dplyr::tibble(model_name = i,
+                                        param_name = extract_param_names(fit_nls),
+                                        start_vals = tidyr::replace_na(start_vals, 0),
+                                        param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+                                        param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+                                        model_AIC = AIC(fit_nls),
+                                        model_BIC = BIC(fit_nls))
+        ## Keep model fit only in first row
+        list_param_tbl <- list_param_tbl |>
+          dplyr::group_by(model_name) |>
+          dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
+                                                   list(fit_nls),
+                                                   list(NULL))) |>
+          dplyr::ungroup()
       }, # <- inside tryCatch
       error = function(e) e)
       if (inherits(possible_error, "error")) {
@@ -196,16 +210,12 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
     # end of rTPC processing
 
   } # <- loop ends
+
   if (length(list_param) == 0) {
     warning("no model converged adequately for fitting your data")
-  } else {
-    list_param <-   list_param |>
-    dplyr::group_by(model_name) |>
-    dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
-                                             model_fit,
-                                             list(NULL)))  |>
-    dplyr::ungroup()
-    }
+  }
+
   return(list_param)
+
 }
 
