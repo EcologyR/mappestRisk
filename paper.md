@@ -138,15 +138,22 @@ default, enabling the user to provide its own. This function outputs a
 simple map visualization accompanied by a spatial raster (*.tiff*) that
 can be exported for GIS processing.
 
-# Examples:
+# Examples
 
 Detailed examples of pipelines of `mappestRisk` are available in the
 [package website](https://ecologyr.github.io/mappestRisk/) articles.
 
-# Collaboration:
+# Collaboration
 
 Designed as a collaborative tool, `mappestRisk` welcomes contributions
 to expand biological models, data sources, and forecasting methods.
+
+# Acknowledgements
+
+The development of this software has been funded by Fondo Europeo de
+Desarrollo Regional (FEDER) and Consejería de Transformación Económica,
+Industria, Conocimiento y Universidades of Junta de Andalucía (proyecto
+US-1381388, Universidad de Sevilla).
 
 [^1]: See e.g., datasheets available at EPPO (<https://gd.eppo.int/>)
     and at CABI
