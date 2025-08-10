@@ -18,9 +18,7 @@
 #'
 #' @returns A plot with predicted values (development rate) across temperatures
 #' for models that have adequately converged using [fit_devmodels()] function.
-#' The facets of the resulting plots are automatically sorted by lowest AIC values
-#' in descending order, and additional information such as the number of parameters
-#' is displayed. It's a <ggplot> object, which can be assigned to a user-defined object.
+#' It's a <ggplot> object, which can be assigned to a user-defined object.
 #'
 #' @seealso [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
 #'
@@ -44,7 +42,7 @@
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 #'                                    dev_rate = aphid$rate_value,
-#'                                    model_name = c("lactin2", "briere2", "ratkowsky"))
+#'                                    model_name = c("lactin2", "briere2", "mod_weibull"))
 #'
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,

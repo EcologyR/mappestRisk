@@ -10,23 +10,29 @@
 #' It must be numeric and of the same length as `temp`.
 #'
 #'
-#' @param fitted_parameters a `tibble` obtained with [fit_devmodels()] function, including parameter names,
-#'  estimates, standard errors, AICs, and <nls> objects (fitted_models) using the [nls.multstart::nls_multstart()] approach.
+#' @param fitted_parameters a `tibble` obtained with [fit_devmodels()] function,
+#' including parameter names, estimates, standard errors, AICs, and <nls> objects
+#' (fitted_models) using the [nls.multstart::nls_multstart()] approach.
 
-#' @param model_name_2boot A vector of strings including one or several TPC models fitted by [fit_devmodels()]. Contrarily to that function,
-#' `model_name_2boot = "all"` is not allowed in this function due to the slow bootstrapping procedure.
-#' We recommend applying this function only to a small pre-selection of models (e.g., one to four) based on statistical
-#' and ecological criteria with the help of [plot_devmodels()] function.
+#' @param model_name_2boot A vector of strings including one or several TPC models
+#' fitted by [fit_devmodels()]. Contrarily to that function, `model_name_2boot = "all"`
+#' is not allowed in this function due to the slow bootstrapping procedure.
+#' We recommend applying this function only to a small pre-selection of models
+#' (e.g., one to four) based on statistical and ecological criteria with the help
+#' of [plot_devmodels()] function.
 #'
 #'
-#' @param propagate_uncertainty A logical argument that specifies whether to propagate parameter uncertainty by bootstrap with residual resampling.
-#' If `FALSE`, the function returns predictions from the fitted TPCs for the selected model(s). If `TRUE`, bootstrap is applied
-#' using residual resampling to obtain multiple TPCs using [car::Boot()] as detailed in vignettes of the `rTPC` package.
+#' @param propagate_uncertainty A logical argument that specifies whether to
+#' propagate parameter uncertainty by bootstrap with residual resampling.
+#' If `FALSE`, the function returns predictions from the fitted TPCs for the
+#' selected model(s). If `TRUE`, bootstrap is applied using residual resampling
+#' to obtain multiple TPCs as detailed in vignettes of the `rTPC` package.
 #' Defaults to `TRUE`.
 #'
-#' @param n_boots_samples Number of bootstrap resampling iterations (default is 100). A larger number
-#' of iterations makes the resampling procedure more robust, but typically 100 is sufficient for propagating parameter
-#' uncertainty, as increasing `n_boots_samples` will increase computation time for predicting resampled TPCs.
+#' @param n_boots_samples Number of bootstrap resampling iterations (default is 100).
+#' A larger number of iterations makes the resampling procedure more robust,
+#' but typically 100 is sufficient for propagating parameter uncertainty,
+#' as increasing `n_boots_samples` will increase computation time for predicting resampled TPCs.
 #'
 #'
 #' @returns A tibble object with as many curves (TPCs) as the number of iterations provided
@@ -39,7 +45,8 @@
 #' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows, and
 #'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
 #'
-#'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
+#'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data,
+#'  which is in turn based on [nls.multstart::nls_multstart()].
 #'
 #' @references
 #'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
@@ -56,15 +63,14 @@
 #'
 #' @export
 #'
-#' @importFrom stats df fitted residuals coef formula na.exclude reformulate
 #'
 #' @examples
 #' \dontrun{
 #' data("aphid")
 #'
 #' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                       dev_rate = aphid$rate_value,
-#'                                       model_name = "all")
+#'                                    dev_rate = aphid$rate_value,
+#'                                    model_name = "all")
 #'
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
@@ -78,7 +84,7 @@
 #'                                         fitted_parameters = fitted_tpcs_aphid,
 #'                                         model_name_2boot = c("lactin2", "briere2", "beta"),
 #'                                         propagate_uncertainty = TRUE,
-#'                                         n_boots_samples = 100)
+#'                                         n_boots_samples = 10)
 #'
 #' head(tpc_preds_boots_aphid)
 #' }
@@ -128,7 +134,7 @@ predict_curves <- function(temp = NULL,
   # define temperature range (common to all models)
   temp.min <- min(devdata$temp) - 20 # allow user to change this?
   temp.max <- max(devdata$temp) + 15 # allow user to change this?
-  temp.step <- 0.01 # allow user to change this? Or change to 0.1 (1 decimal degree!) to save memory and time?
+  temp.step <- 0.1 # allow user to change this? Or change to 0.1 (1 decimal degree!) to save memory and time?
   temp.range <- seq(from = temp.min, to = temp.max, by = temp.step)
 
   # get predictions for each model
@@ -158,11 +164,11 @@ predict_curves <- function(temp = NULL,
     message("\nNote: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`\n")
 
     boot_models_list <- lapply(model_name_2boot,
-                             bootstrap_model,
-                             fitted_df = fitted_df,
-                             devdata = devdata,
-                             nboot = n_boots_samples,
-                             temp.range = temp.range)
+                               bootstrap_model,
+                               fitted_df = fitted_df,
+                               devdata = devdata,
+                               nboot = n_boots_samples,
+                               temp.range = temp.range)
     boot_models <- dplyr::bind_rows(boot_models_list)
 
     if (!any(boot_models$curvetype == "uncertainty")) {
@@ -172,7 +178,7 @@ due to convergence problems")
 
     out <- dplyr::bind_rows(estimate_curve, boot_models)
 
-  } # end of condition for `uncertainty == TRUE`
+  }
 
   return(out)
 
@@ -230,6 +236,7 @@ bootstrap_model <- function(model_name, fitted_df, devdata, nboot, temp.range) {
   refit <- resampled_data |>
     split(resampled_data$boot_iter) |>
     lapply(function(x) {
+      pb$tick()
       try(suppressMessages(fit_devmodels(temp = x$temp,
                                          dev_rate = x$dev_rate,
                                          model_name = unique(x$model_name))),
@@ -252,8 +259,6 @@ bootstrap_model <- function(model_name, fitted_df, devdata, nboot, temp.range) {
   out <- dplyr::bind_rows(refit_pred) |>
     dplyr::mutate(curvetype = "uncertainty") |>
     dplyr::relocate(boot_iter, .after = model_name)
-
-  pb$tick()
 
   if (nrow(out) == 0) {
     warning("For model '", model_name, "', no bootstrap iterations converged successfully.")
