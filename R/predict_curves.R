@@ -47,8 +47,7 @@
 #' @export
 #'
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' data("aphid")
 #'
 #' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
@@ -70,7 +69,7 @@
 #'                             n_boots_samples = 10)
 #'
 #' boot_tpcs
-#' }
+
 
 predict_curves <- function(temp = NULL,
                            dev_rate = NULL,
