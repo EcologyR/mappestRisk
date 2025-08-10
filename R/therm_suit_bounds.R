@@ -73,7 +73,7 @@
 #' boundaries <- therm_suit_bounds(preds_tbl = boot_tpcs,
 #'                                 model_name = "lactin2",
 #'                                 suitability_threshold = 80)
-#' head(boundaries_aphid)
+#' head(boundaries)
 
 
 therm_suit_bounds <- function(preds_tbl = NULL,
