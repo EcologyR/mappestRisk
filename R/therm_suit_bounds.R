@@ -93,7 +93,7 @@ therm_suit_bounds <- function(preds_tbl = NULL,
 
   if (!inherits(preds_tbl, "data.frame") |
       !all(c("model_name", "boot_iter", "temp", "dev_rate", "curvetype") %in% names(preds_tbl))) {
-    stop("`preds_tbl` must be a  `data.frame` inherited from the output of `mappestRisk::predict_curves()` function")
+    stop("`preds_tbl` must be a `data.frame` with columns as produced by the `predict_curves()` function")
   }
 
   if (is.null(suitability_threshold)) {
