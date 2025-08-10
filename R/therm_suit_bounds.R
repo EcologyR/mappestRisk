@@ -47,7 +47,7 @@
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
 #'                fitted_parameters = fitted_tpcs,
-#'                species = "Brachycaudus swartzi",
+#'                species = "Brachycaudus schwartzi",
 #'                life_stage = "Nymphs")
 #'
 #' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
