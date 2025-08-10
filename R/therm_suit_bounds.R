@@ -118,7 +118,8 @@ therm_suit_bounds <- function(preds_tbl = NULL,
 
   if (!all(model_name %in% unique(preds_tbl$model_name))) {
     stop("Model ", model_name[which(!model_name %in% unique(preds_tbl$model_name))],
-    " is not available in `preds_tbl`.
+    stop("Model(s) ", paste(model_name[which(!model_name %in% unique(preds_tbl$model_name))], collapse = ", "),
+    " is/are not available in `preds_tbl`.
     Try using another fitted model in your table instead")
   }
 
