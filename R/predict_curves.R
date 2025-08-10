@@ -1,14 +1,6 @@
 #' Propagate parameter uncertainty of TPC fits using bootstrap with residual resampling
 #'
-#' @param temp a vector of temperatures used in the experiment.
-#' It should have at least four different temperatures and must contain only numbers
-#' without any missing values.
-#'
-#' @param dev_rate a vector of estimated development rates corresponding to each temperature.
-#' These rates are calculated as the inverse of the number of days to complete the transition
-#' from the beginning of a certain life stage to the beginning of the following at each temperature.
-#' It must be numeric and of the same length as `temp`.
-#'
+#' @inheritParams fit_devmodels
 #'
 #' @param fitted_parameters a `tibble` obtained with [fit_devmodels()] function,
 #' including parameter names, estimates, standard errors, AICs, and <nls> objects
@@ -38,9 +30,11 @@
 #' @returns A tibble object with as many curves (TPCs) as the number of iterations provided
 #' in the `n_boots_samples` argument if `propagate_uncertainty = TRUE` minus the bootstrap samples that
 #' could not be fitted (i.e., new nonlinear regression models did not converge for them).
-#' Otherwise, it returns just one prediction TPC from model fit estimates. Each resampled TPC consists of a collection of
-#' predictions for a set of temperatures from `temp - 20` to `temp + 15` with a resolution of 0.1°C and a unique identifier
-#' called `boots_iter`. In addition to the uncertainty TPCs, the estimated TPC is also explicit in the output tibble.
+#' Otherwise, it returns just one prediction TPC from model fit estimates.
+#' Each resampled TPC consists of a collection of predictions for a set of temperatures
+#' from `temp - 20` to `temp + 15` with a resolution of 0.1°C and a unique identifier
+#' called `boots_iter`. In addition to the uncertainty TPCs, the estimated TPC
+#' is also explicit in the output tibble.
 #'
 #' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows, and
 #'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
@@ -48,18 +42,7 @@
 #'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data,
 #'  which is in turn based on [nls.multstart::nls_multstart()].
 #'
-#' @references
-#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
-#'  (for reading on model selection in TPC framework)
-#'
-#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
-#'
-#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
-#'
-#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
-#'
-#' @source
-#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+#' @inherit fit_devmodels references source
 #'
 #' @export
 #'
@@ -68,25 +51,25 @@
 #' \dontrun{
 #' data("aphid")
 #'
-#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                    dev_rate = aphid$rate_value,
-#'                                    model_name = "all")
+#' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+#'                              dev_rate = aphid$rate_value,
+#'                              model_name = "all")
 #'
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
-#'                fitted_parameters = fitted_tpcs_aphid,
+#'                fitted_parameters = fitted_tpcs,
 #'                species = "Brachycaudus schwartzi",
 #'                life_stage = "Nymphs")
 #'
 #' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-#' tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-#'                                         dev_rate = aphid$rate_value,
-#'                                         fitted_parameters = fitted_tpcs_aphid,
-#'                                         model_name_2boot = c("lactin2", "briere2", "beta"),
-#'                                         propagate_uncertainty = TRUE,
-#'                                         n_boots_samples = 10)
+#' boot_tpcs <- predict_curves(temp = aphid$temperature,
+#'                             dev_rate = aphid$rate_value,
+#'                             fitted_parameters = fitted_tpcs,
+#'                             model_name_2boot = c("lactin2", "briere2", "beta"),
+#'                             propagate_uncertainty = TRUE,
+#'                             n_boots_samples = 10)
 #'
-#' head(tpc_preds_boots_aphid)
+#' boot_tpcs
 #' }
 
 predict_curves <- function(temp = NULL,

@@ -31,7 +31,8 @@
 #' we recommend using [plot_devmodels()] and consulting relevant literature.
 #'
 #' @source
-#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+#' The dataset used in the example was originally published in Satar & Yokomi (2022)
+#' under the CC-BY-NC license
 #'
 #' @seealso
 #'  [nls.multstart::nls_multstart()] for structure of model fitting approach
@@ -42,14 +43,19 @@
 #'  bootstrapping procedures using both `rTPC` and `nls.multstart` packages.
 #'
 #' @references
-#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
-#'  (for reading on model selection in TPC framework)
+#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves.
+#'  <i>J. Therm. Biol.</i> 31: 541-545. (for model selection in TPC framework)
 #'
-#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
+#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>:
+#'  A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 12: 1138-1143.
 #'
-#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
+#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent
+#'  development rate and phenology in arthropods: The `devRate` package for `R`.
+#'  <i>Methods Ecol Evol</i>. 9: 1144-1150.
 #'
-#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
+#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development
+#'  of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae).
+#'  <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
 #'
 #' @export
 #'
@@ -57,11 +63,11 @@
 #' @examples
 #' data("aphid")
 #'
-#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                    dev_rate = aphid$rate_value,
-#'                                    model_name = c("lactin2", "briere2", "mod_weibull")
-#'                                    )
-#' fitted_tpcs_aphid
+#' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+#'                              dev_rate = aphid$rate_value,
+#'                              model_name = c("lactin2", "briere2", "mod_weibull")
+#'                              )
+#' fitted_tpcs
 #'
 
 fit_devmodels <- function(temp = NULL,

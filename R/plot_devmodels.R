@@ -20,33 +20,24 @@
 #' for models that have adequately converged using [fit_devmodels()] function.
 #' It's a <ggplot> object, which can be assigned to a user-defined object.
 #'
-#' @seealso [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
+#' @seealso [fit_devmodels()] for fitting Thermal Performance Curves to
+#' development rate data, which is in turn based on [nls.multstart::nls_multstart()].
 #'
-#' @references
-#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
-#'  (for reading on model selection in TPC framework)
 #'
-#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
-#'
-#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
-#'
-#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
-#'
-#' @source
-#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+#' @inherit fit_devmodels references source
 #'
 #' @export
 #'
 #' @examples
 #' data("aphid")
 #'
-#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                    dev_rate = aphid$rate_value,
-#'                                    model_name = c("lactin2", "briere2", "mod_weibull"))
+#' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+#'                              dev_rate = aphid$rate_value,
+#'                              model_name = c("lactin2", "briere2", "mod_weibull"))
 #'
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
-#'                fitted_parameters = fitted_tpcs_aphid,
+#'                fitted_parameters = fitted_tpcs,
 #'                species = "Brachycaudus schwartzi",
 #'                life_stage = "Nymphs")
 
