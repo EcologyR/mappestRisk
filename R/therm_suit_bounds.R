@@ -5,9 +5,9 @@
 #'
 #' @param preds_tbl a `tibble` object as produced by [predict_curves()].
 #'
-#' @param model_name character. Name of one of the TPC models fitted
+#' @param model_name character. Name of one or several of the TPC models fitted
 #' first in `fit_devmodels()` and predicted next in `predict_curves()`.
-#' Setting `model_name = "all"` is not allowed in this function.
+#' If using `model_name = "all"` all models contained in `preds_tbl` will be used.
 #'
 #' @param suitability_threshold A numeric value from 50 to 100 representing
 #' the quantile of the curve that provides the user-defined optimal performance.
@@ -98,7 +98,7 @@ therm_suit_bounds <- function(preds_tbl = NULL,
 
   if (is.null(suitability_threshold)) {
     suitability_threshold <- 75
-    message("No suitability_threshold value input. Default to `suitability_threshold = 75`")
+    message("No suitability_threshold value provided. Default to `suitability_threshold = 75`")
   }
 
   if (suitability_threshold < 50) {
@@ -111,14 +111,15 @@ therm_suit_bounds <- function(preds_tbl = NULL,
     stop("No model name was provided by the user. Please provide any model present in `pred_tbl`")
   }
 
-  if (length(model_name) > 1 || model_name == "all") {
-    stop("Only one model is allowed in `therm_suit_bounds()` at a time.
-         Please use this function repetedly for each of your models one by one.")
+  # If model_name = "all", use all models in preds_tbl
+  if (length(model_name) == 1 && model_name == "all") {
+    model_name <- unique(preds_tbl$model_name)
   }
 
-  if (any(!model_name %in% unique(preds_tbl$model_name))) {
-    stop("Model ", model_name, " is not available. Try using another fitted
-               model in your table instead")
+  if (!all(model_name %in% unique(preds_tbl$model_name))) {
+    stop("Model ", model_name[which(!model_name %in% unique(preds_tbl$model_name))],
+    " is not available in `preds_tbl`.
+    Try using another fitted model in your table instead")
   }
 
   if (!any(preds_tbl$curvetype == "uncertainty")) {
@@ -132,7 +133,7 @@ therm_suit_bounds <- function(preds_tbl = NULL,
 
   preds_mod <- preds_tbl |>
     dplyr::rename(model = model_name) |>
-    dplyr::filter(model == model_name) |>
+    dplyr::filter(model %in% model_name) |>
     # boot_iter is NA for predicted curves without bootstrapping ("estimate")
     # cf. predict_curves()
     dplyr::mutate(iter = dplyr::if_else(
@@ -143,34 +144,38 @@ therm_suit_bounds <- function(preds_tbl = NULL,
 
   ## Calculate boundaries for each bootstrap iteration as well as "estimate"
   boundaries <- preds_mod |>
-    dplyr::group_by(iter) |>
+    dplyr::group_by(model, iter) |>
     dplyr::reframe(bounds_iter(dplyr::pick(dplyr::everything()), suitability_threshold)) |>
     dplyr::ungroup()
 
 
-  ## Warnings
+  ## Warnings ##
 
-  failed_iters <- sum(is.na(boundaries$tval_left) | is.na(boundaries$tval_right))
-  if (failed_iters > 0) {
-    warning("Could not calculate boundaries for ", failed_iters, " out of ",
-      dplyr::n_distinct(preds_mod$iter), " curves."
-    )
+  failed_iters <- boundaries |>
+    dplyr::filter(is.na(tval_left) | is.na(tval_right)) |>
+    dplyr::group_by(model) |>
+    dplyr::summarise(n_failed = dplyr::n()) |>
+    dplyr::ungroup()
+
+  if (nrow(failed_iters) > 0) {
+    failed_warnings <- purrr::map2_chr(failed_iters$model, failed_iters$n_failed,
+                                       ~ paste0("  - For model '", .x, "': ", .y, " curve(s) failed."))
+    warning("Could not calculate boundaries for some curves:\n", paste(failed_warnings, collapse = "\n"))
   }
 
+  ## temp values too high
   temp_50 <- boundaries |>
     dplyr::filter(tval_right >= 50)
-
   if (nrow(temp_50) > 0) {
-    warning(nrow(temp_50), " curve(s) had an upper thermal boundary >= 50°C, which may be unrealistic."
-    )
+    warning(nrow(temp_50), " curve(s) had an upper thermal boundary >= 50°C, which may be unrealistic.")
   }
 
 
-  ## Output
+  ## Output ##
   out <- boundaries |>
     # dplyr::filter(!is.na(tval_left)) |>
     dplyr::mutate(
-      model_name = model_name,
+      model_name = model,
       suitability = paste0(suitability_threshold, "%")
     ) |>
     dplyr::select(model_name, suitability, tval_left, tval_right, pred_suit, iter)
