@@ -4,6 +4,9 @@
 #' @param bootstrap_tpcs a `tibble` A tibble object as produced by
 #' [predict_curves()], containing bootstrapped TPCs to propagate uncertainty.
 #'
+#' @param alpha a number between 0 and 1 to choose transparency of the bootstrapped
+#' curves (0 = complete transparency, 1 = solid line).
+#'
 #' @inheritParams plot_devmodels
 #'
 #' @returns A ggplot object containing the visual representation of the estimate TPC and the bootstrapped uncertainty
@@ -47,18 +50,19 @@
 #'
 #' # Plot bootstrapped curves:
 #'
-#' plot_uncertainties(bootstrap_tpcs = boot_tpcs,
-#'                    temp = aphid$temperature,
+#' plot_uncertainties(temp = aphid$temperature,
 #'                    dev_rate = aphid$rate_value,
+#'                    bootstrap_tpcs = boot_tpcs,
 #'                    species = "Brachycaudus schwartzi",
 #'                    life_stage = "Nymphs")
 #' }
 
-plot_uncertainties <- function(bootstrap_tpcs = NULL,
-                               temp = NULL,
+plot_uncertainties <- function(temp = NULL,
                                dev_rate = NULL,
+                               bootstrap_tpcs = NULL,
                                species = NULL,
-                               life_stage = NULL) {
+                               life_stage = NULL,
+                               alpha = 0.2) {
 
   ## Checks
 
@@ -95,7 +99,11 @@ plot_uncertainties <- function(bootstrap_tpcs = NULL,
              Plotting only the central curve.")
   }
 
-  ## end checks
+  if (alpha < 0 | alpha > 1) {
+    stop("alpha must be a number between 0 (complete transparency) and 1 (solid line).")
+  }
+
+  ## end checks ##
 
   devdata <- dplyr::tibble(temp,
                            dev_rate)
@@ -114,7 +122,7 @@ plot_uncertainties <- function(bootstrap_tpcs = NULL,
                                     y = dev_rate,
                                     group = boot_iter),
                        col = "#0E4D62", #'#586A64',
-                       alpha = 0.08,
+                       alpha = alpha,
                        linewidth = 0.32) +
     ggplot2::geom_line(data = central_curve,
                        ggplot2::aes(x = temp,
