@@ -1,13 +1,5 @@
 data("aphid")
 
-tpcs <- fit_devmodels(temp = aphid$temperature,
-                      dev_rate = aphid$rate_value,
-                      model_name = c("lactin2")
-)
-#' fitted_tpcs
-#'
-
-
 test_that("fit_devmodels returns well structured output with more than one model", {
 
   out <- fit_devmodels(temp = aphid$temperature,
