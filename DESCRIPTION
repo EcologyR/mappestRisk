@@ -15,7 +15,8 @@ Authors@R:
 Description: 'mappestRisk' has three different modules: (1) model fitting & selection
              using a set of the most commonly used equations describing developmental 
              responses to temperature helped by already existing R packages 
-             using equation helpers from rTPC(Padfield and O’Sullivan 2023),
+             using equation helpers from 'rTPC' (Padfield et al. 2021, 
+             <doi:10.1111/2041-210X.13585>),
              with visualization of model predictions to guide ecological criteria for
              model selection; (2) calculation of suitability thermal limits,
              which consist on a temperature interval delimiting the optimal 
