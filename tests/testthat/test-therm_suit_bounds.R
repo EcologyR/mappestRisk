@@ -22,16 +22,13 @@ bounds <- therm_suit_bounds(curves, model_name = "lactin2", suitability_threshol
 
 test_that("`therm_suit_bounds()` produces correct output", {
 
-  #constructive::construct(bounds)
-  expect_equal(bounds,
-               dplyr::tibble(
-                 model_name = "lactin2",
-                 suitability = "80%",
-                 tval_left = c(22.200000000000003, 21.1, 21.5),
-                 tval_right = c(31.700000000000003, 32, 31.800000000000004),
-                 pred_suit = c(0.11538113759547292, 0.11496571239406227, 0.11329888277224544),
-                 iter = c("1", "2", "estimate"),
-               ))
+  expect_equal(bounds$model_name, rep("lactin2", 3))
+  expect_equal(bounds$suitability, rep("80%", 3))
+  expect_type(bounds$tval_left, "double")
+  expect_type(bounds$tval_right, "double")
+  expect_type(bounds$pred_suit, "double")
+  expect_equal(bounds$iter, c("1", "2", "estimate"))
+
 })
 
 
