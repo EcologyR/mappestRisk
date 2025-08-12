@@ -43,7 +43,7 @@
 #' is not provided) and/or to [geodata::world()] (if `region` is a vector of
 #' country names) specifying the folder path for the downloaded maps.
 #'
-#' @param mask Logical value to pass to [terra::crop()] specifying whether the
+#' @param mask Logical value to pass to [terra::mask()] specifying whether the
 #' output raster maps should be masked with the borders of the target 'region',
 #' if this is a polygon map or a vector of country names. The default is TRUE.
 #' If FALSE, the entire rectangular extent of 'region' will be used.
@@ -132,12 +132,12 @@
 #'                              interactive = FALSE,
 #'                              verbose = TRUE)
 #'
-#' # You can use your own spatial feature (sf) object for `region`
-#' sobrarbe_sf <- readRDS(system.file("extdata/sobrarbe.rds",
+#' # Using a spatial object for `region`
+#' sobrarbe <- terra::vect(system.file("extdata/sobrarbe.gpkg",
 #'                                    package = "mappestRisk"))
 #'
 #' risk_map_sobrarbe <- map_risk(t_vals = boundaries,
-#'                               region = sobrarbe_sf,
+#'                               region = sobrarbe,
 #'                               path = tempdir(),
 #'                               mask = TRUE,
 #'                               plot = TRUE,
@@ -156,16 +156,16 @@ map_risk <- function(t_vals = NULL,
 
   ## Checks
 
-  if (!inherits(mask, "logical")) {
+  if (!is.logical(mask)) {
     stop("`mask` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
-  if (!inherits(verbose, "logical")) {
+  if (!is.logical(verbose)) {
     stop("`verbose` must be logical (`TRUE` or `FALSE`). Defaults to `FALSE`.")
   }
-  if (!inherits(plot, "logical" )) {
+  if (!is.logical(plot)) {
     stop("`plot` must be logical (`TRUE` or `FALSE`). Defaults to `TRUE`.")
   }
-  if (!inherits(interactive, "logical")) {
+  if (!is.logical(interactive)) {
     stop("`interactive` must be logical (`TRUE` or `FALSE`). Defaults to `FALSE`.")
   }
 
@@ -273,13 +273,14 @@ map_risk <- function(t_vals = NULL,
   }
 
   # If region does not have a CRS, assume same CRS as t_rast
-  if (terra::crs(region) == "") {
+  # SpatExtent do not have CRS
+  if (terra::crs(region) == "" && !inherits(region, "SpatExtent")) {
     if (verbose) message("Assuming that 'region' has same CRS as 't_rast'")
     terra::crs(region) <- terra::crs(t_rast)
   }
 
   # If region and t_rast do not have same CRS, project region to t_rast CRS
-  if (!terra::same.crs(t_rast, region)) {
+  if (!inherits(region, "SpatExtent") && !terra::same.crs(t_rast, region)) {
     if (verbose) message("\nProjecting 'region' to 't_rast'...\n")
     region <- terra::project(region, t_rast)
   }
@@ -331,6 +332,7 @@ map_risk <- function(t_vals = NULL,
   ## Plot
 
   if (isTRUE(plot)) {
+
     if (verbose) message("\nPlotting map...\n")
     palette_bilbao <- khroma::color(palette = "bilbao",reverse = F)(100)
     palette_acton <- khroma::color(palette = "acton",reverse = T)(100)
