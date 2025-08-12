@@ -167,7 +167,7 @@ therm_suit_bounds <- function(preds_tbl = NULL,
   temp_50 <- boundaries |>
     dplyr::filter(tval_right >= 50)
   if (nrow(temp_50) > 0) {
-    warning(nrow(temp_50), " curve(s) had an upper thermal boundary >= 50°C, which may be unrealistic.")
+    warning(nrow(temp_50), " curve(s) had an upper thermal boundary >= 50 degrees C, which may be unrealistic.")
   }
 
 
