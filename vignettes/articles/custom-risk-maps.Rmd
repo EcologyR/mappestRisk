@@ -36,12 +36,12 @@ fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 
 # STEP 2: Obtain predictions and bootstrapped TPCs
 
-preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
-                                   dev_rate = aphid$rate_value,
-                                   fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2"),
-                                   propagate_uncertainty = TRUE,
-                                   n_boots_samples = 100)
+preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
+                                    dev_rate = aphid$rate_value,
+                                    fitted_parameters = fitted_tpcs_aphid,
+                                    model_name_2boot = c("briere2", "lactin2"),
+                                    propagate_uncertainty = TRUE,
+                                    n_boots_samples = 100)
 # optional: show simulated curves:
 # plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
 #                    temp = aphid$temperature,
@@ -59,12 +59,12 @@ print(boundaries_aphid)
 andalucia_sf <- mapSpain::esp_get_ccaa(ccaa = "Andalucía")
 
 risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid, 
-                             path = tempdir(), # directory to download data 
-                             region = andalucia_sf,    
-                             mask = TRUE,
-                             plot = TRUE,
-                             interactive = FALSE,
-                             verbose = TRUE)
+                                path = tempdir(), # directory to download data 
+                                region = andalucia_sf,    
+                                mask = TRUE,
+                                plot = TRUE,
+                                interactive = FALSE,
+                                verbose = TRUE)
 ```
 
 . First, let's select the *risk* layer (if we don't specifically select it, the latest –sd– is used by default[^1]).
@@ -108,31 +108,31 @@ For now, the map with these custom options and `tidyterra::geom_spatraster()` fu
 ```{r}
 max_risk_andalucia <- terra::minmax(risk_rast_andalucia_epsg25830)[2] # for manual scale fill visualization 
 
-aphid_risk_map <- ggplot2::ggplot()+
-    ggplot2::geom_sf(data = worldmap_sf, # <- countries background
-                     fill = "gray85")+
-    ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
-                  y = c(bbox_rast[2], bbox_rast[4]))+
-    tidyterra::geom_spatraster(data = risk_rast_andalucia_epsg25830, 
-                               maxcell = Inf)+
+aphid_risk_map <- ggplot2::ggplot() +
+  ggplot2::geom_sf(data = worldmap_sf, # <- countries background
+                   fill = "gray85") +
+  ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
+                y = c(bbox_rast[2], bbox_rast[4])) +
+  tidyterra::geom_spatraster(data = risk_rast_andalucia_epsg25830, 
+                             maxcell = Inf) +
   ggplot2::geom_sf(data = worldmap_sf,
                    fill = NA,
-                   color = "lightblue4")+
-  ggplot2::scale_fill_gradientn(colours = my_risk_palette[1:(max_risk_andalucia+1)], # to preserve the scales
-                         na.value = "transparent",
-                         breaks = seq(0, 12, by = 1))
+                   color = "lightblue4") +
+  ggplot2::scale_fill_gradientn(colours = my_risk_palette[1:(max_risk_andalucia + 1)], # to preserve the scales
+                                na.value = "transparent",
+                                breaks = seq(0, 12, by = 1))
 print(aphid_risk_map)
 ```
 
 We can improve the legend visualization using `ggplot2::guides()` is not correct, but we may correct it:
 
 ```{r}
-     aphid_risk_map <- aphid_risk_map+
-       guides(fill = guide_legend(ncol = 13, #from 0 to 12 possible values
-                                 nrow = 1, 
-                                 byrow = TRUE))+
-       theme(legend.position = "bottom")
-     print(aphid_risk_map)
+aphid_risk_map <- aphid_risk_map +
+  guides(fill = guide_legend(ncol = 13, #from 0 to 12 possible values
+                             nrow = 1, 
+                             byrow = TRUE)) +
+  theme(legend.position = "bottom")
+print(aphid_risk_map)
 ```
 
 We can further improve visualization by changing the theme, adding titles and avoid borders overlapping with cells using bathymetry and adjacent region polygons:
@@ -158,26 +158,26 @@ portugal_sf <- worldmap_sf |>
 
 species_name_italics <- expression(italic("Brachycaudus schwatzi"))
 
-aphid_risk_map+
-    theme_bw()+
-    theme(legend.position = "bottom")+
-    labs(title = "Risk Map for Andalucía",
-         subtitle = species_name_italics,
-         caption = "Climate data from WorldClim Historical data set",
-         fill = "Annual Risk Months")+
-    theme(legend.position = "bottom")+
-    theme(plot.title = element_text(face = "bold"))+
+aphid_risk_map +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  labs(title = "Risk Map for Andalucía",
+       subtitle = species_name_italics,
+       caption = "Climate data from WorldClim Historical data set",
+       fill = "Annual Risk Months") +
+  theme(legend.position = "bottom") +
+  theme(plot.title = element_text(face = "bold")) +
   geom_sf(data = extremadura_sf, fill = "gray85",
-          color = NA)+
+          color = NA) +
   geom_sf(data = clm_sf, fill = "gray85",
-          color = NA)+
+          color = NA) +
   geom_sf(data = murcia_sf, fill = "gray85",
-          color = NA)+
+          color = NA) +
   geom_sf(data = portugal_sf, fill = "gray85",
-          color = NA)+
+          color = NA) +
   geom_sf(data = andalucia_sf, 
           color = "#060d0e",
-          fill = NA)+
+          fill = NA) +
   geom_sf(data = bath_spain,
           fill = "#060d0e",
           color = "#060d0e")
@@ -187,41 +187,41 @@ Similarly, a discrete *"iso-risk"* map can be generated using `terra::geom_spatr
 
 ```{r}
 breaks_levels <- purrr::map_chr(.x = seq(0, max_risk_andalucia),
-                            .f = ~paste0("[", .x, " ", .x+1,")")) |> 
+                                .f = ~paste0("[", .x, " ", .x+1,")")) |> 
   forcats::as_factor()
 
-ggplot2::ggplot()+
-    ggplot2::geom_sf(data = worldmap_sf, # <- countries background
-                     fill = "gray85")+
-    ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
-                  y = c(bbox_rast[2], bbox_rast[4]))+
-    tidyterra::geom_spatraster_contour_filled(data = risk_rast_andalucia_epsg25830,
-                                              breaks = seq(0, 12),
-                                              maxcell = Inf)+
+ggplot2::ggplot() +
+  ggplot2::geom_sf(data = worldmap_sf, # <- countries background
+                   fill = "gray85") +
+  ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
+                y = c(bbox_rast[2], bbox_rast[4])) +
+  tidyterra::geom_spatraster_contour_filled(data = risk_rast_andalucia_epsg25830,
+                                            breaks = seq(0, 12),
+                                            maxcell = Inf) +
   ggplot2::geom_sf(data = worldmap_sf,
                    fill = NA,
-                   color = "lightblue4")+
+                   color = "lightblue4") +
   ggplot2::scale_fill_manual(values = my_risk_palette,
-                             labels = breaks_levels)+
-  theme_bw()+
-    theme(legend.position = "bottom")+
-    labs(title = "Risk Map for Andalucía",
-         subtitle = species_name_italics,
-         caption = "Climate data from WorldClim Historical data set",
-         fill = "Annual Risk Months")+
-    theme(legend.position = "bottom")+
-    theme(plot.title = element_text(face = "bold"))+
+                             labels = breaks_levels) +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  labs(title = "Risk Map for Andalucía",
+       subtitle = species_name_italics,
+       caption = "Climate data from WorldClim Historical data set",
+       fill = "Annual Risk Months") +
+  theme(legend.position = "bottom") +
+  theme(plot.title = element_text(face = "bold")) +
   geom_sf(data = extremadura_sf, fill = "gray85",
-          color = NA)+
+          color = NA) +
   geom_sf(data = clm_sf, fill = "gray85",
-          color = NA)+
+          color = NA) +
   geom_sf(data = murcia_sf, fill = "gray85",
-          color = NA)+
+          color = NA) +
   geom_sf(data = portugal_sf, fill = "gray85",
-          color = NA)+
+          color = NA) +
   geom_sf(data = andalucia_sf, 
           color = "#060d0e",
-          fill = NA)+
+          fill = NA) +
   geom_sf(data = bath_spain,
           fill = "#060d0e",
           color = "#060d0e")

@@ -49,12 +49,12 @@ fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 ```
 
 ```{r}
-preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
+preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
                                    model_name_2boot = c("briere2", "lactin2"),
                                    propagate_uncertainty = TRUE,
-                                   n_boots_samples = 100)
+                                   n_boots_samples = 10)
 ```
 
 By default, the `predict_curves` function does propagate uncertainty by simulating as many curves as asked through `n_boots_samples` argument for each of the selected models from `model_name_2boot`. If able to perform bootstrap, this default configuration will output a `tibble` with simulated TPCs for both ploting purposes and thermal traits calculation. `n_boots_samples` is set up to 100 by default. We recommend to avoid lower values that may inaccurately reflect uncertainty and to think carefully when trying to perform bootstrap with larger samples, since they may exponentially increase computational demands with little benefit for the purposes addressed here. If `propagate_uncertainty` is set to `FALSE`, the function will output the same `tibble` with one single curve (temperatures and predictions) coming from the estimated TPC (similar to those plotted in `plot_devmodels()`for applying subsequent steps in the `mappestRisk` suggested workflow.
@@ -62,7 +62,7 @@ By default, the `predict_curves` function does propagate uncertainty by simulati
 The `tibble` output of `predict_curves` can be easily visualized with `plot_uncertainties()`, where the curve from the model estimate is plotted as a thicker, dark orange line and the bootstrapped curves are depicted as slighter, dark blue lines composing a sort of a ribbon for the central curve. If more than one model has been succesfully bootstrapped, predicted curves will be plotted along different facets.
 
 ```{r}
-plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
+plot_uncertainties(bootstrap_tpcs = preds_boots_aphid,
                    temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",

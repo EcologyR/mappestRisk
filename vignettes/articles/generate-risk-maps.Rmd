@@ -83,7 +83,7 @@ The workflow of the function is as follows:
 
 [^3]: We recommend to think carefully where to extract data since a simple call to `map_risk()` without a country name will download \~450MB of climate data with default conditions (`res = 2.5`). Note that the `path` argument must be given by the user. If the user desires to save the temperature data sourcing the map, this path should refer to somewhere in your device; otherwise, a `tempdir()` is recommended to avoid large data storage.
 
-The following sections show how to obtain risk rasters with default visualization given directly by `map_risk()`. Custom alternatives for map visualization are detailed in [Customizeyour Risk Maps](articles/custom-risk-maps.html) article.
+The following sections show how to obtain risk rasters with default visualization given directly by `map_risk()`. Custom alternatives for map visualization are detailed in [Customize your Risk Maps](articles/custom-risk-maps.html) article.
 
 ### Risk map: country
 
@@ -108,7 +108,7 @@ fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 
 # STEP 2: Obtain predictions and bootstrapped TPCs
 
-preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
+preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
                                    model_name_2boot = c("briere2", "lactin2"),
@@ -134,12 +134,12 @@ print(boundaries_aphid)
 # Create a Risk Map for Taiwan
 
 risk_rast_taiwan <- map_risk(t_vals = boundaries_aphid, 
-                      path = tempdir(), # directory to download data 
-                      region = "Taiwan",    
-                      mask = TRUE,
-                      plot = TRUE,
-                      interactive = FALSE,
-                      verbose = TRUE)
+                             path = tempdir(), # directory to download data 
+                             region = "Taiwan",    
+                             mask = TRUE,
+                             plot = TRUE,
+                             interactive = FALSE,
+                             verbose = TRUE)
 ```
 
 The map on the left side shows how many months have optimal temperatures for the aphid *Brachycaudus schwartzi* along Taiwan, from 0 (in mountains and highlands) up to 9 (in southern lowlands). The map on the right side shows an error map from parameter uncertainties, with regions at which the risk estimate is exact (e.g., the mountains) and others with up to 1.6 yielding the standard deviation of the risk value (in *number of suitable months*) at specific cells.
@@ -176,12 +176,12 @@ In the following example, we will use it for Andalucía region in mainland Spain
 andalucia_sf <- mapSpain::esp_get_ccaa(ccaa = "Andalucía")
 
 risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid, 
-                             path = tempdir(), # directory to download data 
-                             region = andalucia_sf,    
-                             mask = TRUE,
-                             plot = TRUE,
-                             interactive = FALSE,
-                             verbose = TRUE)
+                                path = tempdir(), # directory to download data 
+                                region = andalucia_sf,    
+                                mask = TRUE,
+                                plot = TRUE,
+                                interactive = FALSE,
+                                verbose = TRUE)
 ```
 
 ## References
