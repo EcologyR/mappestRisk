@@ -205,11 +205,11 @@ bootstrap_model <- function(model_name, fitted_df, devdata, nboot, temp.range) {
     model_name = model_name,
     boot_iter = rep(seq_len(nboot), each = length(resids)),
     temp = rep(devdata$temp, times = nboot),
-    fitted = rep(fit_vals, times = nboot)) |>
+    fittedvals = rep(fit_vals, times = nboot)) |>
     dplyr::group_by(boot_iter) |>
     dplyr::mutate(resampled_resid = sample(resids, size = length(resids), replace = TRUE)) |>
     dplyr::ungroup() |>
-    dplyr::mutate(dev_rate = fitted + resampled_resid) |>
+    dplyr::mutate(dev_rate = fittedvals + resampled_resid) |>
     dplyr::filter(dev_rate >= 0) # ensure resampled rates are non-negative
 
 
