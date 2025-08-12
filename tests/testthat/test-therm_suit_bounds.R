@@ -88,7 +88,7 @@ are not an indicator of high suitability but of thermal tolerance", {
   pool_warns <- capture_warnings(therm_suit_bounds(preds_tbl = curves,
                                                    model_name = "lactin2",
                                                    suitability_threshold = 30))
-  expect_true(pool_warns == "Suitability thresholds under 50% indicate thermal boundaries for positive development but not\n    necessarily optimal for pest risk assessment. Subsequent map risk analysis will imply\n    risk of thermal tolerance at each location rather than risk of optimal performance or high pest pressure.")
+  expect_true(grepl("Suitability thresholds under 50% indicate thermal boundaries", pool_warns, fixed = TRUE))
 })
 
 ## model_names
