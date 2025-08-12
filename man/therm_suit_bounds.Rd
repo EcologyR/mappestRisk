@@ -4,7 +4,8 @@
 \alias{therm_suit_bounds}
 \title{Determine Thermal Boundaries for Optimal Performance Level}
 \source{
-The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+The dataset used in the example was originally published in Satar & Yokomi (2022)
+under the CC-BY-NC license
 }
 \usage{
 therm_suit_bounds(
@@ -14,90 +15,101 @@ therm_suit_bounds(
 )
 }
 \arguments{
-\item{preds_tbl}{a \code{tibble} object inherited from \code{\link[=predict_curves]{predict_curves()}}
-containing as many thermal performance curves as the number of iterations provided in \code{n_boots_samples} argument
-therein and whenever \code{propagate_uncertainty} was set to \code{TRUE}; or alternatively the
-estimated TPC predictions if \code{propagate_uncertainty} was set to \code{FALSE}.
-Each TPC consists of predictions for temperatures ranging from \code{temp - 20} to \code{temp + 15}
-with a resolution of 0.1°C.}
+\item{preds_tbl}{a \code{tibble} object as produced by \code{\link[=predict_curves]{predict_curves()}}.}
 
-\item{model_name}{a string with one or several TPC models of those fitted first in \code{fit_devmodels()} and predicted
-next in \code{predict_curves()}. Setting \code{model_name = "all"} is not allowed in this function. If the user wants to
-calculate thermal boundaries for several models predicted and/or bootstrapped in \code{predict_curves()}, typing manually
-all desired model names within a vector will be required.}
+\item{model_name}{character. Name of one or several of the TPC models fitted
+first in \code{fit_devmodels()} and predicted next in \code{predict_curves()}.
+If using \code{model_name = "all"} all models contained in \code{preds_tbl} will be used.}
 
-\item{suitability_threshold}{A numeric value from 50 to 100 representing the quantile of the curve that provides the user-defined optimal performance.
-For instance, setting \code{suitability_threshold} to 80 identifies the top 20\% (or quartile 80) of the maximum values of the development rate predicted by the chosen TPC model.
-If \code{suitability_threshold} equals 100, the function returns the optimum temperature for development rate.}
+\item{suitability_threshold}{A numeric value from 50 to 100 representing
+the quantile of the curve that provides the user-defined optimal performance.
+For instance, setting \code{suitability_threshold} to 80 identifies the top 20\%
+(or quantile 80) of the maximum values of the development rate predicted by
+the chosen TPC model. If \code{suitability_threshold} equals 100, the function
+returns the optimum temperature for development rate.}
 }
 \value{
 A tibble with six columns:
 \itemize{
 \item \code{model_name}: A string indicating the selected TPC model used for projections.
-\item \code{suitability}: A string indicating the suitability threshold in percentage (see \code{suitability_threshold}).
-\item \code{tval_left}: A number representing the lower thermal boundary delimiting the suitable region of the TPC.
-\item \code{tval_right}: A number representing the upper thermal boundary delimiting the suitable region of the TPC.
-\item \code{pred_suit}: A number corresponding to the predicted development rate value determining the chosen quantile threshold of the maximum rate (i.e., suitability percentage of maximum rate).
-\item \code{iter}: A factor determining the TPC identity from the bootstrapping procedure in \code{\link[=predict_curves]{predict_curves()}} function, or \code{estimate} when it represents the estimated TPC fitted in \code{\link[=fit_devmodels]{fit_devmodels()}}.
+\item \code{suitability}: A string indicating the suitability threshold in percentage
+(see \code{suitability_threshold}).
+\item \code{tval_left}: A number representing the lower thermal boundary delimiting
+the suitable region of the TPC.
+\item \code{tval_right}: A number representing the upper thermal boundary delimiting
+the suitable region of the TPC.
+\item \code{pred_suit}: A number corresponding to the predicted development rate value
+determining the chosen quantile threshold of the maximum rate
+(i.e., suitability percentage of maximum rate).
+\item \code{iter}: A string determining the TPC identity from the bootstrapping
+procedure in \code{\link[=predict_curves]{predict_curves()}} function, or \code{estimate} when it represents
+the estimated TPC fitted in \code{\link[=fit_devmodels]{fit_devmodels()}}.
 }
 }
 \description{
-This function calculates thermal boundaries that define the suitable region of a Thermal Performance Curve (TPC) corresponding to a user-defined optimal performance level.
+Calculate thermal boundaries that define the suitable region of a
+Thermal Performance Curve (TPC) corresponding to a user-defined optimal performance level.
 }
 \examples{
- \dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data("aphid")
 
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                        dev_rate = aphid$rate_value,
-                                        model_name = c("lactin2", "briere2", "ratkowsky"))
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+                             dev_rate = aphid$rate_value,
+                             model_name = "all")
+
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
-               fitted_parameters = fitted_tpcs_aphid,
+               fitted_parameters = fitted_tpcs,
                species = "Brachycaudus schwartzi",
-               life_stage = "Nymphs") #choose "lactin2"
+               life_stage = "Nymphs")
 
 # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-                                             dev_rate = aphid$rate_value,
-                                             fitted_parameters = fitted_tpcs_aphid,
-                                             model_name_2boot = c("lactin2",
-                                              "briere2", "ratkowsky"),
-                                             propagate_uncertainty = TRUE,
-                                             n_boots_samples = 100)
+boot_tpcs <- predict_curves(temp = aphid$temperature,
+                            dev_rate = aphid$rate_value,
+                            fitted_parameters = fitted_tpcs,
+                            model_name_2boot = c("lactin2", "briere2", "beta"),
+                            propagate_uncertainty = TRUE,
+                            n_boots_samples = 10)
 
-head(tpc_preds_boots_aphid)
+print(boot_tpcs)
 
 # Plot bootstrapped curves:
 
-plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
-                   temp = aphid$temperature,
+plot_uncertainties(temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
+                   bootstrap_tpcs = boot_tpcs,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
 
-#5. Calculate Q80 thermal bounds
+# Calculate Q80 thermal bounds
 
-boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
-                                             model_name = "lactin2",
-                                             suitability_threshold = 80)
-head(boundaries_aphid)
-}
+boundaries <- therm_suit_bounds(preds_tbl = boot_tpcs,
+                                model_name = "lactin2",
+                                suitability_threshold = 80)
+head(boundaries)
+\dontshow{\}) # examplesIf}
 }
 \references{
-Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
-(for reading on model selection in TPC framework)
+Angilletta, M.J., (2006). Estimating and comparing thermal performance curves.
+\if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545. (for model selection in TPC framework)
 
-Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}: A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 00: 1-6
+Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}:
+A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 12: 1138-1143.
 
-Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The \code{devRate} package for \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
+Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent
+development rate and phenology in arthropods: The \code{devRate} package for \code{R}.
+\if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
 
-Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae). \if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
+Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development
+of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae).
+\if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
 }
 \seealso{
 \code{browseVignettes("rTPC")} for model names, start values searching workflows, and
 bootstrapping procedures using both \code{\link[rTPC:get_start_vals]{rTPC::get_start_vals()}} and \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}
 
-\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data, which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}.
+\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data,
+which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}.
 \code{\link[=predict_curves]{predict_curves()}} for bootstrapping procedure based on the above-mentioned \code{rTPC} vignettes.
 }

@@ -17,43 +17,44 @@ map_risk(
 )
 }
 \arguments{
-\item{t_vals}{a \code{data.frame} or \code{\link[dplyr:reexports]{dplyr::tibble()}} inherited from \code{\link[=therm_suit_bounds]{therm_suit_bounds()}}
-function without any further modification. It must contain at least one row
-of numeric values. Additionally, the minimum ("left") thermal boundary or \code{tval_left}
+\item{t_vals}{a \code{data.frame} or \code{\link[dplyr:reexports]{dplyr::tibble()}} as produced by \code{\link[=therm_suit_bounds]{therm_suit_bounds()}}.
+\code{t_vals} must contain results derived from a single model.
+It must contain at least one row of numeric values.
+Additionally, the minimum ("left") thermal boundary or \code{tval_left}
 must be lower than the maximum ("right") one, or \code{tval_right} for all rows.
 Nominative columns must be present in the input (i.e., \code{model_name},
 \code{suitability}, \code{pred_suit} and \code{iter}).}
 
 \item{t_rast}{Optional 12-layer \code{\link[terra:SpatRaster-class]{terra::SpatRaster()}} with monthly mean
-temperatures for (at least) the target 'region'. If not provided, global
-WorldClim raster layers will be automatically (down)loaded and cropped to
-'region' using \code{\link[geodata:worldclim]{geodata::worldclim_global()}}.
+temperatures for the region of interest. If not provided, global
+WorldClim raster layers will be automatically (down)loaded
+using \code{\link[geodata:worldclim]{geodata::worldclim_global()}}, and cropped to \code{region} (if provided).
 Note that the download can be slow the first time you use the function in a new
 \code{path}. If you get a download error, consider running e.g \code{options(timeout = 500)} (or more).}
 
-\item{region}{Mandatory object specifying the region to map. Must overlap the
+\item{region}{Optional object specifying the region to map. Must overlap the
 extent of \code{t_rast} if both are provided. Can be a \code{\link[terra:SpatVector-class]{terra::SpatVector()}}
-polygon map (obtained with \code{\link[terra:vect]{terra::vect()}}); or an \code{\link[sf:sf]{sf::sf()}} polygon map
-(obtained with \code{\link[sf:st_as_sf]{sf::st_as_sf()}}), in which case it will be coerced with
+polygon (obtained with \code{\link[terra:vect]{terra::vect()}}); or an \code{\link[sf:sf]{sf::sf()}} polygon
+(e.g. obtained with \code{\link[sf:st_as_sf]{sf::st_as_sf()}}), in which case it will be coerced with
 \code{\link[terra:vect]{terra::vect()}}) to a \code{\link[terra:SpatVector-class]{terra::SpatVector()}}; or a character vector of country
-name(s) in English, in which case a countries map will be downloaded and
-subset to those countries; or a \code{\link[terra:SpatExtent-class]{terra::SpatExtent()}} object (obtained with
+name(s) in English (see \link{country_names}), in which case climate maps will be
+downloaded for those countries; or a \code{\link[terra:SpatExtent-class]{terra::SpatExtent()}} object (obtained with
 \code{\link[terra:ext]{terra::ext()}}); or a numeric vector of length 4 specifying the region
-coordinates as folows: \code{c(xmin, xmax, ymin, ymax)}. The latter two must be in
+coordinates as follows: \code{c(xmin, xmax, ymin, ymax)}. The latter two must be in
 the same CRS as\code{t_rast} if \code{t_rast} is provided, or in unprojected lon-lat
 coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will
 cover the entire \code{t_rast} if provided, or the entire world otherwise.}
 
 \item{res}{Argument to pass to \code{\link[geodata:worldclim]{geodata::worldclim_global()}} specifying
-the spatial resolution for the raster maps to download, if 't_rast' is not
+the spatial resolution for the raster maps to download, if \code{t_rast} is not
 provided. The default is 2.5 arc-minutes. Beware that lower values (e.g., 0.5)
 may lead to extremely heavy data sets and large computation times.}
 
 \item{path}{Argument to pass to \code{\link[geodata:worldclim]{geodata::worldclim_global()}} (if \code{t_rast}
-is not provided) and/or to \code{\link[geodata:world]{geodata::world()}} (if 'region' is a vector of
+is not provided) and/or to \code{\link[geodata:world]{geodata::world()}} (if \code{region} is a vector of
 country names) specifying the folder path for the downloaded maps.}
 
-\item{mask}{Logical value to pass to \code{\link[terra:crop]{terra::crop()}} specifying whether the
+\item{mask}{Logical value to pass to \code{\link[terra:mask]{terra::mask()}} specifying whether the
 output raster maps should be masked with the borders of the target 'region',
 if this is a polygon map or a vector of country names. The default is TRUE.
 If FALSE, the entire rectangular extent of 'region' will be used.}
@@ -78,90 +79,86 @@ that mean.
 \description{
 This function produces a raster map where each pixel shows the number of
 months per year in which temperature is within a given set of bounds. If
-the input has several pairs of minimum and maximum temperatures (e.g. as
+the input has several pairs of minimum and maximum temperatures (as
 produced by \code{\link[=therm_suit_bounds]{therm_suit_bounds()}}), the output raster has two layers: mean
 and standard deviation.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data("aphid")
 
-# 1. fit TPC models:
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                        dev_rate = aphid$rate_value,
-                                        model_name = "all")
-# 2. plot them
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+                             dev_rate = aphid$rate_value,
+                             model_name = "all")
+
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
-               fitted_parameters = fitted_tpcs_aphid,
+               fitted_parameters = fitted_tpcs,
                species = "Brachycaudus schwartzi",
-               life_stage = "Nymphs") #choose "lactin2"
+               life_stage = "Nymphs")
 
-# 3. obtain predictions and uncertainties
+# Obtain prediction TPCs with bootstraps for propagating uncertainty:
+boot_tpcs <- predict_curves(temp = aphid$temperature,
+                            dev_rate = aphid$rate_value,
+                            fitted_parameters = fitted_tpcs,
+                            model_name_2boot = c("lactin2", "briere2", "beta"),
+                            propagate_uncertainty = TRUE,
+                            n_boots_samples = 10)
 
-tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-                                             dev_rate = aphid$rate_value,
-                                             fitted_parameters = fitted_tpcs_aphid,
-                                             model_name_2boot = "lactin2",
-                                             propagate_uncertainty = TRUE,
-                                             n_boots_samples = 10)
+print(boot_tpcs)
 
-head(tpc_preds_boots_aphid)
+# Plot bootstrapped curves:
 
-# 4. plot predictions and uncertainties
-
-plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
-                   temp = aphid$temperature,
+plot_uncertainties(temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
+                   bootstrap_tpcs = boot_tpcs,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
 
-# 5. Calculate thermal suitability boundaries
+# Calculate Q80 thermal bounds
 
-boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
-                                             model_name = "lactin2",
-                                             suitability_threshold = 80)
-head(boundaries_aphid)
+boundaries <- therm_suit_bounds(preds_tbl = boot_tpcs,
+                                model_name = "lactin2",
+                                suitability_threshold = 80)
+head(boundaries)
 
-# 6. Extract and Plot Risk maps
+# Extract and Plot Risk maps
 
 # if you don't have temperature rasters for your region:
 
- risk_rast_reunion <- map_risk(t_vals = boundaries_aphid,
-                               path = tempdir(), # directory to download data
-                               region = "Réunion",
-                               mask = TRUE,
-                               plot = TRUE,
-                               interactive = FALSE,
-                               verbose = TRUE)
+risk_map_reunion <- map_risk(t_vals = boundaries,
+                             path = tempdir(), # directory to download data
+                             region = "Réunion",
+                             mask = TRUE,
+                             plot = TRUE,
+                             interactive = FALSE,
+                             verbose = TRUE)
 
-# Alternative 1: if you already have a raster of monthly average temperatures
+# If you already have a raster of monthly average temperatures
 # for your region of interest, you can use that as input for `t_rast`:
-   ## first, load it
-   tavg_file <- system.file("extdata/tavg_reunion.tif", package = "mappestRisk")
+## first, load it
+tavg_file <- system.file("extdata/tavg_reunion.tif", package = "mappestRisk")
+tavg_rast <- terra::rast(tavg_file)
 
-   ## second, rasterize it with `terra`
- tavg_rast <- terra::rast(tavg_file)
+## then apply the function
+risk_map_reunion <- map_risk(t_vals = boundaries,
+                             t_rast = tavg_rast,
+                             mask = TRUE,
+                             path = tempdir(),
+                             plot = TRUE,
+                             interactive = FALSE,
+                             verbose = TRUE)
 
-   ## third apply the function
- risk_rast_reunion <- map_risk(t_vals = boundaries_aphid,
-                               t_rast = tavg_rast,
-                               mask = TRUE,
-                               path = tempdir(),
-                               plot = TRUE,
-                               interactive = FALSE,
-                               verbose = TRUE)
- # Alternative 2: you can use your own spatial feature (sf) object for `region`
-sobrarbe_sf <- readRDS(system.file("extdata",
-                                   "sobrarbe.rds",
+# Using a spatial object for `region`
+sobrarbe <- terra::vect(system.file("extdata/sobrarbe.gpkg",
                                    package = "mappestRisk"))
 
-risk_rast_sobrarbe <- map_risk(t_vals = boundaries_aphid,
-                                region = sobrarbe_sf,
-                                path = tempdir(),
-                                mask = TRUE,
-                                plot = TRUE,
-                                interactive = FALSE,
-                                verbose = TRUE)
-}
+risk_map_sobrarbe <- map_risk(t_vals = boundaries,
+                              region = sobrarbe,
+                              path = tempdir(),
+                              mask = TRUE,
+                              plot = TRUE,
+                              interactive = FALSE,
+                              verbose = TRUE)
+\dontshow{\}) # examplesIf}
 }

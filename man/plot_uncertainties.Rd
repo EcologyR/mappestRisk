@@ -2,24 +2,23 @@
 % Please edit documentation in R/plot_uncertainties.R
 \name{plot_uncertainties}
 \alias{plot_uncertainties}
-\title{Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty bands in parameter estimation of TPC fitting}
+\title{Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty
+in parameter estimation of TPC fitting}
 \source{
-The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+The dataset used in the example was originally published in Satar & Yokomi (2022)
+under the CC-BY-NC license
 }
 \usage{
 plot_uncertainties(
-  bootstrap_uncertainties_tpcs,
-  temp,
-  dev_rate,
+  temp = NULL,
+  dev_rate = NULL,
+  bootstrap_tpcs = NULL,
   species = NULL,
-  life_stage = NULL
+  life_stage = NULL,
+  alpha = 0.2
 )
 }
 \arguments{
-\item{bootstrap_uncertainties_tpcs}{a \code{tibble} A tibble object output by \code{\link[=predict_curves]{predict_curves()}}, containing TPCs
-with uncertainty bands. Each TPC consists of predictions for temperatures ranging from \code{temp - 20} to \code{temp + 15}
-with a resolution of 0.01°C. The tibble also includes an estimate TPC.}
-
 \item{temp}{a vector of temperatures used in the experiment.
 It should have at least four different temperatures and must contain only numbers
 without any missing values.}
@@ -29,67 +28,79 @@ These rates are calculated as the inverse of the number of days to complete the 
 from the beginning of a certain life stage to the beginning of the following at each temperature.
 It must be numeric and of the same length as \code{temp}.}
 
-\item{species}{A string containing the name of the species in the study. The function converts the string to a title
-in the ggplot object in italics.}
+\item{bootstrap_tpcs}{a \code{tibble} A tibble object as produced by
+\code{\link[=predict_curves]{predict_curves()}}, containing bootstrapped TPCs to propagate uncertainty.}
 
-\item{life_stage}{A string containing the life stage studied for this rate-temperature relationship. The function
-converts the string to a subtitle in the ggplot object.}
+\item{species}{\if{html}{\out{<optional>}} a string of the target species that
+will constitute the plot title. Must be of type "character".}
+
+\item{life_stage}{\if{html}{\out{<optional>}} a string of the target life stage that
+will constitute the plot subtitle. Must be of type "character".}
+
+\item{alpha}{a number between 0 and 1 to choose transparency of the bootstrapped
+curves (0 = complete transparency, 1 = solid line).}
 }
 \value{
 A ggplot object containing the visual representation of the estimate TPC and the bootstrapped uncertainty
 curves as a ribbon. Each model is represented in a facet, and data points are also explicit.
 }
 \description{
-Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty bands in parameter estimation of TPC fitting
+Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty
+in parameter estimation of TPC fitting
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data("aphid")
 
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                        dev_rate = aphid$rate_value,
-                                        model_name = "all")
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+                             dev_rate = aphid$rate_value,
+                             model_name = "all")
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
-               fitted_parameters = fitted_tpcs_aphid,
+               fitted_parameters = fitted_tpcs,
                species = "Brachycaudus swartzi",
-               life_stage = "Nymphs") # choose "lactin2"
+               life_stage = "Nymphs")
 
 # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-                                             dev_rate = aphid$rate_value,
-                                             fitted_parameters = fitted_tpcs_aphid,
-                                             model_name_2boot = c("lactin2",
-                                              "briere2", "ratkowsky"),
-                                             propagate_uncertainty = TRUE,
-                                             n_boots_samples = 100)
+boot_tpcs <- predict_curves(temp = aphid$temperature,
+                            dev_rate = aphid$rate_value,
+                            fitted_parameters = fitted_tpcs,
+                            model_name_2boot = c("lactin2", "briere2", "beta"),
+                            propagate_uncertainty = TRUE,
+                            n_boots_samples = 10)
 
-print(tpc_preds_boots_aphid)
+print(boot_tpcs)
 
 # Plot bootstrapped curves:
 
-plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
-                   temp = aphid$temperature,
+plot_uncertainties(temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
+                   bootstrap_tpcs = boot_tpcs,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
-}
+\dontshow{\}) # examplesIf}
 }
 \references{
-Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
-(for reading on model selection in TPC framework)
+Angilletta, M.J., (2006). Estimating and comparing thermal performance curves.
+\if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545. (for model selection in TPC framework)
 
-Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}: A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 00: 1-6
+Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}:
+A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 12: 1138-1143.
 
-Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The \code{devRate} package for \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
+Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent
+development rate and phenology in arthropods: The \code{devRate} package for \code{R}.
+\if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
 
-Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae). \if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
+Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development
+of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae).
+\if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
 }
 \seealso{
 \code{browseVignettes("rTPC")} for model names, start values searching workflows, and
 bootstrapping procedures using both \code{\link[rTPC:get_start_vals]{rTPC::get_start_vals()}} and \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}
 
-\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data, which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}.
+\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data,
+which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}.
 \code{\link[=predict_curves]{predict_curves()}} for bootstrapping procedure based on the above-mentioned \code{rTPC} vignettes.
 }
