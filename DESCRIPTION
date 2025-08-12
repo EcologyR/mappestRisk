@@ -1,6 +1,6 @@
 Package: mappestRisk
 Title: Create Maps Forecasting Risk of Pest Occurrence
-Version: 0.0.9
+Version: 0.1.0
 Authors@R: 
   c(
     person("Darío", "San-Segundo  Molina", role = c("aut", "cre"), 
@@ -33,9 +33,8 @@ Depends:
 LazyData: true
 Suggests: 
     covr,
-    testthat (>= 3.0.0),
     leaflet,
-    sf
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
     devRate,

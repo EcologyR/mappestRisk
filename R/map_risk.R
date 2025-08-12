@@ -352,7 +352,7 @@ map_risk <- function(t_vals = NULL,
 
       if (nrow(t_vals) > 1) {
         sd_mean <- out["sd"]
-        op <- par(mfrow = c(1, 2))
+        op <- graphics::par(mfrow = c(1, 2))
         terra::plot(out_mean,
                     col = c(palette_bilbao)[5:100],
                     main = "Risk Map",
@@ -362,14 +362,14 @@ map_risk <- function(t_vals = NULL,
                     col = c(palette_acton),
                     main = "Uncertainty Map",
                     colNA = "white")
-        par(op)
+        graphics::par(op)
       } else {
-        op <- par(mfrow = c(1, 1))
+        op <- graphics::par(mfrow = c(1, 1))
         terra::plot(out_mean,
                     col = c(palette_bilbao)[5:100],
                     main = "Risk Map",
                     colNA = "white")
-        par(op)
+        graphics::par(op)
       }
     }
   }

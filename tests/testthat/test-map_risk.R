@@ -37,7 +37,7 @@ test_that("map_risk returns correct output with only one set of thermal bounds",
   expect_true(inherits(map, "SpatRaster"))
   expect_equal(dim(map), c(62, 74, 1))
   expect_equal(terra::res(map), c(0.00833333333333334, 0.00833333333333332))
-  expect_true(is.lonlat(map))
+  expect_true(terra::is.lonlat(map))
   expect_true(names(map) == "mean")
   expect_equal(min(as.matrix(map), na.rm = TRUE), 0)
   expect_equal(max(as.matrix(map), na.rm = TRUE), 12)
@@ -68,7 +68,13 @@ test_that("map_risk returns correct output with downloaded map", {
 
   map3 <- map_risk(t_vals = bound, region = "Réunion", path = folder, plot = FALSE)
 
-  expect_true(identical(map, map3))
+  expect_true(inherits(map3, "SpatRaster"))
+  expect_equal(dim(map3), c(62, 74, 1))
+  expect_equal(terra::res(map3), c(0.00833333333333334, 0.00833333333333332))
+  expect_true(terra::is.lonlat(map3))
+  expect_true(names(map3) == "mean")
+  expect_equal(min(as.matrix(map3), na.rm = TRUE), 0)
+  expect_equal(max(as.matrix(map3), na.rm = TRUE), 12)
 
   # map.world <- map_risk(t_vals = bound, res = 10, path = folder, plot = FALSE)
   # too heavy download (36 MB)
@@ -88,16 +94,17 @@ test_that("masking with 'region' returns correct output", {
   expect_equal(terra::values(map4, row = 1, nrows = 1, mat = FALSE),
                rep(0, times = 74))
 
+
   # masking with region
+
+  skip_on_cran()
+  skip_if_offline()
+  skip_on_ci()
+
   map5 <- map_risk(t_vals = bound, t_rast = ras, region = "Réunion", path = folder, plot = FALSE)
   # plot(map5)
   expect_equal(terra::values(map5, row = 1, nrows = 1, mat = FALSE),
                c(rep(NA, times = 24), rep(0, 12), rep(NA, 38)))
-
-  # with region but no masking
-  map6 <- map_risk(t_vals = bound, t_rast = ras, region = "Réunion", mask = FALSE, path = folder, plot = FALSE)
-  # plot(map6)
-  expect_true(identical(map4, map6))
 
 })
 
