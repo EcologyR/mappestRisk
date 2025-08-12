@@ -23,9 +23,9 @@
 #'
 #' @param region Optional object specifying the region to map. Must overlap the
 #' extent of `t_rast` if both are provided. Can be a [terra::SpatVector()]
-#' polygon (obtained with [terra::vect()]); or an [sf::sf()] polygon
-#' (e.g. obtained with [sf::st_as_sf()]), in which case it will be coerced with
-#' [terra::vect()]) to a [terra::SpatVector()]; or a character vector of country
+#' polygon (obtained with [terra::vect()]); or an `sf` polygon,
+#' in which case it will be coerced with [terra::vect()]) to a [terra::SpatVector()];
+#' or a character vector of country
 #' name(s) in English (see [country_names]), in which case climate maps will be
 #' downloaded for those countries; or a [terra::SpatExtent()] object (obtained with
 #' [terra::ext()]); or a numeric vector of length 4 specifying the region

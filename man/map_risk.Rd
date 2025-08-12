@@ -34,9 +34,9 @@ Note that the download can be slow the first time you use the function in a new
 
 \item{region}{Optional object specifying the region to map. Must overlap the
 extent of \code{t_rast} if both are provided. Can be a \code{\link[terra:SpatVector-class]{terra::SpatVector()}}
-polygon (obtained with \code{\link[terra:vect]{terra::vect()}}); or an \code{\link[sf:sf]{sf::sf()}} polygon
-(e.g. obtained with \code{\link[sf:st_as_sf]{sf::st_as_sf()}}), in which case it will be coerced with
-\code{\link[terra:vect]{terra::vect()}}) to a \code{\link[terra:SpatVector-class]{terra::SpatVector()}}; or a character vector of country
+polygon (obtained with \code{\link[terra:vect]{terra::vect()}}); or an \code{sf} polygon,
+in which case it will be coerced with \code{\link[terra:vect]{terra::vect()}}) to a \code{\link[terra:SpatVector-class]{terra::SpatVector()}};
+or a character vector of country
 name(s) in English (see \link{country_names}), in which case climate maps will be
 downloaded for those countries; or a \code{\link[terra:SpatExtent-class]{terra::SpatExtent()}} object (obtained with
 \code{\link[terra:ext]{terra::ext()}}); or a numeric vector of length 4 specifying the region
