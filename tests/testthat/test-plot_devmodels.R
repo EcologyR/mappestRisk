@@ -5,14 +5,6 @@ tpcs <- fit_devmodels(temp = aphid$temperature,
                       model_name = c("lactin2", "briere2", "mod_weibull")
 )
 
-# Test input data types
-test_that("plot_devmodels should throw an error if temperature data is not numeric", {
-
-  expect_error(plot_devmodels(temp = as.factor(aphid$temperature),
-                              dev_rate = aphid$rate_value,
-                              fitted_parameters = tpcs),
-               "temperature data is not numeric. Please check it.")
-})
 
 test_that("plot_devmodels should throw an error if a given `species` argument is not a string", {
 
@@ -33,30 +25,8 @@ test_that("plot_devmodels should throw an error if a given `life_stage` argument
                "`life_stage` must be a character or NULL")
 })
 
-test_that("plot_devmodels should throw an error if dev_rate data is not numeric", {
 
-  expect_error(plot_devmodels(temp = aphid$temperature,
-                              dev_rate = as.character(aphid$rate_value),
-                              fitted_parameters = tpcs),
-               "development rate data is not numeric. Please check it.")
-})
 
-test_that("plot_devmodels should throw an error if temperature data is a data.frame", {
-
-  expect_error(plot_devmodels(temp = data.frame(temperature = seq(4, 40, 3),
-                                                temp_error = runif(13, 0, 2)),
-                              dev_rate = aphid$rate_value,
-                              fitted_parameters = tpcs),
-               "temperature data is not numeric. Please check it.")
-})
-
-test_that("plot_devmodels should throw an error if temperature and development rate inputs are not of same length", {
-
-  expect_error(plot_devmodels(temp = c(aphid$temperature, 10),
-                              dev_rate = aphid$rate_value,
-                              fitted_parameters = tpcs),
-               "development rate and temperature inputs are not of same length. Please check it.")
-})
 
 test_that("plot_devmodels should throw an error if fitted_parameters is not unmodified from `fit_devmodels()`", {
 

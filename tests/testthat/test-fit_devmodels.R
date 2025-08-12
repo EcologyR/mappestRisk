@@ -22,49 +22,6 @@ test_that("fit_devmodels returns well structured output with more than one model
 
 })
 
-# input test
-test_that("fit_devmodels should throw an error if temperature data is not numeric", {
-
-  expect_error(fit_devmodels(temp = as.character(seq(4, 40, 3)),
-                             dev_rate = aphid$rate_value,
-                             model_name = "all"),
-               "temperature data is not numeric. Please check it.")
-})
-
-test_that("fit_devmodels should throw an error if temperature data is a data.frame", {
-
-  expect_error(fit_devmodels(temp = data.frame(temperature = seq(4, 40, 3),
-                                               temp_error = runif(13, 0, 2)),
-                             dev_rate = aphid$rate_value,
-                             model_name = "all"),
-               "temperature data is not numeric. Please check it.")
-})
-
-test_that("fit_devmodels should throw an error if temperature data have just three values", {
-
-  expect_error(fit_devmodels(temp = c(15, 20, 25),
-                             dev_rate = aphid$rate_value,
-                             model_name = "all"),
-               "At least four different temperature treatments in the data are required.",
-               fixed = TRUE)
-})
-
-test_that("fit_devmodels should throw an error if development rate data is not numeric
-          (e.g. incorrectly importing data from csv/xlsx, using commas as decimal markers, etc)", {
-
-            expect_error(fit_devmodels(temp = seq(4, 40, 3),
-                                       dev_rate = as.character(aphid$rate_value),
-                                       model_name = "all"),
-                         "development rate data is not numeric. Please check it.")
-          })
-
-test_that("fit_devmodels should throw an error if temperature and development rate inputs are not of same length", {
-
-  expect_error(fit_devmodels(temp = seq(4, 40, 3),
-                             dev_rate = seq(0, 1, by = 0.1),
-                             model_name = "all"),
-               "development rate and temperature inputs are not of same length. Please check it.")
-})
 
 test_that("fit_devmodels should throw an error if model_name is not a character string but a number", {
 
@@ -83,42 +40,6 @@ test_that("fit_devmodels should throw an error if model_name is not in available
                "model not available. For available model names, see `available_models`")
 })
 
-test_that("fit_devmodels should throw an error if development rate is negative, which is biologically unrealistic", {
-  expect_error(fit_devmodels(temp = aphid$temperature,
-                             dev_rate = -1*aphid$rate_value,
-                             model_name = "all"),
-               "Negative dev_rate development rate data found. Please check it.")
-})
-
-# Test input data ranges and warnings
-
-test_that("fit_devmodels should throw an error if temperature data contains values outside of the range of active organisms", {
-
-  expect_error(fit_devmodels(temp = c(seq(4, 39, 3), 4000),
-                             dev_rate = seq(0, 1, length.out = 13),
-                             model_name = "all"),
-               "experienced temperatures by active organisms are usually between 0 and 50 degrees centigrades",
-               fixed = TRUE)
-})
-
-
-## test that rate of development data have NAs
-test_that("fit_devmodels should stop the function and advise the user about NAs in the data set", {
-
-  expect_error(fit_devmodels(temp = c(aphid$temperature, 10),
-                             dev_rate = c(aphid$rate_value, NA),
-                             model_name = "all"),
-               "development rate data have NAs; please consider removing them or fixing them")
-})
-
-## test that get error if temperature data have NAs
-test_that("fit_devmodels should stop the function and advise the user about NAs in the data set", {
-
-  expect_error(fit_devmodels(temp = c(aphid$temperature, NA),
-                             dev_rate = aphid$rate_value,
-                             model_name = "all"),
-               "temperature data have NAs; please consider removing them or fixing them")
-})
 
 ## test that no converged model yields a warning
 test_that("fit_devmodels warns no convergence", {

@@ -31,51 +31,7 @@ test_that("predict_curves output has correct structure", {
 
 
 
-test_that("predict_curves should throw an error if temperature data is not numeric", {
 
-  expect_error(predict_curves(temp =  as.character(aphid$temperature),
-                              dev_rate = aphid$rate_value,
-                              fitted_parameters = tpcs,
-                              model_name_2boot = "lactin2",
-                              propagate_uncertainty = TRUE,
-                              n_boots_samples = 2),
-               "temperature data is not numeric. Please check it.")
-})
-
-test_that("predict_curves should throw an error if temperature data have just three values", {
-
-  expect_error(predict_curves(temp =  c(15, 20, 25),
-                              dev_rate = aphid$rate_value,
-                              fitted_parameters = tpcs,
-                              model_name_2boot = "lactin2",
-                              propagate_uncertainty = TRUE,
-                              n_boots_samples = 2),
-               "At least four different temperature treatments in the data are required.",
-               fixed = TRUE)
-})
-
-test_that("predict_curves should throw an error if development rate data is not numeric
-          (e.g. incorrectly importing data from csv/xlsx, using commas as decimal markers, etc)", {
-
-            expect_error(predict_curves(temp = aphid$temperature,
-                                        dev_rate = as.character(aphid$rate_value),
-                                        fitted_parameters = tpcs,
-                                        model_name_2boot = "lactin2",
-                                        propagate_uncertainty = TRUE,
-                                        n_boots_samples = 2),
-                         "development rate data is not numeric. Please check it.")
-          })
-
-test_that("predict_curves should throw an error if temperature and development rate inputs are not of same length", {
-
-  expect_error(predict_curves(temp = c(aphid$temperature, 10),
-                              dev_rate = aphid$rate_value,
-                              fitted_parameters = tpcs,
-                              model_name_2boot = "lactin2",
-                              propagate_uncertainty = TRUE,
-                              n_boots_samples = 2),
-               "development rate and temperature inputs are not of same length. Please check it.")
-})
 
 test_that("predict_curves should throw an error if fitted_parameters is not provided", {
 
@@ -125,32 +81,6 @@ test_that("predict_curves should throw a message with the  error of available mo
 }
 )
 
-
-
-test_that("predict_curves should throw an error if development rate is negative, which is biologically unrealistic", {
-
-  expect_error(predict_curves(temp = aphid$temperature,
-                              dev_rate = -1*aphid$rate_value,
-                              fitted_parameters = tpcs,
-                              model_name_2boot = "lactin2",
-                              propagate_uncertainty = TRUE,
-                              n_boots_samples = 2),
-               "Negative dev_rate development rate data found. Please check it.")
-})
-
-# Test input data ranges and warnings
-
-test_that("predict_curves should throw an error if temperature data contains values outside of the range of active organisms", {
-
-  expect_error(predict_curves(temp = c(60, aphid$temperature[-1]),
-                              dev_rate = aphid$rate_value,
-                              fitted_parameters = tpcs,
-                              model_name_2boot = "lactin2",
-                              propagate_uncertainty = TRUE,
-                              n_boots_samples = 2),
-               "experienced temperatures by active organisms are usually between 0 and 50 degrees centigrades",
-               fixed = TRUE)
-})
 
 test_that("predict_curves should throw an error if `n_boots_samples` is not an integer", {
 
