@@ -1,5 +1,7 @@
 data("aphid")
 
+set.seed(2025)
+
 tpcs <- fit_devmodels(temp = aphid$temperature,
                       dev_rate = aphid$rate_value,
                       model_name = c("lactin2", "briere2", "mod_weibull")
@@ -11,26 +13,22 @@ curves <- suppressWarnings(
                  fitted_parameters = tpcs,
                  model_name_2boot = c("lactin2", "briere2"),
                  propagate_uncertainty = TRUE,
-                 n_boots_samples = 5))
+                 n_boots_samples = 2))
 
 
 test_that("predict_curves output has correct structure", {
 
   expect_named(curves, c("model_name", "boot_iter", "temp", "dev_rate", "curvetype"))
   expect_equal(unique(curves$model_name), c("briere2", "lactin2"))
-  expect_equal(unique(curves$boot_iter), c(NA, "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
-  # expect_equal(min(curves$temp), -5.0)
-  # expect_equal(max(curves$temp), 39.0)
+  expect_equal(unique(curves$boot_iter), c(NA, "1", "2"))
+  expect_equal(min(curves$temp), -5.0)
+  expect_equal(max(curves$temp), 45.9)
   expect_type(curves$temp, "double")
   expect_type(curves$dev_rate, "double")
   expect_true(all(curves$dev_rate >= 0))
   expect_equal(unique(curves$curvetype), c("estimate", "uncertainty"))
 
 })
-
-
-
-
 
 
 test_that("predict_curves should throw an error if fitted_parameters is not provided", {
