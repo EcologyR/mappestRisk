@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
 `r badger::badge_cran_release()`
 ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
 [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk)
 `r badger::badge_lifecycle("stable")`
 `r badger::badge_repostatus("Active")`
 

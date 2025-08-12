@@ -8,6 +8,8 @@
 [![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
 ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
 [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk)
 [![](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Project Status: Active - The project has reached a stable, usable
 state and is being actively
