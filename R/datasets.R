@@ -63,7 +63,7 @@
 #'    as first attempts to iterate.
 #'    As an exception, if `model_name == "briere1"`, generic starting values are provided
 #'    and advised to the user due to the unrealistic value of some parameters in the
-#'    [devRate] data set.}
+#'    `devRate` data set.}
 #'
 #'   \item{source_model_name}{name of the function in the source packages `rTPC` and `devRate`.}
 #'

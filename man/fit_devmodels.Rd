@@ -4,7 +4,8 @@
 \alias{fit_devmodels}
 \title{Fit Thermal Performance Curves}
 \source{
-The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+The dataset used in the example was originally published in Satar & Yokomi (2022)
+under the CC-BY-NC license
 }
 \usage{
 fit_devmodels(temp = NULL, dev_rate = NULL, model_name = NULL)
@@ -44,22 +45,27 @@ namely \code{rTPC} and \code{devRate}.
 \examples{
 data("aphid")
 
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                   dev_rate = aphid$rate_value,
-                                   model_name = c("lactin2", "briere2", "mod_weibull")
-                                   )
-fitted_tpcs_aphid
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+                             dev_rate = aphid$rate_value,
+                             model_name = c("lactin2", "briere2", "mod_weibull")
+                             )
+fitted_tpcs
 
 }
 \references{
-Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
-(for reading on model selection in TPC framework)
+Angilletta, M.J., (2006). Estimating and comparing thermal performance curves.
+\if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545. (for model selection in TPC framework)
 
-Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}: A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 00: 1-6
+Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}:
+A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 12: 1138-1143.
 
-Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The \code{devRate} package for \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
+Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent
+development rate and phenology in arthropods: The \code{devRate} package for \code{R}.
+\if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
 
-Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae). \if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
+Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development
+of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae).
+\if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
 }
 \seealso{
 \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} for structure of model fitting approach

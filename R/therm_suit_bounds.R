@@ -1,97 +1,89 @@
 #' Determine Thermal Boundaries for Optimal Performance Level
 #'
-#' This function calculates thermal boundaries that define the suitable region of a Thermal Performance Curve (TPC) corresponding to a user-defined optimal performance level.
+#' Calculate thermal boundaries that define the suitable region of a
+#' Thermal Performance Curve (TPC) corresponding to a user-defined optimal performance level.
 #'
-#' @param preds_tbl a `tibble` object inherited from [mappestRisk::predict_curves()]
-#' containing as many thermal performance curves as the number of iterations provided in `n_boots_samples` argument
-#' therein and whenever `propagate_uncertainty` was set to `TRUE`; or alternatively the
-#' estimated TPC predictions if `propagate_uncertainty` was set to `FALSE`.
-#' Each TPC consists of predictions for temperatures ranging from `temp - 20` to `temp + 15`
-#' with a resolution of 0.1°C.
+#' @param preds_tbl a `tibble` object as produced by [predict_curves()].
 #'
-#' @param model_name a string with one or several TPC models of those fitted first in `fit_devmodels()` and predicted
-#' next in `predict_curves()`. Setting `model_name = "all"` is not allowed in this function. If the user wants to
-#' calculate thermal boundaries for several models predicted and/or bootstrapped in `predict_curves()`, typing manually
-#' all desired model names within a vector will be required.
+#' @param model_name character. Name of one or several of the TPC models fitted
+#' first in `fit_devmodels()` and predicted next in `predict_curves()`.
+#' If using `model_name = "all"` all models contained in `preds_tbl` will be used.
 #'
-#' @param suitability_threshold A numeric value from 50 to 100 representing the quantile of the curve that provides the user-defined optimal performance.
-#' For instance, setting `suitability_threshold` to 80 identifies the top 20% (or quartile 80) of the maximum values of the development rate predicted by the chosen TPC model.
-#' If `suitability_threshold` equals 100, the function returns the optimum temperature for development rate.
+#' @param suitability_threshold A numeric value from 50 to 100 representing
+#' the quantile of the curve that provides the user-defined optimal performance.
+#' For instance, setting `suitability_threshold` to 80 identifies the top 20%
+#' (or quantile 80) of the maximum values of the development rate predicted by
+#' the chosen TPC model. If `suitability_threshold` equals 100, the function
+#' returns the optimum temperature for development rate.
 #'
 #' @returns A tibble with six columns:
 #'  - `model_name`: A string indicating the selected TPC model used for projections.
-#'  - `suitability`: A string indicating the suitability threshold in percentage (see `suitability_threshold`).
-#'  - `tval_left`: A number representing the lower thermal boundary delimiting the suitable region of the TPC.
-#'  - `tval_right`: A number representing the upper thermal boundary delimiting the suitable region of the TPC.
-#'  - `pred_suit`: A number corresponding to the predicted development rate value determining the chosen quantile threshold of the maximum rate (i.e., suitability percentage of maximum rate).
-#'  - `iter`: A factor determining the TPC identity from the bootstrapping procedure in [predict_curves()] function, or `estimate` when it represents the estimated TPC fitted in [fit_devmodels()].
+#'  - `suitability`: A string indicating the suitability threshold in percentage
+#'    (see `suitability_threshold`).
+#'  - `tval_left`: A number representing the lower thermal boundary delimiting
+#'    the suitable region of the TPC.
+#'  - `tval_right`: A number representing the upper thermal boundary delimiting
+#'    the suitable region of the TPC.
+#'  - `pred_suit`: A number corresponding to the predicted development rate value
+#'    determining the chosen quantile threshold of the maximum rate
+#'    (i.e., suitability percentage of maximum rate).
+#'  - `iter`: A string determining the TPC identity from the bootstrapping
+#'    procedure in [predict_curves()] function, or `estimate` when it represents
+#'    the estimated TPC fitted in [fit_devmodels()].
 #'
-#' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows, and
-#'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
 #'
-#'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
-#'  [predict_curves()] for bootstrapping procedure based on the above-mentioned `rTPC` vignettes.
-#'
-#' @references
-#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
-#'  (for reading on model selection in TPC framework)
-#'
-#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
-#'
-#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
-#'
-#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
-#'
-#' @source
-#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+#' @inherit fit_devmodels references source
+#' @inherit plot_uncertainties seealso
 #'
 #' @export
 #'
-#' @examples
-#'  \dontrun{
+#' @examplesIf interactive()
 #' data("aphid")
 #'
-#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                         dev_rate = aphid$rate_value,
-#'                                         model_name = c("lactin2", "briere2", "ratkowsky"))
+#' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+#'                              dev_rate = aphid$rate_value,
+#'                              model_name = "all")
+#'
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
-#'                fitted_parameters = fitted_tpcs_aphid,
+#'                fitted_parameters = fitted_tpcs,
 #'                species = "Brachycaudus schwartzi",
-#'                life_stage = "Nymphs") #choose "lactin2"
+#'                life_stage = "Nymphs")
 #'
 #' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-#' tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-#'                                              dev_rate = aphid$rate_value,
-#'                                              fitted_parameters = fitted_tpcs_aphid,
-#'                                              model_name_2boot = c("lactin2",
-#'                                               "briere2", "ratkowsky"),
-#'                                              propagate_uncertainty = TRUE,
-#'                                              n_boots_samples = 100)
+#' boot_tpcs <- predict_curves(temp = aphid$temperature,
+#'                             dev_rate = aphid$rate_value,
+#'                             fitted_parameters = fitted_tpcs,
+#'                             model_name_2boot = c("lactin2", "briere2", "beta"),
+#'                             propagate_uncertainty = TRUE,
+#'                             n_boots_samples = 10)
 #'
-#' head(tpc_preds_boots_aphid)
+#' print(boot_tpcs)
 #'
 #' # Plot bootstrapped curves:
 #'
-#' plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
-#'                    temp = aphid$temperature,
+#' plot_uncertainties(temp = aphid$temperature,
 #'                    dev_rate = aphid$rate_value,
+#'                    bootstrap_tpcs = boot_tpcs,
 #'                    species = "Brachycaudus schwartzi",
 #'                    life_stage = "Nymphs")
 #'
-#' #5. Calculate Q80 thermal bounds
+#' # Calculate Q80 thermal bounds
 #'
-#' boundaries_aphid <- therm_suit_bounds(preds_tbl = tpc_preds_boots_aphid,
-#'                                              model_name = "lactin2",
-#'                                              suitability_threshold = 80)
-#' head(boundaries_aphid)
-#' }
+#' boundaries <- therm_suit_bounds(preds_tbl = boot_tpcs,
+#'                                 model_name = "lactin2",
+#'                                 suitability_threshold = 80)
+#' head(boundaries)
+
 
 therm_suit_bounds <- function(preds_tbl = NULL,
                               model_name = NULL,
                               suitability_threshold = NULL) {
+
+  ## Checks ##
+
   if (is.null(preds_tbl)) {
-    stop("The `preds_tbl` argument is absent. Please provide a `tibble` or `data.frame` object
+    stop("The `preds_tbl` argument is missing. Please provide a `tibble` or `data.frame` object
          from `predict_curves()`")
   }
 
@@ -100,104 +92,137 @@ therm_suit_bounds <- function(preds_tbl = NULL,
   }
 
   if (!inherits(preds_tbl, "data.frame") |
-      suppressWarnings(any(!c("model_name_iter", "boots_iter",
-                              "temp", "preds",
-                              "curvetype") %in% colnames(preds_tbl)))) {
-    stop("`preds_tbl` must be a  `data.frame` inherited   from the output of `mappestRisk::predict_curves()` function")
+      !all(c("model_name", "boot_iter", "temp", "dev_rate", "curvetype") %in% names(preds_tbl))) {
+    stop("`preds_tbl` must be a `data.frame` with columns as produced by the `predict_curves()` function")
   }
 
-  if(is.null(suitability_threshold)){
+  if (is.null(suitability_threshold)) {
     suitability_threshold <- 75
-    message("No suitability_threshold value input. Default to `suitability_threshold = 75`")
+    message("No suitability_threshold value provided. Default to `suitability_threshold = 75`")
   }
 
-  if(suitability_threshold < 50) {
+  if (suitability_threshold < 50) {
     warning("Suitability thresholds under 50% indicate thermal boundaries for positive development but not
-necessarily optimal for pest risk assessment. Subsequent map risk analysis will imply
-risk of thermal tolerance at each location rather than risk of optimal performance or high pest pressure.")
+    necessarily optimal for pest risk assessment. Subsequent map risk analysis will imply
+    risk of thermal tolerance at each location rather than risk of optimal performance or high pest pressure.")
   }
 
-  if(is.null(model_name)) {
+  if (is.null(model_name)) {
     stop("No model name was provided by the user. Please provide any model present in `pred_tbl`")
   }
 
-  if(length(model_name) > 1 || model_name == "all") {
-    stop("Only one model is allowed in `therm_suit_bounds()` at a time.
-Please use this function repetedly for each of your models one by one.")
+  # If model_name = "all", use all models in preds_tbl
+  if (length(model_name) == 1 && model_name == "all") {
+    model_name <- unique(preds_tbl$model_name)
   }
 
-  if(!is.null(model_name) && any(!model_name %in% unique(preds_tbl$model_name_iter))) {
-    stop(paste("Model", model_name, "did not fitted well to your data or is not available. Try using another fitted model in your table instead"))
+  if (!all(model_name %in% unique(preds_tbl$model_name))) {
+    stop("Model(s) ", paste(model_name[which(!model_name %in% unique(preds_tbl$model_name))], collapse = ", "),
+    " is/are not available in `preds_tbl`.
+    Try using another fitted model in your table instead")
   }
 
-  if(!any(preds_tbl$curvetype == "uncertainty")) {
+  if (!any(preds_tbl$curvetype == "uncertainty")) {
     warning("No bootstrapped predictions were performed.
-We strongly recommend to propagate uncertainty by setting the `predict_curves()`
-arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
+    We strongly recommend to propagate uncertainty by setting the `predict_curves()`
+            arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
   }
-  preds_tbl <- preds_tbl |>
-    dplyr::filter(model_name_iter == model_name)
-  tvals <- dplyr::tibble(model_name = model_name,
-                         tval_left = NULL,
-                         tval_right = NULL,
-                         pred_suit = NULL,
-                         suitability = paste(suitability_threshold, "%"),
-                         iter = NULL)
 
-  for(iter_i in unique(preds_tbl$boots_iter)){
-    pred_tbl_i <- preds_tbl[preds_tbl$boots_iter == iter_i, ]
-    devrate_max_i <- max(pred_tbl_i$preds, na.rm = TRUE)
-    possible_error <- tryCatch(expr =
-                                 suppressWarnings({topt_pred <- pred_tbl_i |> #the custom error message is more informative than this warning
-                                   dplyr::slice_max(preds) |>
-                                   dplyr::pull(temp)
-                                 q_threshold <- devrate_max_i * 0.01 * suitability_threshold
-                                 half_left <- pred_tbl_i |>
-                                   dplyr::filter(temp < topt_pred)
-                                 half_right <- pred_tbl_i |>
-                                   dplyr::filter(temp >= topt_pred)
-                                 therm_suit_left <- half_left |>
-                                   dplyr::filter(preds <= q_threshold) |>
-                                   dplyr::slice_tail(n = 1) |>
-                                   dplyr::pull(temp)
-                                 therm_suit_right <- half_right |>
-                                   dplyr::filter(preds <= q_threshold) |>
-                                   dplyr::slice_head(n = 1) |>
-                                   dplyr::pull(temp)
-                                 dev_rate_suit <- devrate_max_i*0.01*suitability_threshold
-                                 }),
-                               error = function(e) e)
-    if(inherits(possible_error, "error")) {
-      therm_suit_right <- NA
-      therm_suit_left <- NA
-    }
-    if (length(therm_suit_right) == 0) {
-      therm_suit_right <- NA_real_
-    }
-    if (length(therm_suit_left) == 0) {
-      therm_suit_left <- NA_real_
-    }
+  ## End checks ##
 
-    if(is.na(therm_suit_right) |
-       is.na(therm_suit_left)) {
-      warning(paste("Simulation", iter_i, "yielded NA value and then has been discarded for thermal suitability"))
-    }
 
-    tvals_i <- dplyr::tibble(model_name = model_name,
-                             tval_left = therm_suit_left,
-                             tval_right = therm_suit_right,
-                             pred_suit = devrate_max_i*0.01*suitability_threshold,
-                             suitability = paste(suitability_threshold, "%"),
-                             iter = iter_i) |>
-      dplyr::mutate(iter = ifelse(is.integer(iter),
-                                  iter,
-                                  as.factor("estimate")))
-    if(any(tvals$tval_right >= 50, na.rm = TRUE))
-    { warning("upper value of thermal suitability  might be non-realistic")
-    }
-    tvals <- dplyr::bind_rows(tvals,
-                              tvals_i)
+  preds_mod <- preds_tbl |>
+    dplyr::rename(model = model_name) |>
+    dplyr::filter(model %in% model_name) |>
+    # boot_iter is NA for predicted curves without bootstrapping ("estimate")
+    # cf. predict_curves()
+    dplyr::mutate(iter = dplyr::if_else(
+      is.na(boot_iter),
+      "estimate",
+      as.character(boot_iter)
+    ))
+
+  ## Calculate boundaries for each bootstrap iteration as well as "estimate"
+  boundaries <- preds_mod |>
+    dplyr::group_by(model, iter) |>
+    dplyr::reframe(bounds_iter(dplyr::pick(dplyr::everything()), suitability_threshold)) |>
+    dplyr::ungroup()
+
+
+  ## Warnings ##
+
+  failed_iters <- boundaries |>
+    dplyr::filter(is.na(tval_left) | is.na(tval_right)) |>
+    dplyr::group_by(model) |>
+    dplyr::summarise(n_failed = dplyr::n()) |>
+    dplyr::ungroup()
+
+  if (nrow(failed_iters) > 0) {
+    failed_warnings <- purrr::map2_chr(failed_iters$model, failed_iters$n_failed,
+                                       ~ paste0("  - For model '", .x, "': ", .y, " curve(s) failed."))
+    warning("Could not calculate boundaries for some curves:\n", paste(failed_warnings, collapse = "\n"))
   }
-  return(tvals)
+
+  ## temp values too high
+  temp_50 <- boundaries |>
+    dplyr::filter(tval_right >= 50)
+  if (nrow(temp_50) > 0) {
+    warning(nrow(temp_50), " curve(s) had an upper thermal boundary >= 50 degrees C, which may be unrealistic.")
+  }
+
+
+  ## Output ##
+  out <- boundaries |>
+    # dplyr::filter(!is.na(tval_left)) |>
+    dplyr::mutate(
+      model_name = model,
+      suitability = paste0(suitability_threshold, "%")
+    ) |>
+    dplyr::select(model_name, suitability, tval_left, tval_right, pred_suit, iter)
+
+  return(out)
+
 }
 
+
+
+
+# calculate boundaries for each iteration
+bounds_iter <- function(df = NULL, suit_threshold = NULL) {
+
+  stopifnot(is.data.frame(df))
+  stopifnot(is.numeric(suit_threshold))
+
+  devrate_max <- max(df$dev_rate, na.rm = TRUE)
+
+  # Return empty row if the curve is empty or flat
+  if (nrow(df) < 2 || devrate_max <= 0) {
+    return(dplyr::tibble(tval_left = NA_real_,
+                         tval_right = NA_real_,
+                         pred_suit = NA_real_))
+  }
+
+  q_threshold <- devrate_max * 0.01 * suit_threshold
+
+  # Find all points on the curve that are above the suitability threshold
+  suitable_points <- df |>
+    dplyr::filter(dev_rate >= q_threshold)
+
+  # If no points are above the threshold, no suitable range exists
+  if (nrow(suitable_points) == 0) {
+    return(dplyr::tibble(tval_left = NA_real_,
+                         tval_right = NA_real_,
+                         pred_suit = q_threshold))
+  }
+
+  # The boundaries are the minimum and maximum temperatures of this suitable range
+  tval_left <- min(suitable_points$temp, na.rm = TRUE)
+  tval_right <- max(suitable_points$temp, na.rm = TRUE)
+
+  dplyr::tibble(
+    tval_left = tval_left,
+    tval_right = tval_right,
+    pred_suit = q_threshold
+  )
+
+}

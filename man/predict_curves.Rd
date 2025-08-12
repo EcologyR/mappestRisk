@@ -4,7 +4,8 @@
 \alias{predict_curves}
 \title{Propagate parameter uncertainty of TPC fits using bootstrap with residual resampling}
 \source{
-The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+The dataset used in the example was originally published in Satar & Yokomi (2022)
+under the CC-BY-NC license
 }
 \usage{
 predict_curves(
@@ -26,72 +27,86 @@ These rates are calculated as the inverse of the number of days to complete the 
 from the beginning of a certain life stage to the beginning of the following at each temperature.
 It must be numeric and of the same length as \code{temp}.}
 
-\item{fitted_parameters}{a \code{tibble} obtained with \code{\link[=fit_devmodels]{fit_devmodels()}} function, including parameter names,
-estimates, standard errors, AICs, and \if{html}{\out{<nls>}} objects (fitted_models) using the \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach.}
+\item{fitted_parameters}{a \code{tibble} obtained with \code{\link[=fit_devmodels]{fit_devmodels()}} function,
+including parameter names, estimates, standard errors, AICs, and \if{html}{\out{<nls>}} objects
+(fitted_models) using the \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach.}
 
-\item{model_name_2boot}{A vector of strings including one or several TPC models fitted by \code{\link[=fit_devmodels]{fit_devmodels()}}. Contrarily to that function,
-\code{model_name_2boot = "all"} is not allowed in this function due to the slow bootstrapping procedure.
-We recommend applying this function only to a small pre-selection of models (e.g., one to four) based on statistical
-and ecological criteria with the help of \code{\link[=plot_devmodels]{plot_devmodels()}} function.}
+\item{model_name_2boot}{A vector of strings including one or several TPC models
+fitted by \code{\link[=fit_devmodels]{fit_devmodels()}}. Contrarily to that function, \code{model_name_2boot = "all"}
+is not allowed in this function due to the slow bootstrapping procedure.
+We recommend applying this function only to a small pre-selection of models
+(e.g., one to four) based on statistical and ecological criteria with the help
+of \code{\link[=plot_devmodels]{plot_devmodels()}} function.}
 
-\item{propagate_uncertainty}{A logical argument that specifies whether to propagate parameter uncertainty by bootstrap with residual resampling.
-If \code{FALSE}, the function returns predictions from the fitted TPCs for the selected model(s). If \code{TRUE}, bootstrap is applied
-using residual resampling to obtain multiple TPCs using \code{\link[car:Boot]{car::Boot()}} as detailed in vignettes of the \code{rTPC} package.
+\item{propagate_uncertainty}{A logical argument that specifies whether to
+propagate parameter uncertainty by bootstrap with residual resampling.
+If \code{FALSE}, the function returns predictions from the fitted TPCs for the
+selected model(s). If \code{TRUE}, bootstrap is applied using residual resampling
+to obtain multiple TPCs as detailed in vignettes of the \code{rTPC} package.
 Defaults to \code{TRUE}.}
 
-\item{n_boots_samples}{Number of bootstrap resampling iterations (default is 100). A larger number
-of iterations makes the resampling procedure more robust, but typically 100 is sufficient for propagating parameter
-uncertainty, as increasing \code{n_boots_samples} will increase computation time for predicting resampled TPCs.}
+\item{n_boots_samples}{Number of bootstrap resampling iterations (default is 100).
+A larger number of iterations makes the resampling procedure more robust,
+but typically 100 is sufficient for propagating parameter uncertainty,
+as increasing \code{n_boots_samples} will increase computation time for predicting resampled TPCs.}
 }
 \value{
 A tibble object with as many curves (TPCs) as the number of iterations provided
 in the \code{n_boots_samples} argument if \code{propagate_uncertainty = TRUE} minus the bootstrap samples that
 could not be fitted (i.e., new nonlinear regression models did not converge for them).
-Otherwise, it returns just one prediction TPC from model fit estimates. Each resampled TPC consists of a collection of
-predictions for a set of temperatures from \code{temp - 20} to \code{temp + 15} with a resolution of 0.1°C and a unique identifier
-called \code{boots_iter}. In addition to the uncertainty TPCs, the estimated TPC is also explicit in the output tibble.
+Otherwise, it returns just one prediction TPC from model fit estimates.
+Each resampled TPC consists of a collection of predictions for a set of temperatures
+from \code{temp - 20} to \code{temp + 15} with a resolution of 0.1°C and a unique identifier
+called \code{boots_iter}. In addition to the uncertainty TPCs, the estimated TPC
+is also explicit in the output tibble.
 }
 \description{
 Propagate parameter uncertainty of TPC fits using bootstrap with residual resampling
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data("aphid")
 
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                      dev_rate = aphid$rate_value,
-                                      model_name = "all")
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+                             dev_rate = aphid$rate_value,
+                             model_name = "all")
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
-               fitted_parameters = fitted_tpcs_aphid,
+               fitted_parameters = fitted_tpcs,
                species = "Brachycaudus schwartzi",
                life_stage = "Nymphs")
 
 # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-                                        dev_rate = aphid$rate_value,
-                                        fitted_parameters = fitted_tpcs_aphid,
-                                        model_name_2boot = c("lactin2", "briere2", "ratkowsky"),
-                                        propagate_uncertainty = TRUE,
-                                        n_boots_samples = 100)
+boot_tpcs <- predict_curves(temp = aphid$temperature,
+                            dev_rate = aphid$rate_value,
+                            fitted_parameters = fitted_tpcs,
+                            model_name_2boot = c("lactin2", "briere2", "beta"),
+                            propagate_uncertainty = TRUE,
+                            n_boots_samples = 10)
 
-head(tpc_preds_boots_aphid)
-}
+boot_tpcs
+\dontshow{\}) # examplesIf}
 }
 \references{
-Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
-(for reading on model selection in TPC framework)
+Angilletta, M.J., (2006). Estimating and comparing thermal performance curves.
+\if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545. (for model selection in TPC framework)
 
-Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}: A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 00: 1-6
+Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}:
+A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 12: 1138-1143.
 
-Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The \code{devRate} package for \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
+Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent
+development rate and phenology in arthropods: The \code{devRate} package for \code{R}.
+\if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
 
-Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae). \if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
+Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development
+of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae).
+\if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
 }
 \seealso{
 \code{browseVignettes("rTPC")} for model names, start values searching workflows, and
 bootstrapping procedures using both \code{\link[rTPC:get_start_vals]{rTPC::get_start_vals()}} and \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}
 
-\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data, which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}.
+\code{\link[=fit_devmodels]{fit_devmodels()}} for fitting Thermal Performance Curves to development rate data,
+which is in turn based on \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}}.
 }

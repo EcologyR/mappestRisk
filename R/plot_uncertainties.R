@@ -1,23 +1,13 @@
-#' Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty bands in parameter estimation of TPC fitting
+#' Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty
+#' in parameter estimation of TPC fitting
 #'
-#' @param bootstrap_uncertainties_tpcs a `tibble` A tibble object output by [predict_curves()], containing TPCs
-#' with uncertainty bands. Each TPC consists of predictions for temperatures ranging from `temp - 20` to `temp + 15`
-#' with a resolution of 0.01°C. The tibble also includes an estimate TPC.
+#' @param bootstrap_tpcs a `tibble` A tibble object as produced by
+#' [predict_curves()], containing bootstrapped TPCs to propagate uncertainty.
 #'
-#' @param temp a vector of temperatures used in the experiment.
-#' It should have at least four different temperatures and must contain only numbers
-#' without any missing values.
+#' @param alpha a number between 0 and 1 to choose transparency of the bootstrapped
+#' curves (0 = complete transparency, 1 = solid line).
 #'
-#' @param dev_rate a vector of estimated development rates corresponding to each temperature.
-#' These rates are calculated as the inverse of the number of days to complete the transition
-#' from the beginning of a certain life stage to the beginning of the following at each temperature.
-#' It must be numeric and of the same length as `temp`.
-#'
-#' @param species A string containing the name of the species in the study. The function converts the string to a title
-#' in the ggplot object in italics.
-#'
-#' @param life_stage A string containing the life stage studied for this rate-temperature relationship. The function
-#' converts the string to a subtitle in the ggplot object.
+#' @inheritParams plot_devmodels
 #'
 #' @returns A ggplot object containing the visual representation of the estimate TPC and the bootstrapped uncertainty
 #' curves as a ribbon. Each model is represented in a facet, and data points are also explicit.
@@ -25,123 +15,125 @@
 #' @seealso `browseVignettes("rTPC")` for model names, start values searching workflows, and
 #'  bootstrapping procedures using both [rTPC::get_start_vals()] and [nls.multstart::nls_multstart()]
 #'
-#'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
+#'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data,
+#'  which is in turn based on [nls.multstart::nls_multstart()].
 #'  [predict_curves()] for bootstrapping procedure based on the above-mentioned `rTPC` vignettes.
 #'
-#' @references
-#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
-#'  (for reading on model selection in TPC framework)
-#'
-#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
-#'
-#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
-#'
-#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
-#'
-#' @source
-#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+#' @inherit fit_devmodels references source
 #'
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' data("aphid")
 #'
-#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                         dev_rate = aphid$rate_value,
-#'                                         model_name = "all")
+#' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+#'                              dev_rate = aphid$rate_value,
+#'                              model_name = "all")
 #'
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
-#'                fitted_parameters = fitted_tpcs_aphid,
+#'                fitted_parameters = fitted_tpcs,
 #'                species = "Brachycaudus swartzi",
-#'                life_stage = "Nymphs") # choose "lactin2"
+#'                life_stage = "Nymphs")
 #'
 #' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
-#' tpc_preds_boots_aphid <- predict_curves(temp = aphid$temperature,
-#'                                              dev_rate = aphid$rate_value,
-#'                                              fitted_parameters = fitted_tpcs_aphid,
-#'                                              model_name_2boot = c("lactin2",
-#'                                               "briere2", "ratkowsky"),
-#'                                              propagate_uncertainty = TRUE,
-#'                                              n_boots_samples = 100)
+#' boot_tpcs <- predict_curves(temp = aphid$temperature,
+#'                             dev_rate = aphid$rate_value,
+#'                             fitted_parameters = fitted_tpcs,
+#'                             model_name_2boot = c("lactin2", "briere2", "beta"),
+#'                             propagate_uncertainty = TRUE,
+#'                             n_boots_samples = 10)
 #'
-#' print(tpc_preds_boots_aphid)
+#' print(boot_tpcs)
 #'
 #' # Plot bootstrapped curves:
 #'
-#' plot_uncertainties(bootstrap_uncertainties_tpcs = tpc_preds_boots_aphid,
-#'                    temp = aphid$temperature,
+#' plot_uncertainties(temp = aphid$temperature,
 #'                    dev_rate = aphid$rate_value,
+#'                    bootstrap_tpcs = boot_tpcs,
 #'                    species = "Brachycaudus schwartzi",
 #'                    life_stage = "Nymphs")
-#' }
 
-plot_uncertainties <- function(bootstrap_uncertainties_tpcs,
-                               temp,
-                               dev_rate,
+
+plot_uncertainties <- function(temp = NULL,
+                               dev_rate = NULL,
+                               bootstrap_tpcs = NULL,
                                species = NULL,
-                               life_stage = NULL) {
+                               life_stage = NULL,
+                               alpha = 0.2) {
+
+  ## Checks
 
   check_data(temp, dev_rate)
 
-  if(!is.character(species) &&
-     !is.null(species)) {
+  if (!is.character(species) && !is.null(species)) {
     stop("`species` must be a character or `NULL`")
   }
 
-  if(!is.character(life_stage) &&
-     !is.null(life_stage)) {
+  if (!is.character(life_stage) && !is.null(life_stage)) {
     stop("`life_stage` must be a character or `NULL`")
   }
 
-  if(!is.data.frame(bootstrap_uncertainties_tpcs)) {
-    stop("`bootstrap_uncertainties_tpcs` must be a  `data.frame` or `tibble`
-    inherited from the output of `mappestRisk::predict_curves()` function with
+  if (!is.data.frame(bootstrap_tpcs)) {
+    stop("`bootstrap_tpcs` must be a  `data.frame` or `tibble`
+    as produced by `mappestRisk::predict_curves()` function with
     `propagate_uncertainty = TRUE` and `n_boots_samples > 0`.")
   }
-  if(suppressWarnings(any(!c("model_name_iter", "boots_iter", "temp", "preds", "curvetype") %in% colnames(bootstrap_uncertainties_tpcs)))){
-    stop("`bootstrap_uncertainties_tpcs` must be a  `data.frame` or `tibble` inherited from the
-    output of `mappestRisk::predict_curves()` function with
+
+  if (!all(c("model_name", "boot_iter", "temp", "dev_rate", "curvetype") %in% names(bootstrap_tpcs))) {
+    stop("`bootstrap_tpcs` must be a  `data.frame` or `tibble`
+    as produced by `mappestRisk::predict_curves()` function with
     `propagate_uncertainty = TRUE` and `n_boots_samples > 0`.")
   }
-  if(nrow(bootstrap_uncertainties_tpcs) == 0){
+
+  if (nrow(bootstrap_tpcs) == 0) {
     stop("No bootstrapped or estimate predictions are available.
-         Please check `bootstrap_uncertainties_tpcs` and consider using a different model or
+         Please check `bootstrap_tpcs` and consider using a different model or
          setting `propagate_uncertainty` to `FALSE` in `predict_curves()`")
   }
-  if(!any(bootstrap_uncertainties_tpcs$curvetype == "uncertainty")){
-    warning("No bootstrapped predictions available. Please check `bootstrap_uncertainties_tpcs`.
+
+  if (!any(bootstrap_tpcs$curvetype == "uncertainty")) {
+    warning("No bootstrapped predictions available. Please check `bootstrap_tpcs`.
              Plotting only the central curve.")
   }
+
+  if (alpha < 0 | alpha > 1) {
+    stop("alpha must be a number between 0 (complete transparency) and 1 (solid line).")
+  }
+
+  ## end checks ##
+
   devdata <- dplyr::tibble(temp,
                            dev_rate)
-  central_curve <- bootstrap_uncertainties_tpcs |>
+
+  central_curve <- bootstrap_tpcs |>
     dplyr::filter(curvetype == "estimate")
-  uncertainty_curves <- bootstrap_uncertainties_tpcs |>
+
+  uncertainty_curves <- bootstrap_tpcs |>
     dplyr::filter(curvetype == "uncertainty")
 
   my_title <- substitute(italic(paste(x)), list(x = species))
+
   plot_boot_tpcs <- ggplot2::ggplot() +
     ggplot2::geom_line(data = uncertainty_curves,
                        ggplot2::aes(x = temp,
-                                    y = preds,
-                                    group = boots_iter),
+                                    y = dev_rate,
+                                    group = boot_iter),
                        col = "#0E4D62", #'#586A64',
-                       alpha = 0.08,
+                       alpha = alpha,
                        linewidth = 0.32) +
     ggplot2::geom_line(data = central_curve,
                        ggplot2::aes(x = temp,
-                                    y = preds),
+                                    y = dev_rate),
                        col = "#CF8143", #'#B1492E',
                        linewidth = .85) +
     ggplot2::geom_point(data = devdata,
                         ggplot2::aes(temp, dev_rate),
                         size = 2) +
-    ggplot2::facet_wrap(~model_name_iter, scales = "free")+
-    ggplot2::scale_x_continuous(limits = c(0, 50))+
-    ggplot2::scale_y_continuous(limits = c(0, 1.5*max(devdata$dev_rate, na.rm = TRUE)))+
+    ggplot2::facet_wrap(~model_name, scales = "free") +
+    ggplot2::scale_x_continuous(limits = c(0, 50)) +
+    ggplot2::scale_y_continuous(limits = c(0, 1.5*max(devdata$dev_rate, na.rm = TRUE))) +
     ggplot2::theme_bw(base_size = 12) +
     ggplot2::labs(x = 'Temperature',
                   y = italic(R)(T)~(d^-1),

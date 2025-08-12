@@ -18,7 +18,12 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 
-`r badger::badge_cran_release()` ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk) [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml) `r badger::badge_lifecycle("stable")` `r badger::badge_repostatus("Active")`
+`r badger::badge_cran_release()`
+![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
+[![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk)
+`r badger::badge_lifecycle("stable")`
+`r badger::badge_repostatus("Active")`
 
 <!-- badges: end -->
 
@@ -55,13 +60,13 @@ In this example, we'll show how to fit one to several thermal performance curves
 ```{r,  warning=FALSE, message=FALSE}
 library("mappestRisk")
 data("aphid") 
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,  
-                                   dev_rate = aphid$rate_value, 
-                                   model_name = c("briere2", "lactin2", "ratkowsky"))
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,  
+                             dev_rate = aphid$rate_value, 
+                             model_name = c("briere2", "lactin2", "ratkowsky"))
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
-               fitted_parameters = fitted_tpcs_aphid,
+               fitted_parameters = fitted_tpcs,
                species = "Brachycaudus schwartzi",
                life_stage = "Nymphs")
 ```
@@ -71,14 +76,14 @@ For a more complete explanation and example of model fitting and visualization, 
 Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures with *residual resampling*, following vignettes of `rTPC` package [@padfield2021]. This can be done with the function `predict_curves()` by setting the argument `propagate_uncertainty` to be `TRUE`. Resulting predictions can be plotted using `plot_uncertainties()`. A detailed explanation is given in the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
 
 ```{r, warning=FALSE, fig.width=12, fig.height=5, dpi=300, out.width="100%", cache = TRUE}
-preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
-                                   dev_rate = aphid$rate_value,
-                                   fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2"),
-                                   propagate_uncertainty = TRUE,
-                                   n_boots_samples = 100)
+preds_boots <- predict_curves(temp = aphid$temperature,          
+                              dev_rate = aphid$rate_value,
+                              fitted_parameters = fitted_tpcs,
+                              model_name_2boot = c("briere2", "lactin2"),
+                              propagate_uncertainty = TRUE,
+                              n_boots_samples = 10)
 
-plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
+plot_uncertainties(bootstrap_tpcs = preds_boots,
                    temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
@@ -90,9 +95,9 @@ plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
 After the previous steps, the user can calculate the thermal boundaries of the optimal zone of the TPC –i.e., those temperature values yielding the Y-th quantile of the development rate (default to $`\mathrm{Q}_{75}`$) at both sides of the curve peak or $`R_\max`$. Once a model has been selected under both ecological and statistical criteria, the `thermal_suitability_bounds()` function calculates these values:
 
 ```{r, warning=FALSE}
-boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
-                                      model_name = "briere2",        
-                                      suitability_threshold = 80) 
+boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
+                                model_name = "briere2",        
+                                suitability_threshold = 80) 
 ```
 
 ### 3. Climatic data extraction and projection
@@ -100,12 +105,10 @@ boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
 These optimal thermal boundaries are used for spatial projection of pest risk. The `map_risk()` function automatically downloads temperature data into a `SpatRaster` format from [WorldClim](https://worldclim.org/data/worldclim21.html) masked into an user-defined region or area, and then calculates the number of months per year with highly suitable temperatures for pest development.
 
 ```{r, message = FALSE}
-risk_rast <- map_risk(t_vals = boundaries_aphid, 
-                      path = tempdir(), # directory to download data 
-                      region = "Réunion",    
-                      plot = TRUE,
-                      interactive = FALSE,
-                      verbose = TRUE)
+risk_rast <- map_risk(t_vals = boundaries, 
+                      region = "Réunion",   
+                      path = tempdir() # directory to download climate data 
+                      )
 ```
 
 ### Citation

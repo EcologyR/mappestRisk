@@ -1,6 +1,6 @@
 Package: mappestRisk
 Title: Create Maps Forecasting Risk of Pest Occurrence
-Version: 0.0.9
+Version: 0.1.0
 Authors@R: 
   c(
     person("Darío", "San-Segundo  Molina", role = c("aut", "cre"), 
@@ -15,7 +15,8 @@ Authors@R:
 Description: 'mappestRisk' has three different modules: (1) model fitting & selection
              using a set of the most commonly used equations describing developmental 
              responses to temperature helped by already existing R packages 
-             using equation helpers from rTPC(Padfield and O’Sullivan 2023),
+             using equation helpers from 'rTPC' (Padfield et al. 2021, 
+             <doi:10.1111/2041-210X.13585>),
              with visualization of model predictions to guide ecological criteria for
              model selection; (2) calculation of suitability thermal limits,
              which consist on a temperature interval delimiting the optimal 
@@ -33,9 +34,8 @@ Depends:
 LazyData: true
 Suggests: 
     covr,
-    testthat (>= 3.0.0),
     leaflet,
-    sf
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
     devRate,

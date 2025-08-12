@@ -1,37 +1,71 @@
+
+data("aphid")
+
+set.seed(2025)
+
+tpcs <- fit_devmodels(temp = aphid$temperature,
+                      dev_rate = aphid$rate_value,
+                      model_name = c("lactin2", "briere2")
+)
+
+curves <- suppressWarnings(
+  predict_curves(temp = aphid$temperature,
+                 dev_rate = aphid$rate_value,
+                 fitted_parameters = tpcs,
+                 model_name_2boot = c("lactin2", "briere2"),
+                 propagate_uncertainty = TRUE,
+                 n_boots_samples = 2))
+
+bounds <- therm_suit_bounds(curves, model_name = "lactin2", suitability_threshold = 80)
+
+
+
+test_that("`therm_suit_bounds()` produces correct output", {
+
+  expect_equal(bounds$model_name, rep("lactin2", 3))
+  expect_equal(bounds$suitability, rep("80%", 3))
+  expect_type(bounds$tval_left, "double")
+  expect_type(bounds$tval_right, "double")
+  expect_type(bounds$pred_suit, "double")
+  expect_equal(bounds$iter, c("1", "2", "estimate"))
+
+})
+
+
 test_that("`therm_suit_bounds()` should throw an error if the structure of `preds_tbl` has been altered from
           that output at `predict_curves()`", {
-          boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  expect_error(therm_suit_bounds(preds_tbl = boots_params_example |> dplyr::select(1:3),
-                                 model_name = unique(boots_params_example$model_name)[1],
-                                 suitability_threshold = 80),
-               "`preds_tbl` must be a  `data.frame` inherited   from the output of `mappestRisk::predict_curves()` function",
-               fixed = TRUE)
-})
+
+            expect_error(therm_suit_bounds(preds_tbl = curves |> dplyr::select(1:3),
+                                           model_name = unique(curves$model_name)[1],
+                                           suitability_threshold = 80),
+                         "`preds_tbl` must be a `data.frame` with columns as produced by the `predict_curves()` function",
+                         fixed = TRUE)
+          })
 
 
 test_that("`therm_suit_bounds()` should throw an error if the names of `preds_tbl` has been altered from
           that output at `predict_curves()`", {
-            boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-            expect_error(therm_suit_bounds(preds_tbl = boots_params_example |> dplyr::rename(temperature = temp),
-                                           model_name = unique(boots_params_example$model_name)[1],
+
+            expect_error(therm_suit_bounds(preds_tbl = curves |> dplyr::rename(temperature = temp),
+                                           model_name = unique(curves$model_name)[1],
                                            suitability_threshold = 80),
-                         "preds_tbl` must be a  `data.frame` inherited   from the output of `mappestRisk::predict_curves()` function",
+                         "`preds_tbl` must be a `data.frame` with columns as produced by the `predict_curves()` function",
                          fixed = TRUE)
           })
 
 test_that("`therm_suit_bounds()` should throw an error when no `preds_tbl` is provided", {
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  expect_error(therm_suit_bounds(model_name = unique(boots_params_example$model_name)[1],
+
+  expect_error(therm_suit_bounds(model_name = "lactin2",
                                  suitability_threshold = 80),
-               "The `preds_tbl` argument is absent. Please provide a `tibble` or `data.frame` object
+               "The `preds_tbl` argument is missing. Please provide a `tibble` or `data.frame` object
          from `predict_curves()",
                fixed = TRUE)
 })
 
 test_that("`therm_suit_bounds()` should throw an error if `preds_tbl` is given but it's empty", {
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  expect_error(therm_suit_bounds(preds_tbl = boots_params_example |> dplyr::slice(0),
-                                 model_name = unique(boots_params_example$model_name)[1],
+
+  expect_error(therm_suit_bounds(preds_tbl = curves |> dplyr::slice(0),
+                                 model_name = unique(curves$model_name)[1],
                                  suitability_threshold = 80),
                "The `preds_tbl` table is empty; check out the output of `fit_devmodels()` and `predict_curves()`.",
                fixed = TRUE)
@@ -39,49 +73,40 @@ test_that("`therm_suit_bounds()` should throw an error if `preds_tbl` is given b
 
 test_that("`therm_suit_bounds()` should throw a message with default value of `suitability_threshold` when it's not
           provided by the user", {
-            boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-            expect_message(capture_warnings(therm_suit_bounds(preds_tbl = boots_params_example,
-                                                              model_name = "joehnk")),
-                           "No suitability_threshold value input. Default to `suitability_threshold = 75`")
+
+            expect_message(capture_warnings(therm_suit_bounds(preds_tbl = curves,
+                                                              model_name = "lactin2")),
+                           "No suitability_threshold value provided. Default to `suitability_threshold = 75`")
           })
 
 test_that("`therm_suit_bounds()` advises with a warning that `suitability_threshold` values below 50
 are not an indicator of high suitability but of thermal tolerance", {
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  pool_warns <- capture_warnings(therm_suit_bounds(preds_tbl = boots_params_example,
-                                                   model_name = "joehnk",
+
+  pool_warns <- capture_warnings(therm_suit_bounds(preds_tbl = curves,
+                                                   model_name = "lactin2",
                                                    suitability_threshold = 30))
-  expect_true(any(pool_warns == "Suitability thresholds under 50% indicate thermal boundaries for positive development but not
-necessarily optimal for pest risk assessment. Subsequent map risk analysis will imply
-risk of thermal tolerance at each location rather than risk of optimal performance or high pest pressure."))
+  expect_true(grepl("Suitability thresholds under 50% indicate thermal boundaries", pool_warns, fixed = TRUE))
 })
 
 ## model_names
-model_name_test <- "lactin1"
-
 test_that("`therm_suit_bounds()` should throw an error if `model_name` is not in `preds_tbl`", {
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  expect_error(therm_suit_bounds(preds_tbl = boots_params_example,
-                                 model_name = model_name_test,
+
+  models <- c("lactin1", "lactin3")
+  expect_error(therm_suit_bounds(preds_tbl = curves,
+                                 model_name = models,
                                  suitability_threshold = 80),
-               paste("Model", model_name_test, "did not fitted well to your data or is not available. Try using another fitted model in your table instead"),
+               paste("Model(s)", paste(models, collapse = ", "),
+                     "is/are not available in `preds_tbl`.
+    Try using another fitted model in your table instead"),
                fixed = TRUE)
 })
 
-test_that("`therm_suit_bounds()` should throw an error if more than one model is provided in `model_name`", {
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  expect_error(therm_suit_bounds(preds_tbl = boots_params_example,
-                                 model_name = c("lactin1", "joehnk"),
-                                 suitability_threshold = 80),
-               "Only one model is allowed in `therm_suit_bounds()` at a time.
-Please use this function repetedly for each of your models one by one",
-               fixed = TRUE)
-})
+
 
 test_that("`therm_suit_bounds()` should throw an error when no model is provided in `model_name`
           by the user", {
-            boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-            expect_error(therm_suit_bounds(preds_tbl = boots_params_example,
+
+            expect_error(therm_suit_bounds(preds_tbl = curves,
                                            suitability_threshold = 80),
                          "No model name was provided by the user. Please provide any model present in `pred_tbl`",
                          fixed = TRUE)
@@ -89,21 +114,13 @@ test_that("`therm_suit_bounds()` should throw an error when no model is provided
 
 test_that("`therm_suit_bounds()` should give a warning recommending uncertainty propagation if no uncertainty curves
             are present in `preds_tbl`", {
-              boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-              pool_warns <- capture_warnings(therm_suit_bounds(preds_tbl = boots_params_example |> dplyr::filter(curvetype == "estimate"),
-                                                               model_name = "joehnk",
+
+              pool_warns <- capture_warnings(therm_suit_bounds(preds_tbl = curves |> dplyr::filter(curvetype == "estimate"),
+                                                               model_name = "lactin2",
                                                                suitability_threshold = 80))
-              expect_true(any(pool_warns ==  "No bootstrapped predictions were performed.
-We strongly recommend to propagate uncertainty by setting the `predict_curves()`
-arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`"))
+              expect_true(pool_warns ==
+                            "No bootstrapped predictions were performed.\n    We strongly recommend to propagate uncertainty by setting the `predict_curves()`\n            arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
             })
 
-test_that("`therm_suit_bounds()` outputs a tibble with appropriate structure", {
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  pool_warns <- capture_warnings(therm_suit_bounds(preds_tbl = boots_params_example |> dplyr::filter(curvetype == "estimate"),
-                                                   model_name = "joehnk",
-                                                   suitability_threshold = 80))
-  expect_true(any(pool_warns ==  "No bootstrapped predictions were performed.
-We strongly recommend to propagate uncertainty by setting the `predict_curves()`
-arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`"))
-})
+
+

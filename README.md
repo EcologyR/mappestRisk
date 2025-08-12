@@ -8,6 +8,8 @@
 [![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
 ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
 [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk)
 [![](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Project Status: Active - The project has reached a stable, usable
 state and is being actively
@@ -83,13 +85,13 @@ using `plot_devmodels()`.
 ``` r
 library("mappestRisk")
 data("aphid") 
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,  
-                                   dev_rate = aphid$rate_value, 
-                                   model_name = c("briere2", "lactin2", "ratkowsky"))
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,  
+                             dev_rate = aphid$rate_value, 
+                             model_name = c("briere2", "lactin2", "ratkowsky"))
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
-               fitted_parameters = fitted_tpcs_aphid,
+               fitted_parameters = fitted_tpcs,
                species = "Brachycaudus schwartzi",
                life_stage = "Nymphs")
 ```
@@ -110,20 +112,20 @@ plotted using `plot_uncertainties()`. A detailed explanation is given in
 the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
 
 ``` r
-preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
-                                   dev_rate = aphid$rate_value,
-                                   fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2"),
-                                   propagate_uncertainty = TRUE,
-                                   n_boots_samples = 100)
+preds_boots <- predict_curves(temp = aphid$temperature,          
+                              dev_rate = aphid$rate_value,
+                              fitted_parameters = fitted_tpcs,
+                              model_name_2boot = c("briere2", "lactin2"),
+                              propagate_uncertainty = TRUE,
+                              n_boots_samples = 10)
 #> 
-#> ADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`
+#> Note: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`
 #> 
-#>  Bootstrapping simulations completed for briere2 
+#>  Bootstrapping simulations completed for briere2
 #> 
 #>  Bootstrapping simulations completed for lactin2
 
-plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
+plot_uncertainties(bootstrap_tpcs = preds_boots,
                    temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
@@ -143,9 +145,9 @@ criteria, the `thermal_suitability_bounds()` function calculates these
 values:
 
 ``` r
-boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
-                                      model_name = "briere2",        
-                                      suitability_threshold = 80) 
+boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
+                                model_name = "briere2",        
+                                suitability_threshold = 80) 
 ```
 
 ### 3. Climatic data extraction and projection
@@ -158,24 +160,10 @@ user-defined region or area, and then calculates the number of months
 per year with highly suitable temperatures for pest development.
 
 ``` r
-risk_rast <- map_risk(t_vals = boundaries_aphid, 
-                      path = tempdir(), # directory to download data 
-                      region = "Réunion",    
-                      plot = TRUE,
-                      interactive = FALSE,
-                      verbose = TRUE)
-#> 
-#> (Down)loading countries map...
-#> 
-#> (Down)loading temperature rasters...
-#> 
-#> Cropping temperature rasters to region...
-#> 
-#> Masking temperature rasters with region...
-#> 
-#> Computing summary layers...
-#> 
-#> Plotting map...
+risk_rast <- map_risk(t_vals = boundaries, 
+                      region = "Réunion",   
+                      path = tempdir() # directory to download climate data 
+                      )
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />

@@ -28,7 +28,7 @@ model_name_translate <- function(user_model_name) {
 
 # take names from a fitted model to assign them as names for start values later
 extract_param_names <- function(nls_object){
-  parameter_est <- coef(nls_object)
+  parameter_est <- stats::coef(nls_object)
   param_names <- names(parameter_est)
   return(param_names)
 }
@@ -64,7 +64,7 @@ sim_tpc_gridparams <- function(grid_parameters, temperature, model_name){
   model_eq <- available_models |>
     dplyr::filter(model_name == model_i)
   tpc_sim_i <- purrr::map(.x = temperature,
-                          .f = reformulate(termlabels = unique(model_eq$params_formula))
+                          .f = stats::reformulate(termlabels = unique(model_eq$params_formula))
   )
   tpc_sim_tbl <- dplyr::tibble(temperature,
                                pred_devrate = tpc_sim_i) |>
@@ -80,7 +80,7 @@ start_vals_devRate <- function (model_name_2fit, temperature, dev_rate) {
 
   if (model_name_2fit$model_name == "briere1") {
     start_vals_explore <- c(a = 2e-04, tmin = 8, tmax = 32)
-  message("Poorly informative start values for briere1 model")
+    message("Poorly informative start values for briere1 model")
   } else {
     model_name_devrate <- model_name_2fit$source_model_name
     devdata <- dplyr::tibble(temp = temperature,
@@ -93,9 +93,9 @@ start_vals_devRate <- function (model_name_2fit, temperature, dev_rate) {
     start_lower_vals <- purrr::map(.x = start_vals_prev,
                                    .f = ~.x - abs(.x/2))
 
-    multstart_vals_fit <- nls.multstart::nls_multstart(formula = reformulate(response = "rate_development",
-                                                                             termlabels = model_name_2fit |>
-                                                                               dplyr::pull(formula)),
+    multstart_vals_fit <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "rate_development",
+                                                                                    termlabels = model_name_2fit |>
+                                                                                      dplyr::pull(formula)),
                                                        data = devdata,
                                                        iter = 500,
                                                        start_lower = start_lower_vals,

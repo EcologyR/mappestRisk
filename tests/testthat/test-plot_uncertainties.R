@@ -1,26 +1,31 @@
 
-# Test input data types
-test_that("plot_uncertainties should throw an error if temperature data is not numeric", {
+data("aphid")
 
-  rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  temp_test <- seq(4, 40, 3)
-  expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example,
-                                  temp = as.data.frame(temp_test),
-                                  dev_rate = rate_test,
-                                  species = "Brachycaudus schwartzi",
-                                  life_stage = "Nymphs"),
-               "temperature data is not numeric. Please check it.")
-})
+set.seed(2025)
+
+tpcs <- fit_devmodels(temp = aphid$temperature,
+                      dev_rate = aphid$rate_value,
+                      model_name = c("lactin2", "briere2", "mod_weibull")
+)
+
+curves <- suppressWarnings(
+  predict_curves(temp = aphid$temperature,
+                 dev_rate = aphid$rate_value,
+                 fitted_parameters = tpcs,
+                 model_name_2boot = c("lactin2", "briere2"),
+                 propagate_uncertainty = TRUE,
+                 n_boots_samples = 2))
+
+
+
+
+
 
 test_that("plot_uncertainties should throw an error if a given `species` argument is not a string", {
 
-  rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  temp_test <- seq(4, 40, 3)
-  expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example,
-                                  temp = temp_test,
-                                  dev_rate = rate_test,
+  expect_error(plot_uncertainties(bootstrap_tpcs = curves,
+                                  temp = aphid$temperature,
+                                  dev_rate = aphid$rate_value,
                                   species = as.factor("Brachycaudus schwartzi"),
                                   life_stage = "Nymphs"),
                "`species` must be a character or `NULL`")
@@ -28,118 +33,80 @@ test_that("plot_uncertainties should throw an error if a given `species` argumen
 
 test_that("plot_uncertainties should throw an error if a given `life stage` argument is not a string", {
 
-  rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  temp_test <- seq(4, 40, 3)
-  expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example,
-                                  temp = temp_test,
-                                  dev_rate = rate_test,
+  expect_error(plot_uncertainties(bootstrap_tpcs = curves,
+                                  temp = aphid$temperature,
+                                  dev_rate = aphid$rate_value,
                                   species = "Brachycaudus schwartzi",
                                   life_stage = 23),
                "`life_stage` must be a character or `NULL`")
 })
 
-test_that("plot_uncertainties should throw an error if dev_rate data is not numeric", {
 
-  rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  temp_test <- seq(4, 40, 3)
-  expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example,
-                                  temp = temp_test,
-                                  dev_rate = as.logical(rate_test),
+
+test_that("plot_uncertainties should throw an error if `bootstrap_tpcs` is not a data.frame", {
+
+  expect_error(plot_uncertainties(bootstrap_tpcs = as.matrix(curves),
+                                  temp = aphid$temperature,
+                                  dev_rate = aphid$rate_value,
                                   species = "Brachycaudus schwartzi",
                                   life_stage = "Nymphs"),
-               "development rate data is not numeric. Please check it.")
-})
-
-test_that("plot_uncertainties should throw an error if temperature and development rate inputs are not of same length", {
-
-  rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  temp_test <- seq(4, 40, 3)
-  expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example,
-                                  temp = sample(temp_test, 5),
-                                  dev_rate = sample(rate_test, 6),
-                                  species = "Brachycaudus schwartzi",
-                                  life_stage = "Nymphs"),
-               "development rate and temperature inputs are not of same length. Please check it.")
-})
-
-test_that("plot_uncertainties should throw an error if `bootstrap_uncertainties_tpcs` is not a data.frame", {
-  rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  temp_test <- seq(4, 40, 3)
-  expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = as.matrix(boots_params_example),
-                                  temp = temp_test,
-                                  dev_rate = rate_test,
-                                  species = "Brachycaudus schwartzi",
-                                  life_stage = "Nymphs"),
-               "`bootstrap_uncertainties_tpcs` must be a  `data.frame` or `tibble`
-    inherited from the output of `mappestRisk::predict_curves()` function with
+               "`bootstrap_tpcs` must be a  `data.frame` or `tibble`
+    as produced by `mappestRisk::predict_curves()` function with
     `propagate_uncertainty = TRUE` and `n_boots_samples > 0`.",
                fixed = TRUE)
 })
 
-test_that("plot_uncertainties should throw an error if `bootstrap_uncertainties_tpcs` data.frame
+test_that("plot_uncertainties should throw an error if `bootstrap_tpcs` data.frame
           structure has been modified from the output of `predict_curves()`", {
-            rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-            boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-            temp_test <- seq(4, 40, 3)
-            expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example |>
-                                    dplyr::select(-boots_iter),
-                                  temp = temp_test,
-                                  dev_rate = rate_test,
-                                  species = "Brachycaudus schwartzi",
-                                  life_stage = "Nymphs"),
-               "`bootstrap_uncertainties_tpcs` must be a  `data.frame` or `tibble` inherited from the
-    output of `mappestRisk::predict_curves()` function with
+
+            expect_error(plot_uncertainties(bootstrap_tpcs = curves |>
+                                              dplyr::select(-boot_iter),
+                                            temp = aphid$temperature,
+                                            dev_rate = aphid$rate_value,
+                                            species = "Brachycaudus schwartzi",
+                                            life_stage = "Nymphs"),
+                         "`bootstrap_tpcs` must be a  `data.frame` or `tibble`
+    as produced by `mappestRisk::predict_curves()` function with
     `propagate_uncertainty = TRUE` and `n_boots_samples > 0`.",
-               fixed = TRUE)
-})
-
-test_that("plot_uncertainties should throw an error if `bootstrap_uncertainties_tpcs` data.frame
-          contains no uncertainty predictions", {
-            rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-            boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-            temp_test <- seq(4, 40, 3)
-            expect_warning(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example |>
-                                              dplyr::filter(curvetype != "uncertainty"),
-                                              temp = temp_test,
-                                              dev_rate = rate_test,
-                                              species = "Brachycaudus schwartzi",
-                                              life_stage = "Nymphs"),
-                         "No bootstrapped predictions available. Please check `bootstrap_uncertainties_tpcs`.
-             Plotting only the central curve.",
                          fixed = TRUE)
-})
+          })
 
-test_that("plot_uncertainties should throw an error if `bootstrap_uncertainties_tpcs` data.frame
-          contains zero rows", {
-            rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-            boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-            temp_test <- seq(4, 40, 3)
-            expect_error(plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example |> dplyr::slice(0),
-                                              temp = temp_test,
-                                              dev_rate = rate_test,
+test_that("plot_uncertainties should throw a warning if `bootstrap_tpcs` data.frame
+          contains no uncertainty predictions", {
+
+            expect_warning(plot_uncertainties(bootstrap_tpcs = curves |>
+                                                dplyr::filter(curvetype != "uncertainty"),
+                                              temp = aphid$temperature,
+                                              dev_rate = aphid$rate_value,
                                               species = "Brachycaudus schwartzi",
                                               life_stage = "Nymphs"),
-                           "No bootstrapped or estimate predictions are available.
-         Please check `bootstrap_uncertainties_tpcs` and consider using a different model or
-         setting `propagate_uncertainty` to `FALSE` in `predict_curves()",
+                           "No bootstrapped predictions available. Please check `bootstrap_tpcs`.
+             Plotting only the central curve.",
                            fixed = TRUE)
-})
+          })
+
+test_that("plot_uncertainties should throw an error if `bootstrap_tpcs` data.frame
+          contains zero rows", {
+
+            expect_error(plot_uncertainties(bootstrap_tpcs = curves |> dplyr::slice(0),
+                                            temp = aphid$temperature,
+                                            dev_rate = aphid$rate_value,
+                                            species = "Brachycaudus schwartzi",
+                                            life_stage = "Nymphs"),
+                         "No bootstrapped or estimate predictions are available.
+         Please check `bootstrap_tpcs` and consider using a different model or
+         setting `propagate_uncertainty` to `FALSE` in `predict_curves()",
+                         fixed = TRUE)
+          })
 
 # test if output is a ggplot object
 test_that("plot_uncertainties() outputs a ggplot object",{
 
-  rate_test <- readRDS(file = test_path("testdata", "rate_test.rds"))
-  boots_params_example <- readRDS(file = test_path("testdata", "boots_params_tbl.rds"))
-  temp_test <- seq(4, 40, 3)
-  example_plotdevs_uncertainty <- plot_uncertainties(bootstrap_uncertainties_tpcs = boots_params_example,
-                                         temp = temp_test,
-                                         dev_rate = rate_test,
-                                         species = "Brachycaudus schwartzi",
-                                         life_stage = "Nymphs")
-  expect_true(class(example_plotdevs_uncertainty)[2] == "ggplot")
+  example_plotdevs_uncertainty <- plot_uncertainties(bootstrap_tpcs = curves,
+                                                     temp = aphid$temperature,
+                                                     dev_rate = aphid$rate_value,
+                                                     species = "Brachycaudus schwartzi",
+                                                     life_stage = "Nymphs")
+  expect_true(inherits(example_plotdevs_uncertainty, "ggplot"))
 })
 

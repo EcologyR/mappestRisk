@@ -24,7 +24,7 @@ using the parameters published in \code{\link[devRate:devRateEqStartVal]{devRate
 as first attempts to iterate.
 As an exception, if \code{model_name == "briere1"}, generic starting values are provided
 and advised to the user due to the unrealistic value of some parameters in the
-\link{devRate} data set.}
+\code{devRate} data set.}
 
 \item{source_model_name}{name of the function in the source packages \code{rTPC} and \code{devRate}.}
 
