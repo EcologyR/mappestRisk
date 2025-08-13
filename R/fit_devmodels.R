@@ -212,15 +212,20 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
         list_param <- list_param
       } else {list_param <- list_param |>
         dplyr::bind_rows(list_param_tbl)}
+    } # end of rTPC processing
+    list_param_convergence_warning <- list_param_tbl |>
+      dplyr::mutate(convergence_warning = ifelse(10*abs(param_est) < abs(param_se),
+                                                 "warn",
+                                                 "no warn"))
+    if (any(list_param_convergence_warning$convergence_warning == "warn")) {
+      warning(paste0("TPC model ", i, " had one or more parameters with
+unexpectedly large standard errors. Please consider it for further analyses"))
     }
-    # end of rTPC processing
-
   } # <- loop ends
 
   if (length(list_param) == 0) {
     warning("no model converged adequately for fitting your data")
   }
-
   return(list_param)
 
 }
