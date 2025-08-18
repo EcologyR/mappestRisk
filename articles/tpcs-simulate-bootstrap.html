@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mappestRisk</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -207,16 +207,21 @@ parameter uncertainty for inference.</p>
 <span><span class="va">fitted_tpcs_aphid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_devmodels.html">fit_devmodels</a></span><span class="op">(</span>temp <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">temperature</span>,</span>
 <span>                                   dev_rate <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">rate_value</span>,</span>
 <span>                                   model_name <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value, : TPC model beta had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors. Please consider it for further analyses</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value, : TPC model boatman had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors. Please consider it for further analyses</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value, : TPC model briere1 had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors. Please consider it for further analyses</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value, : TPC model joehnk had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors. Please consider it for further analyses</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value, : TPC model kamykowski had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors. Please consider it for further analyses</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value,</span></span>
+<span><span class="co">#&gt; : TPC model beta had one or more parameters with unexpectedly large standard</span></span>
+<span><span class="co">#&gt; errors.</span></span>
+<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value,</span></span>
+<span><span class="co">#&gt; : TPC model boatman had one or more parameters with unexpectedly large standard</span></span>
+<span><span class="co">#&gt; errors.</span></span>
+<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value,</span></span>
+<span><span class="co">#&gt; : TPC model briere1 had one or more parameters with unexpectedly large standard</span></span>
+<span><span class="co">#&gt; errors.</span></span>
+<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value,</span></span>
+<span><span class="co">#&gt; : TPC model joehnk had one or more parameters with unexpectedly large standard</span></span>
+<span><span class="co">#&gt; errors.</span></span>
+<span><span class="co">#&gt; Warning in fit_devmodels(temp = aphid$temperature, dev_rate = aphid$rate_value,</span></span>
+<span><span class="co">#&gt; : TPC model kamykowski had one or more parameters with unexpectedly large</span></span>
+<span><span class="co">#&gt; standard errors.</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">preds_boots_aphid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predict_curves.html">predict_curves</a></span><span class="op">(</span>temp <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">temperature</span>,          </span>
 <span>                                   dev_rate <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">rate_value</span>,</span>
@@ -231,10 +236,12 @@ parameter uncertainty for inference.</p>
 <span><span class="co">#&gt; Note: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Bootstrapping simulations completed for briere2</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = x$temp, dev_rate = x$dev_rate, model_name = unique(x$model_name)): TPC model lactin2 had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors. Please consider it for further analyses</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = x$temp, dev_rate = x$dev_rate, model_name = unique(x$model_name)): TPC model lactin2 had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors. Please consider it for further analyses</span></span>
+<span><span class="co">#&gt; Warning in fit_devmodels(temp = x$temp, dev_rate = x$dev_rate, model_name =</span></span>
+<span><span class="co">#&gt; unique(x$model_name)): TPC model lactin2 had one or more parameters with</span></span>
+<span><span class="co">#&gt; unexpectedly large standard errors.</span></span>
+<span><span class="co">#&gt; Warning in fit_devmodels(temp = x$temp, dev_rate = x$dev_rate, model_name =</span></span>
+<span><span class="co">#&gt; unique(x$model_name)): TPC model lactin2 had one or more parameters with</span></span>
+<span><span class="co">#&gt; unexpectedly large standard errors.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Bootstrapping simulations completed for lactin2</span></span></code></pre></div>
 <p>By default, the <code>predict_curves</code> function does propagate
