@@ -38,5 +38,6 @@ utils::globalVariables(
     "dev_rate",
     "model",
     "pred_suit",
-    "suitability"
+    "suitability",
+    "param_se"
   ))

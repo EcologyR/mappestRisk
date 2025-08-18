@@ -3,9 +3,10 @@ data("aphid")
 test_that("fit_devmodels returns well structured output with more than one model", {
 
   set.seed(2025)
-  out <- fit_devmodels(temp = aphid$temperature,
-                       dev_rate = aphid$rate_value,
-                       model_name = c("lactin2", "beta"))
+  out <- suppressWarnings(
+    fit_devmodels(temp = aphid$temperature,
+                  dev_rate = aphid$rate_value,
+                  model_name = c("lactin2", "beta")))
 
   expect_true(inherits(out, "data.frame"))
   expect_named(out, c("model_name", "param_name", "start_vals", "param_est", "param_se",
@@ -81,9 +82,9 @@ test_that("fit_devmodels warns no convergence", {
 ## test message for exclusion of ratkwosky, wang and mod_polynomial
 test_that("nls object is retrieved and of correct class", {
 
-  expect_message(fit_devmodels(temp = aphid$temperature,
+  expect_message(suppressWarnings(fit_devmodels(temp = aphid$temperature,
                                dev_rate = aphid$rate_value,
-                               model_name = "all"),
+                               model_name = "all")),
                  "By default, all models are fitted except `ratkowsky`, `mod_polynomial` and `wang` due to
 unrealistic behavior at some TPC regions. If you still want to fit them, please write all model names manually")
 

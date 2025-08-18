@@ -1,6 +1,6 @@
 Package: mappestRisk
 Title: Create Maps Forecasting Risk of Pest Occurrence
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
   c(
     person("Darío", "San-Segundo  Molina", role = c("aut", "cre"), 
