@@ -3,7 +3,7 @@ Title: Create Maps Forecasting Risk of Pest Occurrence
 Version: 0.1.1
 Authors@R: 
   c(
-    person("Darío", "San-Segundo  Molina", role = c("aut", "cre"), 
+    person("Darío", "San-Segundo Molina", role = c("aut", "cre"), 
       email = "dario.ssm2@gmail.com", comment = c(ORCID = "0000-0002-7831-9623")),
     person("A. Márcia", "Barbosa", role = c("aut"), 
       comment = c(ORCID = "0000-0001-8972-7713")),

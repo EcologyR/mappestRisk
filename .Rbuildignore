@@ -14,3 +14,4 @@ other/
 references.bib
 ^vignettes/articles$
 README_cache/
+^CITATION\.cff$
