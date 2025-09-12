@@ -67,7 +67,7 @@
 #'                              dev_rate = aphid$rate_value,
 #'                              model_name = c("lactin2", "briere2", "mod_weibull")
 #'                              )
-#' fitted_tpcs
+#' head(fitted_tpcs)
 #'
 
 fit_devmodels <- function(temp = NULL,

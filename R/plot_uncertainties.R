@@ -37,7 +37,6 @@
 #'                species = "Brachycaudus swartzi",
 #'                life_stage = "Nymphs")
 #'
-#' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
 #' boot_tpcs <- predict_curves(temp = aphid$temperature,
 #'                             dev_rate = aphid$rate_value,
 #'                             fitted_parameters = fitted_tpcs,
@@ -47,7 +46,6 @@
 #'
 #' print(boot_tpcs)
 #'
-#' # Plot bootstrapped curves:
 #'
 #' plot_uncertainties(temp = aphid$temperature,
 #'                    dev_rate = aphid$rate_value,
