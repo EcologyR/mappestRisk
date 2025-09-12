@@ -45,14 +45,14 @@ Here we provide a example[^2]:
 data("aphid")
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
                                    dev_rate = aphid$rate_value,
-                                   model_name = "all")
+                                   model_name = c("briere2", "lactin2"))
 #predict curves previously
 preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
                                    model_name_2boot = c("briere2", "lactin2"),
                                    propagate_uncertainty = TRUE,
-                                   n_boots_samples = 100)
+                                   n_boots_samples = 10)
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -87,55 +87,17 @@ The following sections show how to obtain risk rasters with default visualizatio
 
 ### Risk map: country
 
-If we follow the workflow of the package in the examples elsewhere in this website, we can then create a risk map for a country. In this example, we will obtain it for Taiwan.
+If we follow the workflow of the package in the examples elsewhere in this website, we can then create a risk map for a country. In this example, we will obtain it for Bhutan.
 
-Since '*Taiwan'* is the official name included in `mappestRisk::country_names` and no `t_rast` is given by the user, the function will automatically download data cropped for this country.
-
-```{r, message = FALSE, warning=FALSE, echo=FALSE}
-
-# STEP 1: Fit TPCs
-data("aphid")
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                   dev_rate = aphid$rate_value,
-                                   model_name = "all")
-## optional: show predictions
-
-# plot_devmodels(temp = aphid$temperature,
-#                dev_rate = aphid$rate_value,
-#                fitted_parameters = fitted_tpcs_aphid,
-#                species = "Brachycaudus schwartzi",
-#                life_stage = "nymphs")
-
-# STEP 2: Obtain predictions and bootstrapped TPCs
-
-preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
-                                   dev_rate = aphid$rate_value,
-                                   fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2"),
-                                   propagate_uncertainty = TRUE,
-                                   n_boots_samples = 100)
-# optional: show simulated curves:
-# plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
-#                    temp = aphid$temperature,
-#                    dev_rate = aphid$rate_value,
-#                    species = "Brachycaudus schwartzi",
-#                    life_stage = "Nymphs")
-
-# STEP 3: Calculate thermal suitability boundaries
-
-boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,       
-                                      model_name = "lactin2",        
-                                      suitability_threshold = 80) 
-print(boundaries_aphid)
-```
+Since *Bhutan* is the official name included in `mappestRisk::country_names` and no `t_rast` is given by the user, the function will automatically download data cropped for this country. In this case, we will use
 
 ```{r}
 
-# Create a Risk Map for Taiwan
+# Create a Risk Map for Bhutan
 
-risk_rast_taiwan <- map_risk(t_vals = boundaries_aphid, 
+risk_rast_bhutan <- map_risk(t_vals = boundaries_aphid, 
                              path = tempdir(), # directory to download data 
-                             region = "Taiwan",    
+                             region = "Bhutan",    
                              mask = TRUE,
                              plot = TRUE,
                              interactive = FALSE,
@@ -146,20 +108,20 @@ The map on the left side shows how many months have optimal temperatures for the
 
 ### Risk map: Spatial Extent
 
-In the following example, the `region` will be a frame with four coordinates (`xmin, xmax, ymin, ymax`) encompassing the Canary Islands in WGS84 (or EPSG:4326) projection that is use by default in `map_risk()` function. First, let's convert the numeric extent into a `SpatExtent` using `terra::ext()`[^4]:
+In the following example, the `region` will be a frame with four coordinates (`xmin, xmax, ymin, ymax`) encompassing the Bhutan projection that is used by default in `map_risk()` function. First, let's convert the numeric extent into a `SpatExtent` using `terra::ext()`[^4]:
 
 [^4]: Note that `map_risk()` will also work for a numeric vector with this four values, so using `terra::ext()` is not neccesary and we use it for safety practices writing (it might avoid typo data, etc).
 
 ```{r}
-canary_islands_spatextent <- terra::ext(c(-19, -13, 27.5, 29.5))
+bhutan_spatextent <- terra::ext(risk_rast_bhutan)
 ```
 
-Then, we applied the same function as before for the `aphid` workflow:
+Then, we would apply the same function as before for the `aphid` workflow, with the new `region` argument set to `"bhutan_spatextent"`.
 
-```{r}
-risk_rast_canary <- map_risk(t_vals = boundaries_aphid, 
+```{r, eval=FALSE}
+risk_rast_bhutan_v2 <- map_risk(t_vals = boundaries_aphid, 
                              path = tempdir(), # directory to download data 
-                             region = canary_islands_spatextent,    
+                             region = bhutan_spatextent,    
                              mask = TRUE,
                              plot = TRUE,
                              interactive = FALSE,
@@ -170,14 +132,15 @@ risk_rast_canary <- map_risk(t_vals = boundaries_aphid,
 
 A typical scenario may involve forecasting data to regional or province level, to natural protected areas or to crop's growing regions. In these cases, the user input for `region` must be an `sf` object –e.g., by loading a shapefile (\**.shp)* in R using `sf::st_read()`– or as a `SpatVector` –e.g., by loading a shapefile using `terra::vect()`. The `map_risk()` function will automatically download global data and crop it to the spatial extent of the object, and will perform a masking operation if `mask = TRUE`.
 
-In the following example, we will use it for Andalucía region in mainland Spain. The polygon will be obtained using `mapSpain` package [@mapSpain], which uses "ETRS89" as default coordinates reference system. The `map_risk()` function will automatically transform it for the climate extraction and the procedure performs similar to the previous examples:
+In the following example, we will use it for Bhutan, as well. The `map_risk()` function will automatically transform it for the climate extraction and the procedure performs similar to the previous examples:
 
-```{r}
-andalucia_sf <- mapSpain::esp_get_ccaa(ccaa = "Andalucía")
+```{r, eval=FALSE}
+bhutan_sf <- worldmap_sf |> 
+  dplyr::filter(admin == "Bhutan")
 
-risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid, 
+risk_rast_bhutan_sfexample <- map_risk(t_vals = boundaries_aphid, 
                                 path = tempdir(), # directory to download data 
-                                region = andalucia_sf,    
+                                region = bhutan_sf,    
                                 mask = TRUE,
                                 plot = TRUE,
                                 interactive = FALSE,

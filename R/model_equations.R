@@ -20,10 +20,6 @@ lactin1 <- function(temp, a, tmax, delta_t) {
   return(est)
 }
 
-regniere <- function(temp,tmin, tmax, phi, delta_b, delta_m, b) {
- est <- phi* (exp(b * (temp - tmin)) - ((tmax - temp)/(tmax - tmin)) * exp(-b *
-   (temp - tmin)/delta_b) - ((temp - tmin)/(tmax - tmin)) * exp(b * (tmax - tmin) - (tmax - temp)/delta_m))
-return(est)
- }
+
 
 

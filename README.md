@@ -57,18 +57,20 @@ map figures.
 
 ## Installation
 
-`mappestRisk` package can be installed from the
+`mappestRisk` package’s latest version can be installed from the
 [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
 
 ``` r
 install.packages('mappestRisk', repos = c('https://ecologyr.r-universe.dev', 'https://cloud.r-project.org')) 
 ```
 
-Or from the [GitHub
-repository](https://github.com/EcologyR/mappestRisk):
+You can also install its latest version from the [GitHub
+repository](https://github.com/EcologyR/mappestRisk) after installing
+either `remotes` or `devtools` R packages.
 
 ``` r
 remotes::install_github("EcologyR/mappestRisk")  
+#alternatively -> devtools::install_github("EcologyR/mappestRisk")
 ```
 
 ## Example: `mappestRisk` workflow

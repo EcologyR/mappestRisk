@@ -80,7 +80,6 @@
 #'                species = "Brachycaudus schwartzi",
 #'                life_stage = "Nymphs")
 #'
-#' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
 #' boot_tpcs <- predict_curves(temp = aphid$temperature,
 #'                             dev_rate = aphid$rate_value,
 #'                             fitted_parameters = fitted_tpcs,
@@ -90,24 +89,16 @@
 #'
 #' print(boot_tpcs)
 #'
-#' # Plot bootstrapped curves:
-#'
 #' plot_uncertainties(temp = aphid$temperature,
 #'                    dev_rate = aphid$rate_value,
 #'                    bootstrap_tpcs = boot_tpcs,
 #'                    species = "Brachycaudus schwartzi",
 #'                    life_stage = "Nymphs")
 #'
-#' # Calculate Q80 thermal bounds
 #'
 #' boundaries <- therm_suit_bounds(preds_tbl = boot_tpcs,
 #'                                 model_name = "lactin2",
 #'                                 suitability_threshold = 80)
-#' head(boundaries)
-#'
-#' # Extract and Plot Risk maps
-#'
-#' # if you don't have temperature rasters for your region:
 #'
 #' risk_map_reunion <- map_risk(t_vals = boundaries,
 #'                              path = tempdir(), # directory to download data
@@ -116,33 +107,6 @@
 #'                              plot = TRUE,
 #'                              interactive = FALSE,
 #'                              verbose = TRUE)
-#'
-#' # If you already have a raster of monthly average temperatures
-#' # for your region of interest, you can use that as input for `t_rast`:
-#' ## first, load it
-#' tavg_file <- system.file("extdata/tavg_reunion.tif", package = "mappestRisk")
-#' tavg_rast <- terra::rast(tavg_file)
-#'
-#' ## then apply the function
-#' risk_map_reunion <- map_risk(t_vals = boundaries,
-#'                              t_rast = tavg_rast,
-#'                              mask = TRUE,
-#'                              path = tempdir(),
-#'                              plot = TRUE,
-#'                              interactive = FALSE,
-#'                              verbose = TRUE)
-#'
-#' # Using a spatial object for `region`
-#' sobrarbe <- terra::vect(system.file("extdata/sobrarbe.gpkg",
-#'                                    package = "mappestRisk"))
-#'
-#' risk_map_sobrarbe <- map_risk(t_vals = boundaries,
-#'                               region = sobrarbe,
-#'                               path = tempdir(),
-#'                               mask = TRUE,
-#'                               plot = TRUE,
-#'                               interactive = FALSE,
-#'                               verbose = TRUE)
 
 map_risk <- function(t_vals = NULL,
                      t_rast = NULL,

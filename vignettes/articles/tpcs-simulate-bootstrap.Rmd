@@ -18,7 +18,7 @@ library(mappestRisk)
 
 ### Why propagating uncertainty?
 
-Forecasting necessarily incorporates uncertainties in how much we know about the knowledge of the target system (i.e., model structure, parameter uncertainty, response or predictor variable errors, etc) that adds together with uncertainty in how to communicate findings and an unavoidable randomness within natural systems [@simmonds2022].
+Forecasting necessarily incorporates uncertainties in how much we know about the knowledge of the target system (i.e., model structure, parameter uncertainty, response or predictor variable errors, etc) that adds together with uncertainty in how to communicate findings and an unavoidable randomness within natural systems [@simmonds2022]. Specifically, propagating parameter uncertainty for estimation of performance and fitness through thermal performance curves and translate them into geographical predictions result critical to prevent biased forecasts [@woods2018].
 
 At least three different uncertainty sources of the models should be addressed in forecasts:
 
