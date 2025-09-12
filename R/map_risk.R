@@ -101,7 +101,7 @@
 #'                                 suitability_threshold = 80)
 #'
 #' risk_map_reunion <- map_risk(t_vals = boundaries,
-#'                              path = tempdir(), # directory to download data
+#'                              path = tempdir(),
 #'                              region = "Réunion",
 #'                              mask = TRUE,
 #'                              plot = TRUE,
