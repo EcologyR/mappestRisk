@@ -131,7 +131,8 @@ plot_uncertainties <- function(temp = NULL,
                         size = 2) +
     ggplot2::facet_wrap(~model_name, scales = "free") +
     ggplot2::scale_x_continuous(limits = c(0, 50)) +
-    ggplot2::scale_y_continuous(limits = c(0, 1.5*max(devdata$dev_rate, na.rm = TRUE))) +
+    ggplot2::scale_y_continuous(limits = c(0, 1.5*max(
+      devdata$dev_rate, na.rm = TRUE))) +
     ggplot2::theme_bw(base_size = 12) +
     ggplot2::labs(x = 'Temperature',
                   y = italic(R)(T)~(d^-1),

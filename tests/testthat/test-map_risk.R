@@ -17,7 +17,11 @@ curves <- suppressWarnings(
                  propagate_uncertainty = TRUE,
                  n_boots_samples = 2))
 
-bounds <- therm_suit_bounds(curves, model_name = "lactin2", suitability_threshold = 80)
+bounds <- therm_suit_bounds(curves,
+                            model_name = "lactin2", suitability_threshold = 80)
+bounds2 <- therm_suit_bounds(curves,
+                             model_name = c("lactin2", "briere2"),
+                                            suitability_threshold = 80)
 bound <- bounds[bounds$iter == "estimate", ]
 
 tavg_file <- system.file("extdata/tavg_reunion.tif", package = "mappestRisk")
@@ -101,13 +105,29 @@ test_that("masking with 'region' returns correct output", {
   skip_if_offline()
   skip_on_ci()
 
-  map5 <- map_risk(t_vals = bound, t_rast = ras, region = "Réunion", path = folder, plot = FALSE)
+  map5 <- map_risk(t_vals = bound, t_rast = ras, region = "Réunion",
+                   path = folder, plot = FALSE)
   # plot(map5)
   expect_equal(terra::values(map5, row = 1, nrows = 1, mat = FALSE),
                c(rep(NA, times = 24), rep(0, 12), rep(NA, 38)))
 
 })
 
+test_that("map_risk should throw an error if t_vals include more than one
+          TPC model", {
+  expect_error(map_risk(t_vals = bounds2, t_rast = ras, region = "Réunion"),
+               "`t_vals` must contain results from only one model. Please filter the dataset to choose a single model.",
+               fixed = TRUE)
+})
+
+test_that("map_risk should throw an error if any tval_left is higher or equal
+          than tval_right ", {
+  bounds_error <- bounds |>
+    dplyr::mutate(tval_right = c(21.7, 32, 31.8))
+  expect_error(map_risk(t_vals = bounds_error, t_rast = ras, region = "Réunion"),
+  "All 'tval_left' values must be less than or equal to 'tval_right'.",
+  fixed = TRUE)
+          })
 
 test_that("using different types of 'region' returns correctly cropped raster", {
 
@@ -179,11 +199,14 @@ test_that("error is produced if t_vals data frame is not correct", {
 })
 
 test_that("error is produced if country names are not correct", {
-
-  expect_error(map_risk(t_vals = bound, region = c("Spa", "Po"), plot = FALSE))
-
+  regions_error <- c("Spa", "Po")
+  expect_error(map_risk(t_vals = bound,
+                        region = regions_error,
+                        path = folder,
+                        plot = FALSE),
+ "Input region(s) Spa, Po not found. For available region names, run 'data(country_names); country_names'",
+ fixed = TRUE)
 })
-
 
 test_that("the function returns an error when providing an invalid numeric vector for region", {
   expect_error(map_risk(t_vals = bound, t_rast = tavg, region = c(-10, 10, 30)))
@@ -210,6 +233,10 @@ test_that("no overlapping yields an error for a extent", {
     "There's no overlap between 'region' and 't_rast'.")
 })
 
+test_that("t_rast should drop a messages", {
+  expect_error(map_risk(t_vals = bound, t_rast = as.matrix(tavg)))
+  expect_error(map_risk(t_vals = bound, t_rast = subset(tavg, 1)))
+})
 
 
 

@@ -65,7 +65,8 @@
 #'
 #' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
 #'                              dev_rate = aphid$rate_value,
-#'                              model_name = c("lactin2", "briere2", "mod_weibull")
+#'                              model_name = c("lactin2", "briere2",
+#'                                             "mod_weibull")
 #'                              )
 #' head(fitted_tpcs)
 #'
@@ -135,13 +136,14 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
             supp_errors = "Y")
 
           sum_fit_nls <- summary(fit_nls)
-          list_param_tbl <- dplyr::tibble(model_name = i,
-                                          param_name = extract_param_names(fit_nls),
-                                          start_vals = tidyr::replace_na(start_vals, 0),
-                                          param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                          param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                          model_AIC = AIC(fit_nls),
-                                          model_BIC = BIC(fit_nls))
+          list_param_tbl <- dplyr::tibble(
+            model_name = i,
+            param_name = extract_param_names(fit_nls),
+            start_vals = tidyr::replace_na(start_vals, 0),
+            param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+            param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+            model_AIC = AIC(fit_nls),
+            model_BIC = BIC(fit_nls))
           ## Keep model fit only in first row
           list_param_tbl <- list_param_tbl |>
             dplyr::group_by(model_name) |>
@@ -189,13 +191,14 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
                                        model_name = model_name_translate(i)),
           supp_errors = "Y")
         sum_fit_nls <- summary(fit_nls)
-        list_param_tbl <- dplyr::tibble(model_name = i,
-                                        param_name = extract_param_names(fit_nls),
-                                        start_vals = tidyr::replace_na(start_vals, 0),
-                                        param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                        param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                        model_AIC = AIC(fit_nls),
-                                        model_BIC = BIC(fit_nls))
+        list_param_tbl <- dplyr::tibble(
+          model_name = i,
+          param_name = extract_param_names(fit_nls),
+          start_vals = tidyr::replace_na(start_vals, 0),
+          param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+          param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+          model_AIC = AIC(fit_nls),
+          model_BIC = BIC(fit_nls))
         ## Keep model fit only in first row
         list_param_tbl <- list_param_tbl |>
           dplyr::group_by(model_name) |>
@@ -219,9 +222,10 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
     if (exists("list_param_tbl")) {
 
       list_param_convergence_warning <- list_param_tbl |>
-        dplyr::mutate(convergence_warning = ifelse(10*abs(param_est) < abs(param_se),
-                                                   "warn",
-                                                   "no warn"))
+        dplyr::mutate(
+          convergence_warning = ifelse(10*abs(param_est) < abs(param_se),
+                                       "warn",
+                                       "no warn"))
       if (any(list_param_convergence_warning$convergence_warning == "warn")) {
         warning(paste0("TPC model ", i, " had one or more parameters with unexpectedly large standard errors."))
       }

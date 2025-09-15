@@ -6,7 +6,7 @@ utils::globalVariables(
     "tval_left", # <- map_risk()
     "tval_right", # <- map_risk()
     "country_names", # <- map_risk()
-    "model_name", # <- model_name_translate, plot_devmodels() and predict_curves()
+    "model_name", # <- model_name_translate, plot_devmodels(), predict_curves()
     "source_model_name", # <- model_name_translate
     "model_AIC", # <- plot_devmodels() and predict_curves()
     "param_est", # <- plot_devmodels() and predict_curves()
@@ -18,7 +18,7 @@ utils::globalVariables(
     "temperature", # <- plot_devmodels()
     "development_rate", # <- plot_devmodels()
     "curvetype", # <- predict_curves()
-    #                          "pred", # <- predict_curves() and therm_suit_bounds()
+    #   "pred", # <- predict_curves(), therm_suit_bounds()
     "iter", # <- predict_curves() and therm_suit_bounds()
     #                          "model_fit", # <- predict_curves()
     "param_est", # <- predict_curves()

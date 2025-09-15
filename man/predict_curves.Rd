@@ -77,7 +77,6 @@ plot_devmodels(temp = aphid$temperature,
                species = "Brachycaudus schwartzi",
                life_stage = "Nymphs")
 
-# Obtain prediction TPCs with bootstraps for propagating uncertainty:
 boot_tpcs <- predict_curves(temp = aphid$temperature,
                             dev_rate = aphid$rate_value,
                             fitted_parameters = fitted_tpcs,
@@ -85,7 +84,7 @@ boot_tpcs <- predict_curves(temp = aphid$temperature,
                             propagate_uncertainty = TRUE,
                             n_boots_samples = 10)
 
-boot_tpcs
+head(boot_tpcs)
 \dontshow{\}) # examplesIf}
 }
 \references{

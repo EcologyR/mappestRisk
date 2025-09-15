@@ -3,14 +3,17 @@
 \docType{data}
 \name{aphid}
 \alias{aphid}
-\title{\if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} whole life cycle development rate across temperatures}
+\title{\if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} whole life cycle development rate across
+temperatures}
 \format{
 \subsection{\code{aphid}}{
 
 A data frame with 7 rows and 5 columns.
-The workflow is reproducible and available in \verb{/data-raw} folder of the \if{html}{\out{<a href="https://github.com/EcologyR/mappestRisk">}}mappestRisk GitHub repository\if{html}{\out{</a>}},
-which includes both the original summarized data set -\code{satar_data.xlsx}- and the
-R script with the dev. days to dev. rate conversion in \code{prepare_aphid.R}.
+The workflow is reproducible and available in \verb{/data-raw} folder of the
+\if{html}{\out{<a href="https://github.com/EcologyR/mappestRisk">}}mappestRisk GitHub repository\if{html}{\out{</a>}},
+which includes both the original summarized data set -\code{satar_data.xlsx}-
+and the R script with the dev. days to dev. rate conversion
+in \code{prepare_aphid.R}.
 
 \describe{
 \item{reference}{"Satar2002" refers to the source paper as cited below in section \code{Source}.}
@@ -32,7 +35,8 @@ Licence: \if{html}{\out{<a href="https://creativecommons.org/licenses/by-nc/3.0"
 data(aphid)
 }
 \description{
-A modified data set from Table 1 in Satar and Yokomi (2002) on days of development
-for \emph{Brachycaudus schwartzi} across different constant temperatures and life stages
+A modified data set from Table 1 in Satar and Yokomi (2002) on days of
+development for \emph{Brachycaudus schwartzi} across different constant
+temperatures and life stages
 }
 \keyword{datasets}

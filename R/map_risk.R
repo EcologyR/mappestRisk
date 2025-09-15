@@ -154,7 +154,8 @@ map_risk <- function(t_vals = NULL,
 
   if (is.null(region) && is.null(t_rast)) {
     message("Mapping the entire world as neither `region` nor `t_rast` are provided.")
-    # stop("`region` must be defined by the user. You can use a name from `country_names` or
+    # stop("`region` must be defined by the user. You can use a name from
+    #`country_names` or
     #      input your own spatial feature object or your own extent")
   }
 
@@ -298,8 +299,8 @@ map_risk <- function(t_vals = NULL,
   if (isTRUE(plot)) {
 
     if (verbose) message("\nPlotting map...\n")
-    palette_bilbao <- khroma::color(palette = "bilbao",reverse = F)(100)
-    palette_acton <- khroma::color(palette = "acton",reverse = T)(100)
+    palette_bilbao <- khroma::color(palette = "bilbao",reverse = FALSE)(100)
+    palette_acton <- khroma::color(palette = "acton",reverse = TRUE)(100)
 
     if (isTRUE(interactive)) {
 

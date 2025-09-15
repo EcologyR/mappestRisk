@@ -1,15 +1,19 @@
-#' <i>Brachycaudus schwartzi</i> whole life cycle development rate across temperatures
+#' <i>Brachycaudus schwartzi</i> whole life cycle development rate across
+#' temperatures
 #'
-#' A modified data set from Table 1 in Satar and Yokomi (2002) on days of development
-#' for *Brachycaudus schwartzi* across different constant temperatures and life stages
+#' A modified data set from Table 1 in Satar and Yokomi (2002) on days of
+#' development for *Brachycaudus schwartzi* across different constant
+#' temperatures and life stages
 #'
 #' @name aphid
 #' @usage data(aphid)
 #' @format ## `aphid`
 #' A data frame with 7 rows and 5 columns.
-#'    The workflow is reproducible and available in `/data-raw` folder of the <a href="https://github.com/EcologyR/mappestRisk">mappestRisk GitHub repository</a>,
-#'    which includes both the original summarized data set -`satar_data.xlsx`- and the
-#'    R script with the dev. days to dev. rate conversion in `prepare_aphid.R`.
+#'    The workflow is reproducible and available in `/data-raw` folder of the
+#'    <a href="https://github.com/EcologyR/mappestRisk">mappestRisk GitHub repository</a>,
+#'    which includes both the original summarized data set -`satar_data.xlsx`-
+#'    and the R script with the dev. days to dev. rate conversion
+#'    in `prepare_aphid.R`.
 #'
 #'
 #' \describe{
