@@ -34,10 +34,10 @@ and advised to the user due to the unrealistic value of some parameters in the
 }
 \source{
 {\if{html}{\out{<b>}}Rebaudo, F., Struelens, Q., and Dangles, O. (2018)\if{html}{\out{</b>}}. Modelling temperature-dependent development rate and phenology in
-arthropods: The \code{devRate} package for r. Methods Ecol Evol. 9: 1144-1150. \url{https://doi.org/10.1111/2041-210X.12935}
+arthropods: The \code{devRate} package for r. Methods Ecol Evol. 9: 1144-1150. \doi{10.1111/2041-210X.12935}.
 
-\if{html}{\out{<b>}}Padfield, D., O´Sullivan, H., and Pawar, S., (2021)\if{html}{\out{</b>}}. \code{rTPC} and \code{nls.multstart}: a new pipeline to fit thermal
-performance curves in r. Methods Ecol Evol. 12: 1138-1143 \url{https://doi.org/10.1111/2041-210X.13585}}.\if{html}{\out{</br>}}
+\if{html}{\out{<br>}}\if{html}{\out{<b>}}Padfield, D., O´Sullivan, H., and Pawar, S., (2021)\if{html}{\out{</b>}}. \code{rTPC} and \code{nls.multstart}: a new pipeline to fit thermal
+performance curves in r. Methods Ecol Evol. 12: 1138-1143. \doi{10.1111/2041-210X.13585>}.\if{html}{\out{</br>}}}
 }
 \usage{
 data("available_models")

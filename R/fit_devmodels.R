@@ -65,14 +65,17 @@
 #'
 #' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
 #'                              dev_rate = aphid$rate_value,
-#'                              model_name = c("lactin2", "briere2", "mod_weibull")
+#'                              model_name = c("lactin2", "briere2",
+#'                                             "mod_weibull")
 #'                              )
-#' fitted_tpcs
+#' head(fitted_tpcs)
 #'
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
+
+
 
   n_params <- AIC <- BIC <- NULL
 
@@ -135,13 +138,14 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
             supp_errors = "Y")
 
           sum_fit_nls <- summary(fit_nls)
-          list_param_tbl <- dplyr::tibble(model_name = i,
-                                          param_name = extract_param_names(fit_nls),
-                                          start_vals = tidyr::replace_na(start_vals, 0),
-                                          param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                          param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                          model_AIC = AIC(fit_nls),
-                                          model_BIC = BIC(fit_nls))
+          list_param_tbl <- dplyr::tibble(
+            model_name = i,
+            param_name = extract_param_names(fit_nls),
+            start_vals = tidyr::replace_na(start_vals, 0),
+            param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+            param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+            model_AIC = AIC(fit_nls),
+            model_BIC = BIC(fit_nls))
           ## Keep model fit only in first row
           list_param_tbl <- list_param_tbl |>
             dplyr::group_by(model_name) |>
@@ -154,9 +158,15 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
         if (inherits(possible_error, "error")) {
           fit_nls <- NULL
         }
+
+        if (any(is.nan(list_param_tbl$param_se))) {
+          message(red(paste0("TPC model ", i, " was excluded due to bad convergence (param_se = NaN)")))
+          fit_nls <- NULL
+        }
+
         if (is.null(fit_nls)) {
           list_param <- list_param
-        } else {
+          } else {
           list_param <- list_param |>
             dplyr::bind_rows(list_param_tbl)
         }
@@ -189,13 +199,14 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
                                        model_name = model_name_translate(i)),
           supp_errors = "Y")
         sum_fit_nls <- summary(fit_nls)
-        list_param_tbl <- dplyr::tibble(model_name = i,
-                                        param_name = extract_param_names(fit_nls),
-                                        start_vals = tidyr::replace_na(start_vals, 0),
-                                        param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                        param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                        model_AIC = AIC(fit_nls),
-                                        model_BIC = BIC(fit_nls))
+        list_param_tbl <- dplyr::tibble(
+          model_name = i,
+          param_name = extract_param_names(fit_nls),
+          start_vals = tidyr::replace_na(start_vals, 0),
+          param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+          param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+          model_AIC = AIC(fit_nls),
+          model_BIC = BIC(fit_nls))
         ## Keep model fit only in first row
         list_param_tbl <- list_param_tbl |>
           dplyr::group_by(model_name) |>
@@ -208,6 +219,12 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
       if (inherits(possible_error, "error")) {
         fit_nls <- NULL
       }
+
+      if (any(is.nan(list_param_tbl$param_se))) {
+        message(red(paste0("TPC model ", i, " was excluded due to bad convergence (param_se = NaN)")))
+        fit_nls <- NULL
+      }
+
       if (is.null(fit_nls)) {
         list_param <- list_param
       } else {list_param <- list_param |>
@@ -219,10 +236,11 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
     if (exists("list_param_tbl")) {
 
       list_param_convergence_warning <- list_param_tbl |>
-        dplyr::mutate(convergence_warning = ifelse(10*abs(param_est) < abs(param_se),
-                                                   "warn",
-                                                   "no warn"))
-      if (any(list_param_convergence_warning$convergence_warning == "warn")) {
+        dplyr::mutate(
+          convergence_warning = ifelse(10*abs(param_est) < abs(param_se),
+                                       "warn",
+                                       "no warn"))
+      if (any(list_param_convergence_warning$convergence_warning == "warn", na.rm = TRUE)) {
         warning(paste0("TPC model ", i, " had one or more parameters with unexpectedly large standard errors."))
       }
 

@@ -1,13 +1,19 @@
 
 wang <- function(temp, k, r, topt, tmin, tmax, a){
-  est <- (k/(1 + exp(-r * (temp - topt)))) * (1 - exp(-(temp - tmin)/a)) *
-    (1 - exp(-(tmax - temp)/a))
-  return(est)
+  if (all(sapply(list(temp, k, r, topt, tmin, tmax, a), is.numeric))
+) {
+    est <- (k/(1 + exp(-r * (temp - topt)))) * (1 - exp(-(temp - tmin)/a)) *
+      (1 - exp(-(tmax - temp)/a))
+
+    return(est)
+  } else { stop("Non-numeric inputs for `wang` model. Model discarded.") }
 }
 
 mod_polynomial <- function(temp, a_0, a_1, a_2, a_3, a_4){
-  est <- a_0 + a_1 * temp + a_2 * temp^2 + a_3 * temp^3 + a_4 * temp^4
+  if (all(sapply(list(temp, a_0, a_1, a_2, a_3, a_4), is.numeric))) {
+      est <- a_0 + a_1 * temp + a_2 * temp^2 + a_3 * temp^3 + a_4 * temp^4
   return(est)
+  } else { stop("Non-numeric inputs for `mod_polynomial` model. Model discarded.") }
 }
 
 briere1 <- function(temp, tmin, tmax, a) {
@@ -20,10 +26,6 @@ lactin1 <- function(temp, a, tmax, delta_t) {
   return(est)
 }
 
-regniere <- function(temp,tmin, tmax, phi, delta_b, delta_m, b) {
- est <- phi* (exp(b * (temp - tmin)) - ((tmax - temp)/(tmax - tmin)) * exp(-b *
-   (temp - tmin)/delta_b) - ((temp - tmin)/(tmax - tmin)) * exp(b * (tmax - tmin) - (tmax - temp)/delta_m))
-return(est)
- }
+
 
 

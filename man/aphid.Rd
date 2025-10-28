@@ -3,14 +3,17 @@
 \docType{data}
 \name{aphid}
 \alias{aphid}
-\title{\if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} whole life cycle development rate across temperatures}
+\title{\if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} whole life cycle development rate across
+temperatures}
 \format{
 \subsection{\code{aphid}}{
 
 A data frame with 7 rows and 5 columns.
-The workflow is reproducible and available in \verb{/data-raw} folder of the \if{html}{\out{<a href="https://github.com/EcologyR/mappestRisk">}}mappestRisk GitHub repository\if{html}{\out{</a>}},
-which includes both the original summarized data set -\code{satar_data.xlsx}- and the
-R script with the dev. days to dev. rate conversion in \code{prepare_aphid.R}.
+The workflow is reproducible and available in \verb{/data-raw} folder of the
+\if{html}{\out{<a href="https://github.com/EcologyR/mappestRisk">}}mappestRisk GitHub repository\if{html}{\out{</a>}},
+which includes both the original summarized data set -\code{satar_data.xlsx}-
+and the R script with the dev. days to dev. rate conversion
+in \code{prepare_aphid.R}.
 
 \describe{
 \item{reference}{"Satar2002" refers to the source paper as cited below in section \code{Source}.}
@@ -24,7 +27,7 @@ R script with the dev. days to dev. rate conversion in \code{prepare_aphid.R}.
 \source{
 {\if{html}{\out{<b>}}Satar, S. and Yokomi, R. (2002)\if{html}{\out{</b>}}. Effect of temperature and host on development of
 \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae).
-Ann. Entomol. Soc. Am. 95: 597-602. \url{https://doi.org/10.1603/0013-8746(2002)095[0597:EOTAHO]2.0.CO;2}}.\if{html}{\out{</br>}}
+Ann. Entomol. Soc. Am. 95: 597-602. \doi{10.1603/0013-8746(2002)095[0597:EOTAHO]2.0.CO;2>}.\if{html}{\out{</br>}}}
 
 Licence: \if{html}{\out{<a href="https://creativecommons.org/licenses/by-nc/3.0">}}CC BY-NC 3.0\if{html}{\out{</a>}} (modified material).
 }
@@ -32,7 +35,8 @@ Licence: \if{html}{\out{<a href="https://creativecommons.org/licenses/by-nc/3.0"
 data(aphid)
 }
 \description{
-A modified data set from Table 1 in Satar and Yokomi (2002) on days of development
-for \emph{Brachycaudus schwartzi} across different constant temperatures and life stages
+A modified data set from Table 1 in Satar and Yokomi (2002) on days of
+development for \emph{Brachycaudus schwartzi} across different constant
+temperatures and life stages
 }
 \keyword{datasets}

@@ -64,7 +64,6 @@ plot_devmodels(temp = aphid$temperature,
                species = "Brachycaudus schwartzi",
                life_stage = "Nymphs")
 
-# Obtain prediction TPCs with bootstraps for propagating uncertainty:
 boot_tpcs <- predict_curves(temp = aphid$temperature,
                             dev_rate = aphid$rate_value,
                             fitted_parameters = fitted_tpcs,
@@ -74,7 +73,6 @@ boot_tpcs <- predict_curves(temp = aphid$temperature,
 
 print(boot_tpcs)
 
-# Plot bootstrapped curves:
 
 plot_uncertainties(temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
@@ -82,7 +80,6 @@ plot_uncertainties(temp = aphid$temperature,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
 
-# Calculate Q80 thermal bounds
 
 boundaries <- therm_suit_bounds(preds_tbl = boot_tpcs,
                                 model_name = "lactin2",

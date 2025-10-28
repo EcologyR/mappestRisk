@@ -25,7 +25,7 @@ Here we provide an example of customization with `tidyterra` for the latest risk
 data("aphid")
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
                                    dev_rate = aphid$rate_value,
-                                   model_name = "all")
+                                   model_name = c("briere2", "lactin2"))
 ## optional: show predictions
 
 # plot_devmodels(temp = aphid$temperature,
@@ -41,7 +41,7 @@ preds_boots_aphid <- predict_curves(temp = aphid$temperature,
                                     fitted_parameters = fitted_tpcs_aphid,
                                     model_name_2boot = c("briere2", "lactin2"),
                                     propagate_uncertainty = TRUE,
-                                    n_boots_samples = 100)
+                                    n_boots_samples = 10)
 # optional: show simulated curves:
 # plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
 #                    temp = aphid$temperature,
@@ -56,25 +56,23 @@ boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
                                       suitability_threshold = 80) 
 print(boundaries_aphid)
 
-andalucia_sf <- mapSpain::esp_get_ccaa(ccaa = "Andalucía")
-
-risk_rast_andalucia <- map_risk(t_vals = boundaries_aphid, 
+risk_rast_bhutan <- map_risk(t_vals = boundaries_aphid, 
                                 path = tempdir(), # directory to download data 
-                                region = andalucia_sf,    
+                                region = "Bhutan",    
                                 mask = TRUE,
                                 plot = TRUE,
                                 interactive = FALSE,
                                 verbose = TRUE)
 ```
 
-. First, let's select the *risk* layer (if we don't specifically select it, the latest –sd– is used by default[^1]).
+First, let's select the *risk* layer (if we don't specifically select it, the latest –sd– is used by default[^1]).
 
 [^1]: Please, note that if the aim is to generate a custom map for risk uncertainty –i.e., the *uncertainty sd layer*, it must be selected and, accordingly, one may need to manually adjust the breaks of the color palettes and its related code.
 
 ```{r}
 library(ggplot2)
-risk_layer_andalucia <- risk_rast_andalucia |> 
-  tidyterra::select("mean") # or alternatively, risk_layer_andalucia <- risk_rast_andalucia["mean"]
+risk_layer_bhutan<- risk_rast_bhutan |> 
+  tidyterra::select("mean") # or alternatively, risk_layer_bhutan <- risk_rast_bhutan["mean"]
 ```
 
 First, we will obtain an `sf` for the world map using `rnaturalearth` [@rnaturalearthpackage] and EPSG: 3035 as CRS to place underneath the risk map:
@@ -83,17 +81,17 @@ First, we will obtain an `sf` for the world map using `rnaturalearth` [@rnatural
 worldmap_sf <- rnaturalearth::ne_countries(scale = 10,
                                            type = "countries",
                                            returnclass = "sf") |>
-  sf::st_transform(25830) # <- from default EPSG: 4326 to target EPSG:3035
+  sf::st_transform(4326) # <- from default EPSG: 4326 to target EPSG:3035
 ```
 
 Then, we will crop it using the boundaries of our risk raster without `NAs`. However, we must project the raster to the target CRS (in this case: EPSG:3035)
 
 ```{r}
-noNA_risk_rast <- risk_layer_andalucia |> 
+noNA_risk_rast <- risk_layer_bhutan |> 
   tidyterra::drop_na()
-risk_rast_andalucia_epsg25830 <- terra::project(x = noNA_risk_rast,
-                                               "EPSG:25830")
-bbox_rast <- sf::st_bbox(risk_rast_andalucia_epsg25830)
+risk_rast_bhutan_epsg4326 <- terra::project(x = noNA_risk_rast,
+                                               "EPSG:4326")
+bbox_rast <- sf::st_bbox(risk_rast_bhutan_epsg4326)
 ```
 
 Then, we will use a custom palette based on *magma* palette from `viridis` package with a custom color for `0`'s:
@@ -106,19 +104,19 @@ my_risk_palette <- c("#AFC8C8", viridis::magma(12, direction = -1))
 For now, the map with these custom options and `tidyterra::geom_spatraster()` function will look as follows:
 
 ```{r}
-max_risk_andalucia <- terra::minmax(risk_rast_andalucia_epsg25830)[2] # for manual scale fill visualization 
+max_risk_bhutan<- terra::minmax(risk_rast_bhutan_epsg4326)[2] # for manual scale fill visualization 
 
 aphid_risk_map <- ggplot2::ggplot() +
   ggplot2::geom_sf(data = worldmap_sf, # <- countries background
                    fill = "gray85") +
   ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
                 y = c(bbox_rast[2], bbox_rast[4])) +
-  tidyterra::geom_spatraster(data = risk_rast_andalucia_epsg25830, 
+  tidyterra::geom_spatraster(data = risk_rast_bhutan_epsg4326, 
                              maxcell = Inf) +
   ggplot2::geom_sf(data = worldmap_sf,
                    fill = NA,
                    color = "lightblue4") +
-  ggplot2::scale_fill_gradientn(colours = my_risk_palette[1:(max_risk_andalucia + 1)], # to preserve the scales
+  ggplot2::scale_fill_gradientn(colours = my_risk_palette[1:(max_risk_bhutan + 1)], # to preserve the scales
                                 na.value = "transparent",
                                 breaks = seq(0, 12, by = 1))
 print(aphid_risk_map)
@@ -135,58 +133,38 @@ aphid_risk_map <- aphid_risk_map +
 print(aphid_risk_map)
 ```
 
-We can further improve visualization by changing the theme, adding titles and avoid borders overlapping with cells using bathymetry and adjacent region polygons:
+We can further improve visualization by changing the theme, adding titles and avoid borders overlapping with cells using adjacent region polygons:
 
 ```{r}
-bath_spain <- mapSpain::esp_get_hypsobath() |> 
-  sf::st_transform(25830) |> 
-  dplyr::filter(val_sup <= 0)
+#add borders:
+china_sf <- worldmap_sf |> 
+  dplyr::filter(admin == "China")
 
-andalucia_sf <- mapSpain::esp_get_ccaa("Andalucia") |> 
-  sf::st_transform(25830)
+india_sf <- worldmap_sf |> 
+  dplyr::filter(admin == "India")
 
-#and borders:
-clm_sf <- mapSpain::esp_get_ccaa("Castilla-La Mancha") |> 
-  sf::st_transform(25830)
-
-extremadura_sf <- mapSpain::esp_get_ccaa("Extremadura") |> 
-  sf::st_transform(25830)
-murcia_sf <- mapSpain::esp_get_ccaa("Murcia") |> 
-  sf::st_transform(25830)
-portugal_sf <- worldmap_sf |> 
-  dplyr::filter(geounit == "Portugal")
 
 species_name_italics <- expression(italic("Brachycaudus schwatzi"))
 
 aphid_risk_map +
   theme_bw() +
   theme(legend.position = "bottom") +
-  labs(title = "Risk Map for Andalucía",
+  labs(title = "Risk Map for bhutan",
        subtitle = species_name_italics,
        caption = "Climate data from WorldClim Historical data set",
        fill = "Annual Risk Months") +
   theme(legend.position = "bottom") +
   theme(plot.title = element_text(face = "bold")) +
-  geom_sf(data = extremadura_sf, fill = "gray85",
+  geom_sf(data = china_sf, fill = "white",
           color = NA) +
-  geom_sf(data = clm_sf, fill = "gray85",
-          color = NA) +
-  geom_sf(data = murcia_sf, fill = "gray85",
-          color = NA) +
-  geom_sf(data = portugal_sf, fill = "gray85",
-          color = NA) +
-  geom_sf(data = andalucia_sf, 
-          color = "#060d0e",
-          fill = NA) +
-  geom_sf(data = bath_spain,
-          fill = "#060d0e",
-          color = "#060d0e")
+  geom_sf(data = india_sf, fill = "white",
+          color = NA)
 ```
 
-Similarly, a discrete *"iso-risk"* map can be generated using `terra::geom_spatraster_contour_filled()` with the previous approach as follows:
+Similarly, a discrete *iso-risk* map can be generated using `terra::geom_spatraster_contour_filled()` with the previous approach as follows:
 
 ```{r}
-breaks_levels <- purrr::map_chr(.x = seq(0, max_risk_andalucia),
+breaks_levels <- purrr::map_chr(.x = seq(0, max_risk_bhutan),
                                 .f = ~paste0("[", .x, " ", .x+1,")")) |> 
   forcats::as_factor()
 
@@ -195,36 +173,30 @@ ggplot2::ggplot() +
                    fill = "gray85") +
   ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
                 y = c(bbox_rast[2], bbox_rast[4])) +
-  tidyterra::geom_spatraster_contour_filled(data = risk_rast_andalucia_epsg25830,
+  tidyterra::geom_spatraster_contour_filled(data = risk_rast_bhutan_epsg4326,
                                             breaks = seq(0, 12),
                                             maxcell = Inf) +
   ggplot2::geom_sf(data = worldmap_sf,
                    fill = NA,
                    color = "lightblue4") +
   ggplot2::scale_fill_manual(values = my_risk_palette,
-                             labels = breaks_levels) +
+                             labels = breaks_levels, na.value = "white") +
   theme_bw() +
   theme(legend.position = "bottom") +
-  labs(title = "Risk Map for Andalucía",
+  labs(title = "Risk Map for Bhutan",
        subtitle = species_name_italics,
        caption = "Climate data from WorldClim Historical data set",
        fill = "Annual Risk Months") +
   theme(legend.position = "bottom") +
   theme(plot.title = element_text(face = "bold")) +
-  geom_sf(data = extremadura_sf, fill = "gray85",
+  geom_sf(data = china_sf, fill = "black",
           color = NA) +
-  geom_sf(data = clm_sf, fill = "gray85",
-          color = NA) +
-  geom_sf(data = murcia_sf, fill = "gray85",
-          color = NA) +
-  geom_sf(data = portugal_sf, fill = "gray85",
-          color = NA) +
-  geom_sf(data = andalucia_sf, 
-          color = "#060d0e",
-          fill = NA) +
-  geom_sf(data = bath_spain,
-          fill = "#060d0e",
-          color = "#060d0e")
+  geom_sf(data = india_sf, fill = "black",
+          color = NA)+
+    geom_sf(data = china_sf, fill = NA,
+          color = "black") +
+  geom_sf(data = india_sf, fill = NA,
+          color = "black")
 ```
 
 ## References

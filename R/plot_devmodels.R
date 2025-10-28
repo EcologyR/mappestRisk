@@ -109,16 +109,19 @@ plot_devmodels <- function(temp = NULL,
     fit_vals_tbl <- explore_preds |>
       dplyr::select(temp, model_name, model_AIC, n_params) |>
       dplyr::mutate(formula = formula_i) |>
-      dplyr::mutate(preds = purrr::map_dbl(.x = temp,
-                                           .f = stats::reformulate(unique(formula_i)))) |>
+      dplyr::mutate(
+        preds = purrr::map_dbl(.x = temp,
+                               .f = stats::reformulate(unique(formula_i)))) |>
       dplyr::filter(preds >= 0) |>
       dplyr::select(-formula) |>
-      dplyr::mutate(preds = dplyr::case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
-                                             model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
-                                             model_name == "briere1" & temp < params_i[1] ~ NA_real_,
-                                             model_name == "briere2" & temp < params_i[1] ~ NA_real_,
-                                             TRUE ~ preds)
-      ) # to exclude biological non-sense predictions due to model mathematical properties
+      dplyr::mutate(preds = dplyr::case_when(
+        model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
+        model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
+        model_name == "briere1" & temp < params_i[1] ~ NA_real_,
+        model_name == "briere2" & temp < params_i[1] ~ NA_real_,
+        TRUE ~ preds)
+      ) # to exclude biological non-sense predictions due to model
+    #     mathematical properties
     predict2fill <- predict2fill |>
       dplyr::bind_rows(fit_vals_tbl)
   }
@@ -137,7 +140,9 @@ plot_devmodels <- function(temp = NULL,
   my_title <- substitute(italic(paste(especie)), list(especie = species))
   ggplot_models <- ggplot2::ggplot() +
     ggplot2::geom_line(data = predict2fill |>
-                         dplyr::filter(preds < (1.5*max(devdata$development_rate))),
+                         dplyr::filter(
+                           preds < (1.5*max(devdata$development_rate)
+                                    )),
                        ggplot2::aes(x = temp, y = preds, color = model_name),
                        linewidth = 1.3) +
     ggplot2::geom_point(data = devdata, ggplot2::aes(x = temperature,

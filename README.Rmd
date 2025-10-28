@@ -18,12 +18,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 
-`r badger::badge_cran_release()`
-![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
-[![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk)
-`r badger::badge_lifecycle("stable")`
-`r badger::badge_repostatus("Active")`
+`r badger::badge_cran_release()` ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk) [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk) `r badger::badge_lifecycle("stable")` `r badger::badge_repostatus("Active")`
 
 <!-- badges: end -->
 
@@ -37,16 +32,17 @@ Therefore, `mappestRisk` has three different modules: *(1) model fitting & selec
 
 ## Installation
 
-`mappestRisk` package can be installed from the [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
+`mappestRisk` package's latest version can be installed from the [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
 
 ```{r, eval=FALSE}
 install.packages('mappestRisk', repos = c('https://ecologyr.r-universe.dev', 'https://cloud.r-project.org')) 
 ```
 
-Or from the [GitHub repository](https://github.com/EcologyR/mappestRisk):
+You can also install its latest version from the [GitHub repository](https://github.com/EcologyR/mappestRisk) after installing either `remotes` or `devtools` R packages.
 
 ```{r, eval=FALSE}
 remotes::install_github("EcologyR/mappestRisk")  
+#alternatively -> devtools::install_github("EcologyR/mappestRisk")
 ```
 
 ## Example: `mappestRisk` workflow

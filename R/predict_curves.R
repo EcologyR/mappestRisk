@@ -60,7 +60,6 @@
 #'                species = "Brachycaudus schwartzi",
 #'                life_stage = "Nymphs")
 #'
-#' # Obtain prediction TPCs with bootstraps for propagating uncertainty:
 #' boot_tpcs <- predict_curves(temp = aphid$temperature,
 #'                             dev_rate = aphid$rate_value,
 #'                             fitted_parameters = fitted_tpcs,
@@ -68,7 +67,7 @@
 #'                             propagate_uncertainty = TRUE,
 #'                             n_boots_samples = 10)
 #'
-#' boot_tpcs
+#' head(boot_tpcs)
 
 
 predict_curves <- function(temp = NULL,
@@ -207,7 +206,9 @@ bootstrap_model <- function(model_name, fitted_df, devdata, nboot, temp.range) {
     temp = rep(devdata$temp, times = nboot),
     fittedvals = rep(fit_vals, times = nboot)) |>
     dplyr::group_by(boot_iter) |>
-    dplyr::mutate(resampled_resid = sample(resids, size = length(resids), replace = TRUE)) |>
+    dplyr::mutate(
+      resampled_resid = sample(
+        resids, size = length(resids), replace = TRUE)) |>
     dplyr::ungroup() |>
     dplyr::mutate(dev_rate = fittedvals + resampled_resid) |>
     dplyr::filter(dev_rate >= 0) # ensure resampled rates are non-negative

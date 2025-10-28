@@ -9,6 +9,8 @@ crop_palette <- function(palette_vector, n_breaks) {
   return(palette_flex)
 }
 
+red    <- function(x) paste0("\033[31m", x, "\033[39m")
+
 #### a) working functions ----
 model_name_translate <- function(user_model_name) {
   if (!all(user_model_name %in% c("all", available_models$model_name))) {
@@ -64,7 +66,8 @@ sim_tpc_gridparams <- function(grid_parameters, temperature, model_name){
   model_eq <- available_models |>
     dplyr::filter(model_name == model_i)
   tpc_sim_i <- purrr::map(.x = temperature,
-                          .f = stats::reformulate(termlabels = unique(model_eq$params_formula))
+                          .f = stats::reformulate(
+                            termlabels = unique(model_eq$params_formula))
   )
   tpc_sim_tbl <- dplyr::tibble(temperature,
                                pred_devrate = tpc_sim_i) |>
@@ -86,35 +89,40 @@ start_vals_devRate <- function (model_name_2fit, temperature, dev_rate) {
     devdata <- dplyr::tibble(temp = temperature,
                              rate_development = dev_rate)
     start_vals_prev <- devRate::devRateEqStartVal[[model_name_devrate]]
-    names(start_vals_prev) <- startvals_names_translate_devrate(start_vals_prev,
-                                                                model_name = model_name_2fit$model_name)
+    names(start_vals_prev) <- startvals_names_translate_devrate(
+      start_vals_prev,
+      model_name = model_name_2fit$model_name)
     start_upper_vals <- purrr::map(.x = start_vals_prev,
                                    .f = ~.x + abs(.x/2))
     start_lower_vals <- purrr::map(.x = start_vals_prev,
                                    .f = ~.x - abs(.x/2))
 
-    multstart_vals_fit <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "rate_development",
-                                                                                    termlabels = model_name_2fit |>
-                                                                                      dplyr::pull(formula)),
-                                                       data = devdata,
-                                                       iter = 500,
-                                                       start_lower = start_lower_vals,
-                                                       start_upper = start_upper_vals,
-                                                       supp_errors = "Y")
+    multstart_vals_fit <- nls.multstart::nls_multstart(
+      formula = stats::reformulate(response = "rate_development",
+                                   termlabels = model_name_2fit |>
+                                     dplyr::pull(formula)),
+      data = devdata,
+      iter = 500,
+      start_lower = start_lower_vals,
+      start_upper = start_upper_vals,
+      supp_errors = "Y")
     sum_start_vals_fit <- summary(multstart_vals_fit)
 
     if (is.null(multstart_vals_fit)) {
-      start_vals_explore <- dplyr::tibble(param_name = names(start_vals_prev),
-                                          start_value = unlist(start_vals_prev),
-                                          model_name = model_name_2fit$model_name) |>
+      start_vals_explore <- dplyr::tibble(
+        param_name = names(start_vals_prev),
+        start_value = unlist(start_vals_prev),
+        model_name = model_name_2fit$model_name) |>
         dplyr::pull(start_value)
 
       message("generic starting values")
     } else { start_vals_names <- extract_param_names(multstart_vals_fit)
-    start_vals <- sum_start_vals_fit$parameters[1:length(start_vals_names), 1]
-    start_vals_explore <- dplyr::tibble(param_name = start_vals_names,
-                                        start_value = start_vals,
-                                        model_name = model_name_2fit$model_name) |>
+    start_vals <- sum_start_vals_fit$parameters[seq_along(start_vals_names), 1]
+    start_vals_explore <- dplyr::tibble(
+      param_name = start_vals_names,
+      start_value = start_vals,
+      model_name = model_name_2fit$model_name
+      ) |>
       dplyr::pull(start_value)
     }
   }
