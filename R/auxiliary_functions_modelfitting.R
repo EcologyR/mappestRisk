@@ -9,6 +9,8 @@ crop_palette <- function(palette_vector, n_breaks) {
   return(palette_flex)
 }
 
+red    <- function(x) paste0("\033[31m", x, "\033[39m")
+
 #### a) working functions ----
 model_name_translate <- function(user_model_name) {
   if (!all(user_model_name %in% c("all", available_models$model_name))) {
