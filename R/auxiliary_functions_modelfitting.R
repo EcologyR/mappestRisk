@@ -80,13 +80,28 @@ start_vals_devRate <- function (model_name_2fit, temperature, dev_rate) {
              dev_rate)
 
   if (model_name_2fit$model_name == "briere1") {
-    start_vals_explore <- c(a = 2e-04, tmin = 8, tmax = 32)
+    start_vals_explore <- c(a = 1e-04, tmin = 8, tmax = 32)
     message("Poorly informative start values for briere1 model")
   } else {
     model_name_devrate <- model_name_2fit$source_model_name
     devdata <- dplyr::tibble(temp = temperature,
                              rate_development = dev_rate)
-    start_vals_prev <- devRate::devRateEqStartVal[[model_name_devrate]]
+
+    #for future versions ->    start_vals_prev <- devRate::devRateEqStartVal[[model_name_devrate]]
+    if (model_name_devrate == "lactin1_95") {
+      start_vals_prev = list(aa = 0.1, Tmax = 35, deltaT = 6)
+      message(red(paste0("Start values for TPC model `lactin1` have been
+obtained from `devRate` package" ))) }
+    if (model_name_devrate == "poly4") {
+      start_vals_prev = list(a1 = 0.1, a2 = -0.01, a3 = 0.003, a4 = -4e-06)
+      message(red(paste0("Start values for TPC model `mod_polynomial` have been
+obtained from `devRate` package" ))) }
+    if (model_name_devrate == "wang") {
+      start_vals_prev = list(K = 0.5, r = 0.2, T0 = 27, TL = 10, TH = 38, aa = 2)
+      message(red(paste0("Start values for TPC model `wang` have been
+obtained from `devRate` package" ))) }
+    }
+
     names(start_vals_prev) <- startvals_names_translate_devrate(
       start_vals_prev,
       model_name = model_name_2fit$model_name)
