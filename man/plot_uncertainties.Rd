@@ -49,7 +49,7 @@ Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty
 in parameter estimation of TPC fitting
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 data("aphid")
 
 fitted_tpcs <- fit_devmodels(temp = aphid$temperature,

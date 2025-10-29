@@ -51,7 +51,7 @@ Calculate thermal boundaries that define the suitable region of a
 Thermal Performance Curve (TPC) corresponding to a user-defined optimal performance level.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 data("aphid")
 
 fitted_tpcs <- fit_devmodels(temp = aphid$temperature,

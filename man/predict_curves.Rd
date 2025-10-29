@@ -64,7 +64,7 @@ is also explicit in the output tibble.
 Propagate parameter uncertainty of TPC fits using bootstrap with residual resampling
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 data("aphid")
 
 fitted_tpcs <- fit_devmodels(temp = aphid$temperature,

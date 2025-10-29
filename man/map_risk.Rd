@@ -84,7 +84,7 @@ produced by \code{\link[=therm_suit_bounds]{therm_suit_bounds()}}), the output r
 and standard deviation.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 data("aphid")
 
 fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
