@@ -90,15 +90,15 @@ start_vals_devRate <- function (model_name_2fit, temperature, dev_rate) {
     #for future versions ->    start_vals_prev <- devRate::devRateEqStartVal[[model_name_devrate]]
     if (model_name_devrate == "lactin1_95") {
       start_vals_prev = list(aa = 0.1, Tmax = 35, deltaT = 6)
-      message(red(paste0("Start values for TPC model `lactin1` have been
+      message(red(paste0("Start values and equation for TPC model `lactin1` have been
 obtained from `devRate` package" ))) }
     if (model_name_devrate == "poly4") {
       start_vals_prev = list(a1 = 0.1, a2 = -0.01, a3 = 0.003, a4 = -4e-06)
-      message(red(paste0("Start values for TPC model `mod_polynomial` have been
+      message(red(paste0("Start values and equation for TPC model `mod_polynomial` have been
 obtained from `devRate` package" ))) }
     if (model_name_devrate == "wang") {
       start_vals_prev = list(K = 0.5, r = 0.2, T0 = 27, TL = 10, TH = 38, aa = 2)
-      message(red(paste0("Start values for TPC model `wang` have been
+      message(red(paste0("Start values and equation for TPC model `wang` have been
 obtained from `devRate` package" ))) }
     }
 
@@ -138,7 +138,6 @@ obtained from `devRate` package" ))) }
       ) |>
       dplyr::pull(start_value)
     }
-  }
   return(start_vals_explore)
 }
 
