@@ -27,7 +27,7 @@ in \code{prepare_aphid.R}.
 \source{
 {\if{html}{\out{<b>}}Satar, S. and Yokomi, R. (2002)\if{html}{\out{</b>}}. Effect of temperature and host on development of
 \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae).
-Ann. Entomol. Soc. Am. 95: 597-602. \doi{10.1603/0013-8746(2002)095[0597:EOTAHO]2.0.CO;2>}.\if{html}{\out{</br>}}}
+Ann. Entomol. Soc. Am. 95: 597-602. \doi{10.1603/0013-8746(2002)095[0597:EOTAHO]2.0.CO;2}.\if{html}{\out{</br>}}}
 
 Licence: \if{html}{\out{<a href="https://creativecommons.org/licenses/by-nc/3.0">}}CC BY-NC 3.0\if{html}{\out{</a>}} (modified material).
 }

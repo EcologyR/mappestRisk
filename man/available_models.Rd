@@ -37,7 +37,7 @@ and advised to the user due to the unrealistic value of some parameters in the
 arthropods: The \code{devRate} package for r. Methods Ecol Evol. 9: 1144-1150. \doi{10.1111/2041-210X.12935}.
 
 \if{html}{\out{<br>}}\if{html}{\out{<b>}}Padfield, D., O´Sullivan, H., and Pawar, S., (2021)\if{html}{\out{</b>}}. \code{rTPC} and \code{nls.multstart}: a new pipeline to fit thermal
-performance curves in r. Methods Ecol Evol. 12: 1138-1143. \doi{10.1111/2041-210X.13585>}.\if{html}{\out{</br>}}}
+performance curves in r. Methods Ecol Evol. 12: 1138-1143. \doi{10.1111/2041-210X.13585}.\if{html}{\out{</br>}}}
 }
 \usage{
 data("available_models")

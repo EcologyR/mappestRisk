@@ -102,9 +102,8 @@ obtained from `devRate` package" ))) }
       start_vals_prev = list(K = 0.5, r = 0.2, T0 = 27, TL = 10, TH = 38, aa = 2)
       message(red(paste0("Start values and equation for TPC model `wang` have been
 obtained from `devRate` package" ))) }
-    }
 
-    names(start_vals_prev) <- startvals_names_translate_devrate(
+      names(start_vals_prev) <- startvals_names_translate_devrate(
       start_vals_prev,
       model_name = model_name_2fit$model_name)
     start_upper_vals <- purrr::map(.x = start_vals_prev,
@@ -140,6 +139,7 @@ obtained from `devRate` package" ))) }
       ) |>
       dplyr::pull(start_value)
     }
+  }
   return(start_vals_explore)
 }
 
