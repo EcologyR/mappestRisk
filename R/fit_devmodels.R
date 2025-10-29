@@ -75,6 +75,8 @@ fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
 
+
+
   n_params <- AIC <- BIC <- NULL
 
   check_data(temp, dev_rate)
@@ -156,9 +158,15 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
         if (inherits(possible_error, "error")) {
           fit_nls <- NULL
         }
+
+        if (any(is.nan(list_param_tbl$param_se))) {
+          message(red(paste0("TPC model ", i, " was excluded due to bad convergence (param_se = NaN)")))
+          fit_nls <- NULL
+        }
+
         if (is.null(fit_nls)) {
           list_param <- list_param
-        } else {
+          } else {
           list_param <- list_param |>
             dplyr::bind_rows(list_param_tbl)
         }
@@ -211,6 +219,12 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
       if (inherits(possible_error, "error")) {
         fit_nls <- NULL
       }
+
+      if (any(is.nan(list_param_tbl$param_se))) {
+        message(red(paste0("TPC model ", i, " was excluded due to bad convergence (param_se = NaN)")))
+        fit_nls <- NULL
+      }
+
       if (is.null(fit_nls)) {
         list_param <- list_param
       } else {list_param <- list_param |>
@@ -226,7 +240,7 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
           convergence_warning = ifelse(10*abs(param_est) < abs(param_se),
                                        "warn",
                                        "no warn"))
-      if (any(list_param_convergence_warning$convergence_warning == "warn")) {
+      if (any(list_param_convergence_warning$convergence_warning == "warn", na.rm = TRUE)) {
         warning(paste0("TPC model ", i, " had one or more parameters with unexpectedly large standard errors."))
       }
 
