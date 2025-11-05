@@ -9,8 +9,18 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include=FALSE}
 library(mappestRisk)
+# Check if tidyterra is installed
+has_tidyterra <- requireNamespace("tidyterra", quietly = TRUE)
+
+# If it's not available, skip all vignette code
+if (!has_tidyterra) {
+  knitr::opts_chunk$set(eval = FALSE)
+  message("tidyterra not installed — skipping vignette code chunks.")
+} else {
+  library(tidyterra)
+}
 ```
 
 ## Customize your risk map

@@ -140,11 +140,10 @@ plot_uncertainties(bootstrap_tpcs = preds_boots,
 
 After the previous steps, the user can calculate the thermal boundaries
 of the optimal zone of the TPC –i.e., those temperature values yielding
-the Y-th quantile of the development rate (default to
-$`\mathrm{Q}_{75}`$) at both sides of the curve peak or $`R_\max`$. Once
-a model has been selected under both ecological and statistical
-criteria, the `thermal_suitability_bounds()` function calculates these
-values:
+the Y-th quantile of the development rate (default to $\textrm{Q}_{75}$)
+at both sides of the curve peak or $R_\max$. Once a model has been
+selected under both ecological and statistical criteria, the
+`thermal_suitability_bounds()` function calculates these values:
 
 ``` r
 boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
@@ -188,7 +187,7 @@ A BibTeX entry for LaTeX users is
   @Manual{,
     title = {mappestRisk: An R package for modelling and mapping risk of pest development based on
   known thermal limits},
-    author = {Darío {San-Segundo  Molina} and A. Márcia Barbosa and Antonio Jesús Pérez-Luque and Francisco Rodríguez-Sánchez},
+    author = {Darío {San-Segundo Molina} and A. Márcia Barbosa and Antonio Jesús Pérez-Luque and Francisco Rodríguez-Sánchez},
     year = {2025},
     url = {https://ecologyr.github.io/mappestRisk},
   }

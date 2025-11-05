@@ -88,7 +88,7 @@ plot_uncertainties(bootstrap_tpcs = preds_boots,
 
 ### 2. Calculate thermal suitability bounds:
 
-After the previous steps, the user can calculate the thermal boundaries of the optimal zone of the TPC –i.e., those temperature values yielding the Y-th quantile of the development rate (default to $`\mathrm{Q}_{75}`$) at both sides of the curve peak or $`R_\max`$. Once a model has been selected under both ecological and statistical criteria, the `thermal_suitability_bounds()` function calculates these values:
+After the previous steps, the user can calculate the thermal boundaries of the optimal zone of the TPC –i.e., those temperature values yielding the Y-th quantile of the development rate (default to $\textrm{Q}_{75}$) at both sides of the curve peak or $R_\max$. Once a model has been selected under both ecological and statistical criteria, the `thermal_suitability_bounds()` function calculates these values:
 
 ```{r, warning=FALSE}
 boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
