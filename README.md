@@ -7,6 +7,10 @@
 
 [![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
 ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
+[![r-universe
+version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk)
+[![r-universe
+status](https://ecologyr.r-universe.dev/mappestRisk/badges/checks)](https://ecologyr.r-universe.dev/mappestRisk)
 [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk)
@@ -14,6 +18,8 @@ coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://a
 [![Project Status: Active - The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+[![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
 
 <!-- badges: end -->
 
