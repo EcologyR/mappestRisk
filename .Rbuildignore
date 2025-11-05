@@ -16,3 +16,4 @@ references.bib
 README_cache/
 ^CITATION\.cff$
 ^cran-comments\.md$
+^CODE_OF_CONDUCT\.md$
