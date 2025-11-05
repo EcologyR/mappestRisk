@@ -159,7 +159,8 @@ unrealistic behavior at some TPC regions. If you still want to fit them, please 
           fit_nls <- NULL
         }
 
-        if (any(is.nan(list_param_tbl$param_se))) {
+        if (!is.null(fit_nls) &&
+            any(is.nan(list_param_tbl$param_se))) {
           message(red(paste0("TPC model ", i, " was excluded due to bad convergence (param_se = NaN)")))
           fit_nls <- NULL
         }
