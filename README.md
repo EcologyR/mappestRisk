@@ -5,7 +5,8 @@
 
 <!-- badges: start -->
 
-[![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+<!-- [![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
+
 ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
 [![r-universe
 version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk)
@@ -18,8 +19,8 @@ coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://a
 [![Project Status: Active - The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
-[![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+<!-- [![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
+<!-- [![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
 
 <!-- badges: end -->
 
@@ -186,7 +187,7 @@ To cite package 'mappestRisk' in publications use:
   San-Segundo Molina D, Barbosa A, Pérez-Luque A, Rodríguez-Sánchez F
   (2025). _mappestRisk: An R package for modelling and mapping risk of
   pest development based on known thermal limits_.
-  <https://ecologyr.github.io/mappestRisk>.
+  <https://ecologyr.github.io/mappestRisk/>.
 
 A BibTeX entry for LaTeX users is
 
@@ -195,7 +196,7 @@ A BibTeX entry for LaTeX users is
   known thermal limits},
     author = {Darío {San-Segundo Molina} and A. Márcia Barbosa and Antonio Jesús Pérez-Luque and Francisco Rodríguez-Sánchez},
     year = {2025},
-    url = {https://ecologyr.github.io/mappestRisk},
+    url = {https://ecologyr.github.io/mappestRisk/},
   }
 ```
 
@@ -269,8 +270,7 @@ Relationship Between Development Rate and Temperature in Ectotherms.”
 Rebaudo, François, Quentin Struelens, and Olivier Dangles. 2018.
 “Modelling Temperature-Dependent Development Rate and Phenology in
 Arthropods: The devRate Package for r.” *Methods in Ecology and
-Evolution* 9 (4): 1144–50.
-https://doi.org/<https://doi.org/10.1111/2041-210X.12935>.
+Evolution* 9 (4): 1144–50. <https://doi.org/10.1111/2041-210X.12935>.
 
 </div>
 
