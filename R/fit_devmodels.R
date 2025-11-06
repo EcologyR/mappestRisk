@@ -32,12 +32,13 @@
 #'
 #' @source
 #' The dataset used in the example was originally published in Satar & Yokomi (2022)
-#' under the CC-BY-NC license
+#' under the CC-BY-NC license.
+#' The start values and equations for the 'briere1', 'lactin1', 'mod_polynomial'
+#' and 'wang' models have been obtained from
+#' the [devRate](https://cran.r-project.org/package=devRate) package.
 #'
 #' @seealso
 #'  [nls.multstart::nls_multstart()] for structure of model fitting approach
-#'
-#'  [devRate::devRateEqList()] for information on several equations
 #'
 #'  `browseVignettes("rTPC")` for model names, start values searching workflows and
 #'  bootstrapping procedures using both `rTPC` and `nls.multstart` packages.
