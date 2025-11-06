@@ -109,10 +109,17 @@ boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
 
 These optimal thermal boundaries are used for spatial projection of pest risk. The `map_risk()` function automatically downloads temperature data into a `SpatRaster` format from [WorldClim](https://worldclim.org/data/worldclim21.html) masked into an user-defined region or area, and then calculates the number of months per year with highly suitable temperatures for pest development.
 
-```{r, message = FALSE}
+```{r, message = FALSE, eval=FALSE}
 risk_rast <- map_risk(t_vals = boundaries, 
                       region = "Réunion",   
                       path = tempdir() # directory to download climate data 
+                      )
+```
+
+```{r, message = FALSE, eval=TRUE, echo=FALSE}
+t_rast <- terra::rast("vignettes/articles/REU_wc2.1_30s_tavg.tif")
+risk_rast <- map_risk(t_vals = boundaries, 
+                      t_rast = t_rast
                       )
 ```
 
