@@ -154,7 +154,7 @@ worldmap_sv <- terra::unwrap(readRDS("gadm36_adm0_r5_pk.rds"))
 bhutan_sv <- worldmap_sv |> 
   dplyr::filter(admin == "Bhutan")
 
-risk_rast_bhutan_sfexample <- map_risk(t_vals = boundaries_aphid, 
+risk_rast_bhutan_sv_example <- map_risk(t_vals = boundaries_aphid, 
                                        path = tempdir(), # directory to download data 
                                        region = bhutan_sv,    
                                        mask = TRUE,
