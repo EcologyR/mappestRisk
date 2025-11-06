@@ -149,12 +149,14 @@ A typical scenario may involve forecasting data to regional or province level, t
 In the following example, we will use it for Bhutan, as well. The `map_risk()` function will automatically transform it for the climate extraction and the procedure performs similar to the previous examples:
 
 ```{r, eval=FALSE}
-bhutan_sf <- worldmap_sf |> 
+worldmap_sv <- terra::unwrap(readRDS("gadm36_adm0_r5_pk.rds"))
+
+bhutan_sv <- worldmap_sv |> 
   dplyr::filter(admin == "Bhutan")
 
 risk_rast_bhutan_sfexample <- map_risk(t_vals = boundaries_aphid, 
                                        path = tempdir(), # directory to download data 
-                                       region = bhutan_sf,    
+                                       region = bhutan_sv,    
                                        mask = TRUE,
                                        plot = TRUE,
                                        interactive = FALSE,
