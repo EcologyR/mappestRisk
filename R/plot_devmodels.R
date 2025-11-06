@@ -8,17 +8,17 @@
 #'
 #' @param fitted_parameters a `tibble` obtained with [fit_devmodels()],
 #' including parameter names, estimates, standard errors, AICs, and
-#' <nls> objects (fitted_models) using the [nls.multstart::nls_multstart()] approach.
+#' nls objects (fitted_models) using the [nls.multstart::nls_multstart()] approach.
 #'
-#' @param species <optional> a string of the target species that
+#' @param species optional a string of the target species that
 #' will constitute the plot title. Must be of type "character".
 #'
-#' @param life_stage <optional> a string of the target life stage that
+#' @param life_stage optional a string of the target life stage that
 #' will constitute the plot subtitle. Must be of type "character".
 #'
 #' @returns A plot with predicted values (development rate) across temperatures
 #' for models that have adequately converged using [fit_devmodels()] function.
-#' It's a <ggplot> object, which can be assigned to a user-defined object.
+#' It's a ggplot object, which can be assigned to a user-defined object.
 #'
 #' @seealso [fit_devmodels()] for fitting Thermal Performance Curves to
 #' development rate data, which is in turn based on [nls.multstart::nls_multstart()].

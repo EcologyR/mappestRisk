@@ -3,7 +3,7 @@
 #' @inheritParams fit_devmodels
 #'
 #' @param fitted_parameters a `tibble` obtained with [fit_devmodels()] function,
-#' including parameter names, estimates, standard errors, AICs, and <nls> objects
+#' including parameter names, estimates, standard errors, AICs, and nls objects
 #' (fitted_models) using the [nls.multstart::nls_multstart()] approach.
 
 #' @param model_name_2boot A vector of strings including one or several TPC models

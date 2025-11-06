@@ -23,11 +23,12 @@
 #'   \item{rate_value}{Rate of Development (1/days), the reciprocal of Development days, see `dev_days`}
 #'   \item{stage}{Life stage or instar evaluated. In this case, only data of the whole immature stages (i.e., nymphs) were used}
 #' }
-#' @source {<b>Satar, S. and Yokomi, R. (2002)</b>. Effect of temperature and host on development of
-#'  <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae).
-#'   Ann. Entomol. Soc. Am. 95: 597-602. \doi{10.1603/0013-8746(2002)095[0597:EOTAHO]2.0.CO;2}.</br>}
+#' @source
+#' Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of
+#' *Brachycaudus schwartzi* (Homoptera: Aphididae).
+#' Ann. Entomol. Soc. Am. 95: 597-602. \doi{10.1603/0013-8746(2002)095[0597:EOTAHO]2.0.CO;2}.
 #'
-#'   Licence: <a href="https://creativecommons.org/licenses/by-nc/3.0">CC BY-NC 3.0</a> (modified material).
+#' Licence: <a href="https://creativecommons.org/licenses/by-nc/3.0">CC BY-NC 3.0</a> (modified material).
 "aphid"
 
 
@@ -74,11 +75,15 @@
 #'   \item{formula, working_formula, n_params}{formulas used for model fitting.}
 #' }
 #'
-#' @source {<b>Rebaudo, F., Struelens, Q., and Dangles, O. (2018)</b>. Modelling temperature-dependent development rate and phenology in
-#' arthropods: The `devRate` package for R. Methods Ecol Evol. 9: 1144-1150. \doi{10.1111/2041-210X.12935}.
+#' @source
 #'
-#' <br><b>Padfield, D., O´Sullivan, H., and Pawar, S., (2021)</b>. `rTPC` and `nls.multstart`: a new pipeline to fit thermal
-#' performance curves in r. Methods Ecol Evol. 12: 1138-1143. \doi{10.1111/2041-210X.13585}.</br>}
+#' Rebaudo, F., Struelens, Q., and Dangles, O. (2018). Modelling temperature-dependent
+#'  development rate and phenology in arthropods: The `devRate` package for R.
+#'  Methods Ecol Evol. 9: 1144-1150. \doi{10.1111/2041-210X.12935}.
+#'
+#' Padfield, D., O´Sullivan, H., and Pawar, S., (2021). `rTPC` and `nls.multstart`:
+#' a new pipeline to fit thermal performance curves in R. Methods Ecol Evol. 12: 1138-1143.
+#' \doi{10.1111/2041-210X.13585}.
 #'
 #'
 #'

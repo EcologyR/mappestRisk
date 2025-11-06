@@ -24,7 +24,7 @@ from the beginning of a certain life stage to the beginning of the following at 
 It must be numeric and of the same length as \code{temp}.}
 
 \item{fitted_parameters}{a \code{tibble} obtained with \code{\link[=fit_devmodels]{fit_devmodels()}} function,
-including parameter names, estimates, standard errors, AICs, and \if{html}{\out{<nls>}} objects
+including parameter names, estimates, standard errors, AICs, and nls objects
 (fitted_models) using the \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach.}
 
 \item{model_name_2boot}{A vector of strings including one or several TPC models
