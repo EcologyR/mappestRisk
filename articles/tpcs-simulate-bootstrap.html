@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Simulate TPCs with bootstrap to propagate uncertainty • mappestRisk</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -33,7 +38,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/tpcs-model-fitting.html">TPCs model fitting</a></li>
+<li><a class="dropdown-item" href="../articles/generate-risk-maps.html">Generating Risk Maps</a></li>
+    <li><a class="dropdown-item" href="../articles/tpcs-model-fitting.html">TPCs model fitting</a></li>
     <li><a class="dropdown-item" href="../articles/tpcs-simulate-bootstrap.html">Simulate TPCs with bootstrap to propagate uncertainty</a></li>
   </ul>
 </li>
@@ -79,7 +85,11 @@ performance curves using bootstrap with residual resampling<a class="anchor" ari
 know about the knowledge of the target system (i.e., model structure,
 parameter uncertainty, response or predictor variable errors, etc) that
 adds together with uncertainty in how to communicate findings and an
-unavoidable randomness within natural systems <span class="citation">(Simmonds et al. 2022)</span>.</p>
+unavoidable randomness within natural systems <span class="citation">(Simmonds et al. 2022)</span>. Specifically,
+propagating parameter uncertainty for estimation of performance and
+fitness through thermal performance curves and translate them into
+geographical predictions result critical to prevent biased forecasts
+<span class="citation">(Woods et al. 2018)</span>.</p>
 <p>At least three different uncertainty sources of the models should be
 addressed in forecasts:</p>
 <ol style="list-style-type: decimal">
@@ -148,16 +158,17 @@ article</a>.</p>
 that automate the workflow suggested by <code>rTPC</code> package to
 simulate curves for propagating parameter uncertainty. We implemented
 the <em>residual resampling</em> method following <code>rTPC</code>
-vignete suggestions, but with a raw resampling code workflow rather than
-using <code>car::Boot()</code> function for simplicity. We opted for the
-residual resampling rather than the case resampling bootstrapping method
-as the predictor data are controlled by the experimental researchers and
-there are usually few data points per curve, with low representation of
-the hot decay TPC region in the source data that would make many case
-resampling iterations difficult for refitting new TPC models. For
-further insights on the methodology, please refer to the <a href="https://padpadpadpad.github.io/rTPC/articles/bootstrapping_models.html#residual-resampling" class="external-link">the
+vignette suggestions, but with a raw resampling code workflow rather
+than using <code>car::Boot()</code> function for simplicity. We opted
+for the residual resampling rather than the case resampling
+bootstrapping method as the predictor data are controlled by the
+experimental researchers and there are usually few data points per
+curve, with low representation of the hot decay TPC region in the source
+data that would make many case resampling iterations difficult for
+refitting new TPC models. For further insights on the methodology,
+please refer to the <a href="https://padpadpadpad.github.io/rTPC/articles/bootstrapping_models.html#residual-resampling" class="external-link">the
 original <code>rTPC</code> vignette</a>. Further updates of the package
-may incorporate variance modelling for heteroskedastic residuals, as
+may incorporate variance modelling for heteroscedastic residuals, as
 well as an argument to choice between <em>residual</em>
 <em>resampling</em> and <em>case resampling</em><a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;More methods to perform these bootstrap resampling
 tecniques are given in &lt;span class="citation"&gt;(Sonderegger and Buscaglia
@@ -236,12 +247,6 @@ parameter uncertainty for inference.</p>
 <span><span class="co">#&gt; Note: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Bootstrapping simulations completed for briere2</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = x$temp, dev_rate = x$dev_rate, model_name =</span></span>
-<span><span class="co">#&gt; unique(x$model_name)): TPC model lactin2 had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors.</span></span>
-<span><span class="co">#&gt; Warning in fit_devmodels(temp = x$temp, dev_rate = x$dev_rate, model_name =</span></span>
-<span><span class="co">#&gt; unique(x$model_name)): TPC model lactin2 had one or more parameters with</span></span>
-<span><span class="co">#&gt; unexpectedly large standard errors.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Bootstrapping simulations completed for lactin2</span></span></code></pre></div>
 <p>By default, the <code>predict_curves</code> function does propagate
@@ -309,6 +314,12 @@ Disciplines.”</span> <em>iScience</em> 25 (12): 105512. <a href="https://doi.o
 Sonderegger, Derek L., and Robert Buscaglia. 2020. <span>“Appendix a :
 Resampling Linear Models | Introduction to Statistical Methodology,
 Second Edition.”</span> In. Bookdown. <a href="https://bookdown.org/dereksonderegger/570/appendix-a-resampling-linear-models.html" class="external-link">https://bookdown.org/dereksonderegger/570/appendix-a-resampling-linear-models.html</a>.
+</div>
+<div id="ref-woods2018" class="csl-entry">
+Woods, H. Arthur, Joel G. Kingsolver, Samuel B. Fey, and David A.
+Vasseur. 2018. <span>“Uncertainty in Geographical Estimates of
+Performance and Fitness.”</span> <em>Methods in Ecology and
+Evolution</em> 9 (9): 1996–2008. <a href="https://doi.org/10.1111/2041-210X.13035" class="external-link">https://doi.org/10.1111/2041-210X.13035</a>.
 </div>
 </div>
 </div>
