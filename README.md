@@ -208,6 +208,13 @@ US-1381388, Universidad de Sevilla).
 
 ![](https://ecologyr.github.io/workshop/images/logos.png)
 
+## Code of Conduct
+
+Please note that the mappestRisk project is released with a [Contributor
+Code of
+Conduct](https://ecologyr.github.io/mappestRisk/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
+
 ## References:
 
 <div id="refs" class="references csl-bib-body hanging-indent"
