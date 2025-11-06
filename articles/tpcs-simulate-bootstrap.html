@@ -128,7 +128,7 @@ and some others where they have not.</li>
 <li>
 <strong>Source data uncertainty:</strong> additionally, TPCs are
 usually fitted to summarized data from experiments in laboratory
-conditions. These measures incorporate both both mesasurement error (at
+conditions. These measures incorporate both both measurement error (at
 the individual level) and uncertainty measures summarizing the
 variability of rate estimates at the population level.</li>
 </ol>
@@ -171,8 +171,8 @@ original <code>rTPC</code> vignette</a>. Further updates of the package
 may incorporate variance modelling for heteroscedastic residuals, as
 well as an argument to choice between <em>residual</em>
 <em>resampling</em> and <em>case resampling</em><a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;More methods to perform these bootstrap resampling
-tecniques are given in &lt;span class="citation"&gt;(Sonderegger and Buscaglia
-2020)&lt;/span&gt;.&lt;/p&gt;'><sup>1</sup></a>.</p>
+techniques are given in &lt;span class="citation"&gt;(Sonderegger and
+Buscaglia 2020)&lt;/span&gt;.&lt;/p&gt;'><sup>1</sup></a>.</p>
 <p>The <code><a href="../reference/predict_curves.html">predict_curves()</a></code> function incorporates the
 temperature and development rate data arguments, a
 <code>fitted_parameters</code> argument that requires as input the table
@@ -254,7 +254,7 @@ uncertainty by simulating as many curves as asked through
 <code>n_boots_samples</code> argument for each of the selected models
 from <code>model_name_2boot</code>. If able to perform bootstrap, this
 default configuration will output a <code>tibble</code> with simulated
-TPCs for both ploting purposes and thermal traits calculation.
+TPCs for both plotting purposes and thermal traits calculation.
 <code>n_boots_samples</code> is set up to 100 by default. We recommend
 to avoid lower values that may inaccurately reflect uncertainty and to
 think carefully when trying to perform bootstrap with larger samples,
@@ -270,7 +270,7 @@ easily visualized with <code><a href="../reference/plot_uncertainties.html">plot
 curve from the model estimate is plotted as a thicker, dark orange line
 and the bootstrapped curves are depicted as slighter, dark blue lines
 composing a sort of a ribbon for the central curve. If more than one
-model has been succesfully bootstrapped, predicted curves will be
+model has been successfully bootstrapped, predicted curves will be
 plotted along different facets.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_uncertainties.html">plot_uncertainties</a></span><span class="op">(</span>bootstrap_tpcs <span class="op">=</span> <span class="va">preds_boots_aphid</span>,</span>
