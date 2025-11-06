@@ -47,7 +47,7 @@ fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
                                    dev_rate = aphid$rate_value,
                                    model_name = c("briere2", "lactin2"))
 #predict curves previously
-preds_boots_aphid <-predict_curves(temp = aphid$temperature,          
+preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
                                    model_name_2boot = c("briere2", "lactin2"),
@@ -110,7 +110,7 @@ The map on the left side shows how many months have optimal temperatures for the
 
 In the following example, the `region` will be a frame with four coordinates (`xmin, xmax, ymin, ymax`) encompassing the Bhutan projection that is used by default in `map_risk()` function. First, let's convert the numeric extent into a `SpatExtent` using `terra::ext()`[^4]:
 
-[^4]: Note that `map_risk()` will also work for a numeric vector with this four values, so using `terra::ext()` is not neccesary and we use it for safety practices writing (it might avoid typo data, etc).
+[^4]: Note that `map_risk()` will also work for a numeric vector with this four values, so using `terra::ext()` is not necessary and we use it for safety practices writing (it might avoid typo data, etc).
 
 ```{r}
 bhutan_spatextent <- terra::ext(risk_rast_bhutan)
