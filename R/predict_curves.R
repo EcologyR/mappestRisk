@@ -42,7 +42,7 @@
 #'  [fit_devmodels()] for fitting Thermal Performance Curves to development rate data,
 #'  which is in turn based on [nls.multstart::nls_multstart()].
 #'
-#' @inherit fit_devmodels references source
+#' @inherit fit_devmodels references
 #'
 #' @export
 #'

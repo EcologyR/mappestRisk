@@ -19,7 +19,7 @@
 #'  which is in turn based on [nls.multstart::nls_multstart()].
 #'  [predict_curves()] for bootstrapping procedure based on the above-mentioned `rTPC` vignettes.
 #'
-#' @inherit fit_devmodels references source
+#' @inherit fit_devmodels references
 #'
 #'
 #' @export

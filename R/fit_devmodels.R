@@ -20,7 +20,7 @@
 #' fitting the Thermal Performance Curves. Options include "all" or specific
 #' models listed in [available_models]. These models typically exhibit a common unimodal, left-skewed shape.
 #'
-#' @returns A table in `tibble` format with estimates and standard errors
+#' @return A table in `tibble` format with estimates and standard errors
 #' for each parameter of the models specified by the user that have adequately
 #' converged. Models are sorted based on their Akaike Information Criterion (AIC) values,
 #' with the best fitting models shown first. Fitted models are also provided in list format

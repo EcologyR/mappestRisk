@@ -32,7 +32,7 @@
 #'    the estimated TPC fitted in [fit_devmodels()].
 #'
 #'
-#' @inherit fit_devmodels references source
+#' @inherit fit_devmodels references
 #' @inherit plot_uncertainties seealso
 #'
 #' @export

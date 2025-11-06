@@ -3,10 +3,6 @@
 \name{predict_curves}
 \alias{predict_curves}
 \title{Propagate parameter uncertainty of TPC fits using bootstrap with residual resampling}
-\source{
-The dataset used in the example was originally published in Satar & Yokomi (2022)
-under the CC-BY-NC license
-}
 \usage{
 predict_curves(
   temp = NULL,

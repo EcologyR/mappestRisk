@@ -3,10 +3,6 @@
 \name{plot_devmodels}
 \alias{plot_devmodels}
 \title{Plot fitted thermal performance curves}
-\source{
-The dataset used in the example was originally published in Satar & Yokomi (2022)
-under the CC-BY-NC license
-}
 \usage{
 plot_devmodels(
   temp = NULL,

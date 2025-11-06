@@ -5,7 +5,10 @@
 \title{Fit Thermal Performance Curves}
 \source{
 The dataset used in the example was originally published in Satar & Yokomi (2022)
-under the CC-BY-NC license
+under the CC-BY-NC license.
+The start values and equations for the 'briere1', 'lactin1', 'mod_polynomial'
+and 'wang' models have been obtained from
+the \href{https://cran.r-project.org/package=devRate}{devRate} package.
 }
 \usage{
 fit_devmodels(temp = NULL, dev_rate = NULL, model_name = NULL)
@@ -70,8 +73,6 @@ of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: A
 }
 \seealso{
 \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} for structure of model fitting approach
-
-\code{\link[devRate:devRateEqList]{devRate::devRateEqList()}} for information on several equations
 
 \code{browseVignettes("rTPC")} for model names, start values searching workflows and
 bootstrapping procedures using both \code{rTPC} and \code{nls.multstart} packages.

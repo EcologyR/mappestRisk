@@ -3,10 +3,6 @@
 \name{therm_suit_bounds}
 \alias{therm_suit_bounds}
 \title{Determine Thermal Boundaries for Optimal Performance Level}
-\source{
-The dataset used in the example was originally published in Satar & Yokomi (2022)
-under the CC-BY-NC license
-}
 \usage{
 therm_suit_bounds(
   preds_tbl = NULL,

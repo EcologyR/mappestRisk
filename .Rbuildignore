@@ -18,4 +18,4 @@ README_cache/
 ^cran-comments\.md$
 ^codemeta\.json$
 ^CODE_OF_CONDUCT\.md$
-
+.mailmap

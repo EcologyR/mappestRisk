@@ -4,10 +4,6 @@
 \alias{plot_uncertainties}
 \title{Draw bootstrapped Thermal Performance Curves (TPCs) to visualize uncertainty
 in parameter estimation of TPC fitting}
-\source{
-The dataset used in the example was originally published in Satar & Yokomi (2022)
-under the CC-BY-NC license
-}
 \usage{
 plot_uncertainties(
   temp = NULL,
