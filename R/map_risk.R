@@ -228,6 +228,11 @@ map_risk <- function(t_vals = NULL,
     }
   }
 
+  # if data download from geodata has failed (e.g. no connection), return error
+  if (is.null(t_rast)) {
+    stop("The download of temperature rasters has failed. Please try later or provide a raster in `t_rast`")
+  }
+
 
   ## Crop and mask t_rast with region
 
