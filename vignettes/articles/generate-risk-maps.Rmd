@@ -48,11 +48,11 @@ fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
                                    model_name = c("briere2", "lactin2"))
 #predict curves previously
 preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
-                                   dev_rate = aphid$rate_value,
-                                   fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2"),
-                                   propagate_uncertainty = TRUE,
-                                   n_boots_samples = 10)
+                                    dev_rate = aphid$rate_value,
+                                    fitted_parameters = fitted_tpcs_aphid,
+                                    model_name_2boot = c("briere2", "lactin2"),
+                                    propagate_uncertainty = TRUE,
+                                    n_boots_samples = 10)
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -91,13 +91,27 @@ If we follow the workflow of the package in the examples elsewhere in this websi
 
 Since *Bhutan* is the official name included in `mappestRisk::country_names` and no `t_rast` is given by the user, the function will automatically download data cropped for this country. In this case, we will use
 
-```{r}
+```{r eval=FALSE}
 
 # Create a Risk Map for Bhutan
 
 risk_rast_bhutan <- map_risk(t_vals = boundaries_aphid, 
                              path = tempdir(), # directory to download data 
                              region = "Bhutan",    
+                             mask = TRUE,
+                             plot = TRUE,
+                             interactive = FALSE,
+                             verbose = TRUE)
+```
+
+```{r echo=FALSE, eval=TRUE}
+
+# Create a Risk Map for Bhutan
+
+t_rast <- terra::rast("BTN_wc2.1_30s_tavg.tif")
+
+risk_rast_bhutan <- map_risk(t_vals = boundaries_aphid, 
+                             t_rast = t_rast,
                              mask = TRUE,
                              plot = TRUE,
                              interactive = FALSE,
@@ -120,12 +134,12 @@ Then, we would apply the same function as before for the `aphid` workflow, with 
 
 ```{r, eval=FALSE}
 risk_rast_bhutan_v2 <- map_risk(t_vals = boundaries_aphid, 
-                             path = tempdir(), # directory to download data 
-                             region = bhutan_spatextent,    
-                             mask = TRUE,
-                             plot = TRUE,
-                             interactive = FALSE,
-                             verbose = TRUE)
+                                path = tempdir(), # directory to download data 
+                                region = bhutan_spatextent,    
+                                mask = TRUE,
+                                plot = TRUE,
+                                interactive = FALSE,
+                                verbose = TRUE)
 ```
 
 ### Risk map: Polygons
@@ -139,12 +153,12 @@ bhutan_sf <- worldmap_sf |>
   dplyr::filter(admin == "Bhutan")
 
 risk_rast_bhutan_sfexample <- map_risk(t_vals = boundaries_aphid, 
-                                path = tempdir(), # directory to download data 
-                                region = bhutan_sf,    
-                                mask = TRUE,
-                                plot = TRUE,
-                                interactive = FALSE,
-                                verbose = TRUE)
+                                       path = tempdir(), # directory to download data 
+                                       region = bhutan_sf,    
+                                       mask = TRUE,
+                                       plot = TRUE,
+                                       interactive = FALSE,
+                                       verbose = TRUE)
 ```
 
 ## References
