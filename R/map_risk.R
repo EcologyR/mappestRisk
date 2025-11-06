@@ -304,7 +304,7 @@ map_risk <- function(t_vals = NULL,
   if (isTRUE(plot)) {
 
     if (verbose) message("\nPlotting map...\n")
-    palette_bilbao <- khroma::color(palette = "bilbao",reverse = FALSE)(100)
+    palette_bilbao <- khroma::color(palette = "bilbao",reverse = TRUE)(100)
     palette_acton <- khroma::color(palette = "acton",reverse = TRUE)(100)
 
     if (isTRUE(interactive)) {
