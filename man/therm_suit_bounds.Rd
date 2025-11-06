@@ -15,7 +15,10 @@ therm_suit_bounds(
 
 \item{model_name}{character. Name of one or several of the TPC models fitted
 first in \code{fit_devmodels()} and predicted next in \code{predict_curves()}.
-If using \code{model_name = "all"} all models contained in \code{preds_tbl} will be used.}
+If using \code{model_name = "all"} all models contained in \code{preds_tbl} will be used.
+Please, note that some models (most typically, \code{briere}, \code{mod_poly}, \code{wang} and
+\code{ratkowsky}) may calculate unrealistic thermal boundaries. We
+recommend to double-check it and compare among several models.}
 
 \item{suitability_threshold}{A numeric value from 50 to 100 representing
 the quantile of the curve that provides the user-defined optimal performance.
