@@ -8,6 +8,9 @@
 #' @param model_name character. Name of one or several of the TPC models fitted
 #' first in `fit_devmodels()` and predicted next in `predict_curves()`.
 #' If using `model_name = "all"` all models contained in `preds_tbl` will be used.
+#' Please, note that some models (most typically, `briere`, `mod_poly`, `wang` and
+#' `ratkowsky`) may calculate unrealistic thermal boundaries. We
+#' recommend to double-check it and compare among several models.
 #'
 #' @param suitability_threshold A numeric value from 50 to 100 representing
 #' the quantile of the curve that provides the user-defined optimal performance.

@@ -109,12 +109,12 @@ worldmap_sf <- geodata::world()
 worldmap_sf <- terra::unwrap(readRDS("gadm36_adm0_r5_pk.rds"))
 ```
 
-Then, we will crop it using the boundaries of our risk raster without `NAs`. 
+Then, we will crop it using the boundaries of our risk raster without `NAs`.
 
 ```{r}
 noNA_risk_rast <- risk_layer_bhutan |> 
   tidyterra::drop_na()
-Bhutan_sf <- terra::crop(worldmap_sf, noNA_risk_rast)
+bhutan_sf <- terra::crop(worldmap_sf, noNA_risk_rast)
 ```
 
 Then, we will use a custom palette based on *magma* palette from `viridis` package with a custom color for `0`'s:
@@ -130,16 +130,15 @@ For now, the map with these custom options and `tidyterra::geom_spatraster()` fu
 max_risk_bhutan <- terra::minmax(noNA_risk_rast)[2] # for manual scale fill visualization 
 
 aphid_risk_map <- ggplot2::ggplot() +
-  tidyterra::geom_spatvector(data = Bhutan_sf, # <- countries background
-                   fill = "gray85") +
   tidyterra::geom_spatraster(data = noNA_risk_rast, 
                              maxcell = Inf) +
-  tidyterra::geom_spatvector(data = Bhutan_sf,
-                   fill = NA,
-                   color = "lightblue4") +
+  tidyterra::geom_spatvector(data = bhutan_sf,
+                             fill = NA,
+                             color = "black") +
   ggplot2::scale_fill_gradientn(colours = my_risk_palette[1:(max_risk_bhutan + 1)], # to preserve the scales
                                 na.value = "transparent",
                                 breaks = seq(0, 12, by = 1))
+
 print(aphid_risk_map)
 ```
 
@@ -164,11 +163,15 @@ china_sf <- worldmap_sf |>
 india_sf <- worldmap_sf |> 
   dplyr::filter(NAME_0 == "India")
 
+#adapt frame to Bhutan coordinates
+bhutan_ext <- terra::ext(bhutan_sf)
 
 species_name_italics <- expression(italic("Brachycaudus schwatzi"))
 
 aphid_risk_map +
   theme_bw() +
+  lims(x = c(bhutan_ext[1], bhutan_ext[2]),
+       y = c(bhutan_ext[3], bhutan_ext[4]))+
   theme(legend.position = "bottom") +
   labs(title = "Risk Map for bhutan",
        subtitle = species_name_italics,
@@ -190,11 +193,10 @@ breaks_levels <- purrr::map_chr(.x = seq(0, max_risk_bhutan),
   forcats::as_factor()
 
 ggplot2::ggplot() +
-  ggplot2::geom_sf(data = worldmap_sf, # <- countries background
-                   fill = "gray85") +
-  ggplot2::lims(x = c(bbox_rast[1], bbox_rast[3]),
-                y = c(bbox_rast[2], bbox_rast[4])) +
-  tidyterra::geom_spatraster_contour_filled(data = risk_rast_bhutan_epsg4326,
+  theme_bw() +
+  lims(x = c(bhutan_ext[1], bhutan_ext[2]),
+       y = c(bhutan_ext[3], bhutan_ext[4]))+
+  tidyterra::geom_spatraster_contour_filled(data = risk_layer_bhutan,
                                             breaks = seq(0, 12),
                                             maxcell = Inf) +
   ggplot2::geom_sf(data = worldmap_sf,
@@ -210,14 +212,14 @@ ggplot2::ggplot() +
        fill = "Annual Risk Months") +
   theme(legend.position = "bottom") +
   theme(plot.title = element_text(face = "bold")) +
-  geom_sf(data = china_sf, fill = "black",
+  geom_sf(data = china_sf, fill = "white",
           color = NA) +
-  geom_sf(data = india_sf, fill = "black",
+  geom_sf(data = india_sf, fill = "white",
           color = NA)+
   geom_sf(data = china_sf, fill = NA,
-          color = "black") +
+          color = "white") +
   geom_sf(data = india_sf, fill = NA,
-          color = "black")
+          color = "white")
 ```
 
 ## References

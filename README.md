@@ -95,7 +95,7 @@ library("mappestRisk")
 data("aphid") 
 fitted_tpcs <- fit_devmodels(temp = aphid$temperature,  
                              dev_rate = aphid$rate_value, 
-                             model_name = c("briere2", "lactin2", "ratkowsky"))
+                             model_name = c("briere2", "lactin2", "thomas"))
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
@@ -123,7 +123,7 @@ the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
 preds_boots <- predict_curves(temp = aphid$temperature,          
                               dev_rate = aphid$rate_value,
                               fitted_parameters = fitted_tpcs,
-                              model_name_2boot = c("briere2", "lactin2"),
+                              model_name_2boot = c("briere2", "lactin2", "thomas"),
                               propagate_uncertainty = TRUE,
                               n_boots_samples = 10)
 #> 
@@ -132,6 +132,8 @@ preds_boots <- predict_curves(temp = aphid$temperature,
 #>  Bootstrapping simulations completed for briere2
 #> 
 #>  Bootstrapping simulations completed for lactin2
+#> 
+#>  Bootstrapping simulations completed for thomas
 
 plot_uncertainties(bootstrap_tpcs = preds_boots,
                    temp = aphid$temperature,
@@ -153,7 +155,7 @@ selected under both ecological and statistical criteria, the
 
 ``` r
 boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
-                                model_name = "briere2",        
+                                model_name = "lactin2",        
                                 suitability_threshold = 80) 
 ```
 
