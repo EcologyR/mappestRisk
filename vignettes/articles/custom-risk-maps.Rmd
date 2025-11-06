@@ -117,10 +117,11 @@ noNA_risk_rast <- risk_layer_bhutan |>
 bhutan_sv <- terra::crop(worldmap_sv, noNA_risk_rast)
 ```
 
-Then, we will use a custom palette based on *magma* palette from `viridis` package with a custom color for `0`'s:
+Then, we will use a custom palette based on *lajolla* palette from `khroma` package with a custom color for `0`'s:
 
 ```{r}
-my_risk_palette <- c("#AFC8C8", viridis::magma(12, direction = -1))
+my_risk_palette <- c("#AFC8C8", khroma::color(palette = "lajolla", reverse = TRUE)(12))
+
 
 ```
 
