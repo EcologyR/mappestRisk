@@ -2,7 +2,7 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "mappestRisk",
-  "description": "There are three different modules: (1) model fitting & selection using a set of the most commonly used equations describing developmental responses to temperature helped by already existing R packages using equation helpers and parameters from 'devRate' (Rebaudo et al. 2018, <doi:10.1111/2041-210X.12935>) 'rTPC' and nonlinear regression model functions from 'nls.multstart' (Padfield et al. 2021, <doi:10.1111/2041-210X.13585>), with visualization of model predictions to guide ecological criteria for model selection; (2) calculation of suitability thermal limits, which consist on a temperature interval delimiting the optimal performance zone or suitability; and (3) climatic data extraction & visualization inspired on previous research (Taylor et al. 2019, <doi:10.1111/1365-2664.13455>), with either exportable rasters, static map images or html, interactive maps.",
+  "description": "There are three different modules: (1) model fitting and selection using a set of the most commonly used equations describing developmental responses to temperature helped by already existing R packages ('rTPC') and nonlinear regression model functions from 'nls.multstart' (Padfield et al. 2021, <doi:10.1111/2041-210X.13585>), with visualization of model predictions to guide ecological criteria for model selection; (2) calculation of suitability thermal limits, which consist on a temperature interval delimiting the optimal performance zone or suitability; and (3) climatic data extraction and visualization inspired on previous research (Taylor et al. 2019, <doi:10.1111/1365-2664.13455>), with either exportable rasters, static map images or html, interactive maps.",
   "name": "mappestRisk: Create Maps Forecasting Risk of Pest Occurrence",
   "relatedLink": "https://ecologyr.github.io/mappestRisk/",
   "codeRepository": "https://github.com/EcologyR/mappestRisk",
@@ -106,18 +106,6 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=leaflet"
-    },
-    {
-      "@type": "SoftwareApplication",
-      "identifier": "tidyterra",
-      "name": "tidyterra",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=tidyterra"
     },
     {
       "@type": "SoftwareApplication",
@@ -262,7 +250,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "539.473KB",
+  "fileSize": "804.364KB",
   "citation": [
     {
       "@type": "SoftwareSourceCode",
@@ -297,7 +285,7 @@
         }
       ],
       "name": "mappestRisk: An R package for modelling and mapping risk of pest development based on\n  known thermal limits",
-      "url": "https://ecologyr.github.io/mappestRisk"
+      "url": "https://ecologyr.github.io/mappestRisk/"
     }
   ],
   "releaseNotes": "https://github.com/EcologyR/mappestRisk/blob/main/NEWS.md",
