@@ -18,7 +18,9 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 
-`r badger::badge_cran_release()` ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk) [![r-universe version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk) [![r-universe status](https://ecologyr.r-universe.dev/mappestRisk/badges/checks)](https://ecologyr.r-universe.dev/mappestRisk) [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk) `r badger::badge_lifecycle("stable")` `r badger::badge_repostatus("Active")` [![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk) [![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+<!-- `r badger::badge_cran_release()` -->
+
+![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk) [![r-universe version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk) [![r-universe status](https://ecologyr.r-universe.dev/mappestRisk/badges/checks)](https://ecologyr.r-universe.dev/mappestRisk) [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk) `r badger::badge_lifecycle("stable")` `r badger::badge_repostatus("Active")` <!-- [![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk) --> <!-- [![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
 
 <!-- badges: end -->
 

@@ -5,7 +5,8 @@
 
 <!-- badges: start -->
 
-[![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+<!-- [![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
+
 ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
 [![r-universe
 version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk)
@@ -18,8 +19,8 @@ coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://a
 [![Project Status: Active - The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
-[![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+<!-- [![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
+<!-- [![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
 
 <!-- badges: end -->
 
@@ -243,7 +244,6 @@ Analysing Thermal Performance Curves.”
 Padfield, Daniel, Hannah O’Sullivan, and Samraat Pawar. 2021. “rTPC and
 Nls.multstart: A New Pipeline to Fit Thermal Performance Curves in r.”
 *Methods in Ecology and Evolution* 12 (6): 1138–43.
-<https://doi.org/10.1111/2041-210X.13585>.
 
 </div>
 
@@ -254,7 +254,7 @@ Alex H. H. Chan, Marta S. Shocket, Leah R. Johnson, Dimitrios-Georgios
 Kontopoulos, and Lauren J. Cator. 2024. “Variation in Temperature of
 Peak Trait Performance Constrains Adaptation of Arthropod Populations to
 Climatic Warming.” *Nature Ecology & Evolution*, January, 1–11.
-<https://doi.org/10.1038/s41559-023-02301-8>.
+<https://www.nature.com/articles/s41559-023-02301-8>.
 
 </div>
 
@@ -272,7 +272,6 @@ Rebaudo, François, Quentin Struelens, and Olivier Dangles. 2018.
 “Modelling Temperature-Dependent Development Rate and Phenology in
 Arthropods: The devRate Package for r.” *Methods in Ecology and
 Evolution* 9 (4): 1144–50.
-https://doi.org/<https://doi.org/10.1111/2041-210X.12935>.
 
 </div>
 
@@ -282,7 +281,6 @@ Schmalensee, Loke von, Katrín Hulda Gunnarsdóttir, Joacim Näslund, Karl
 Gotthard, and Philipp Lehmann. 2021. “Thermal Performance Under Constant
 Temperatures Can Accurately Predict Insect Development Times Across
 Naturally Variable Microclimates.” *Ecology Letters* 24 (8): 1633–45.
-<https://doi.org/10.1111/ele.13779>.
 
 </div>
 
@@ -292,7 +290,7 @@ Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, David G. Hall,
 Hossein A. Narouei-Khandan, Jason R. Rohr, and Leah R. Johnson. 2019.
 “Predicting the Fundamental Thermal Niche of Crop Pests and Diseases in
 a Changing World: A Case Study on Citrus Greening.” *Journal of Applied
-Ecology* 56 (8): 2057–68. <https://doi.org/10.1111/1365-2664.13455>.
+Ecology* 56 (8): 2057–68.
 
 </div>
 

@@ -27,10 +27,10 @@ It must be numeric and of the same length as \code{temp}.}
 \item{bootstrap_tpcs}{a \code{tibble} A tibble object as produced by
 \code{\link[=predict_curves]{predict_curves()}}, containing bootstrapped TPCs to propagate uncertainty.}
 
-\item{species}{\if{html}{\out{<optional>}} a string of the target species that
+\item{species}{optional a string of the target species that
 will constitute the plot title. Must be of type "character".}
 
-\item{life_stage}{\if{html}{\out{<optional>}} a string of the target life stage that
+\item{life_stage}{optional a string of the target life stage that
 will constitute the plot subtitle. Must be of type "character".}
 
 \item{alpha}{a number between 0 and 1 to choose transparency of the bootstrapped
