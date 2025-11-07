@@ -191,7 +191,7 @@ Similarly, a discrete *iso-risk* map can be generated using `terra::geom_spatras
 ```{r}
 breaks_levels <- purrr::map_chr(.x = seq(0, max_risk_bhutan),
                                 .f = ~paste0("[", .x, " ", .x+1,")")) |> 
-  forcats::as_factor()
+  as.factor()
 
 ggplot2::ggplot() +
   theme_bw() +
