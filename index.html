@@ -41,7 +41,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/generate-risk-maps.html">Generating Risk Maps</a></li>
+<li><a class="dropdown-item" href="articles/custom-risk-maps.html">Customize your Risk Maps</a></li>
+    <li><a class="dropdown-item" href="articles/generate-risk-maps.html">Generating Risk Maps</a></li>
     <li><a class="dropdown-item" href="articles/tpcs-model-fitting.html">TPCs model fitting</a></li>
     <li><a class="dropdown-item" href="articles/tpcs-simulate-bootstrap.html">Simulate TPCs with bootstrap to propagate uncertainty</a></li>
   </ul>
@@ -100,7 +101,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"aphid"</span><span class="op">)</span> </span>
 <span><span class="va">fitted_tpcs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_devmodels.html">fit_devmodels</a></span><span class="op">(</span>temp <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">temperature</span>,  </span>
 <span>                             dev_rate <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">rate_value</span>, </span>
-<span>                             model_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"briere2"</span>, <span class="st">"lactin2"</span>, <span class="st">"ratkowsky"</span><span class="op">)</span><span class="op">)</span></span>
+<span>                             model_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"briere2"</span>, <span class="st">"lactin2"</span>, <span class="st">"thomas"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/plot_devmodels.html">plot_devmodels</a></span><span class="op">(</span>temp <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">temperature</span>,</span>
 <span>               dev_rate <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">rate_value</span>,</span>
@@ -114,7 +115,7 @@
 <code class="sourceCode R"><span><span class="va">preds_boots</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/predict_curves.html">predict_curves</a></span><span class="op">(</span>temp <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">temperature</span>,          </span>
 <span>                              dev_rate <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">rate_value</span>,</span>
 <span>                              fitted_parameters <span class="op">=</span> <span class="va">fitted_tpcs</span>,</span>
-<span>                              model_name_2boot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"briere2"</span>, <span class="st">"lactin2"</span><span class="op">)</span>,</span>
+<span>                              model_name_2boot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"briere2"</span>, <span class="st">"lactin2"</span>, <span class="st">"thomas"</span><span class="op">)</span>,</span>
 <span>                              propagate_uncertainty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                              n_boots_samples <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -123,6 +124,8 @@
 <span><span class="co">#&gt;  Bootstrapping simulations completed for briere2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Bootstrapping simulations completed for lactin2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  Bootstrapping simulations completed for thomas</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/plot_uncertainties.html">plot_uncertainties</a></span><span class="op">(</span>bootstrap_tpcs <span class="op">=</span> <span class="va">preds_boots</span>,</span>
 <span>                   temp <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">temperature</span>,</span>
@@ -137,7 +140,7 @@
 <p>After the previous steps, the user can calculate the thermal boundaries of the optimal zone of the TPC –i.e., those temperature values yielding the Y-th quantile of the development rate (default to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">Q</mtext><mn>75</mn></msub><annotation encoding="application/x-tex">\textrm{Q}_{75}</annotation></semantics></math>) at both sides of the curve peak or <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mo>max</mo></msub><annotation encoding="application/x-tex">R_\max</annotation></semantics></math>. Once a model has been selected under both ecological and statistical criteria, the <code>thermal_suitability_bounds()</code> function calculates these values:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boundaries</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/therm_suit_bounds.html">therm_suit_bounds</a></span><span class="op">(</span>preds_tbl <span class="op">=</span> <span class="va">preds_boots</span>,</span>
-<span>                                model_name <span class="op">=</span> <span class="st">"briere2"</span>,        </span>
+<span>                                model_name <span class="op">=</span> <span class="st">"lactin2"</span>,        </span>
 <span>                                suitability_threshold <span class="op">=</span> <span class="fl">80</span><span class="op">)</span> </span></code></pre></div>
 </div>
 <div class="section level3">
@@ -161,7 +164,7 @@
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  San<span class="sc">-</span>Segundo Molina D, Barbosa A, Pérez<span class="sc">-</span>Luque A, Rodríguez<span class="sc">-</span>Sánchez F</span>
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  (<span class="dv">2025</span>). _mappestRisk<span class="sc">:</span> An R package <span class="cf">for</span> modelling and mapping risk of</span>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  pest development based on known thermal limits_.</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>ecologyr.github.io<span class="sc">/</span>mappestRisk<span class="sc">/</span><span class="er">&gt;</span>.</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>ecologyr.github.io<span class="sc">/</span>mappestRisk<span class="sc">&gt;</span>.</span>
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
 <span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
@@ -170,7 +173,7 @@
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  known thermal limits},</span>
 <span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    author <span class="ot">=</span> {Darío {San<span class="sc">-</span>Segundo Molina} and A. Márcia Barbosa and Antonio Jesús Pérez<span class="sc">-</span>Luque and Francisco Rodríguez<span class="sc">-</span>Sánchez},</span>
 <span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2025</span>},</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>ecologyr.github.io<span class="sc">/</span>mappestRisk<span class="sc">/</span>},</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>ecologyr.github.io<span class="sc">/</span>mappestRisk},</span>
 <span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  }</span></code></pre></div>
 </div>
 </div>

@@ -20,7 +20,8 @@ Thermal Performance Curve (TPC) corresponding to a user-defined optimal performa
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/generate-risk-maps.html">Generating Risk Maps</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/custom-risk-maps.html">Customize your Risk Maps</a></li>
+    <li><a class="dropdown-item" href="../articles/generate-risk-maps.html">Generating Risk Maps</a></li>
     <li><a class="dropdown-item" href="../articles/tpcs-model-fitting.html">TPCs model fitting</a></li>
     <li><a class="dropdown-item" href="../articles/tpcs-simulate-bootstrap.html">Simulate TPCs with bootstrap to propagate uncertainty</a></li>
   </ul></li>
@@ -65,7 +66,10 @@ Thermal Performance Curve (TPC) corresponding to a user-defined optimal performa
 <dt id="arg-model-name">model_name<a class="anchor" aria-label="anchor" href="#arg-model-name"></a></dt>
 <dd><p>character. Name of one or several of the TPC models fitted
 first in <code><a href="fit_devmodels.html">fit_devmodels()</a></code> and predicted next in <code><a href="predict_curves.html">predict_curves()</a></code>.
-If using <code>model_name = "all"</code> all models contained in <code>preds_tbl</code> will be used.</p></dd>
+If using <code>model_name = "all"</code> all models contained in <code>preds_tbl</code> will be used.
+Please, note that some models (most typically, <code>briere</code>, <code>mod_poly</code>, <code>wang</code> and
+<code>ratkowsky</code>) may calculate unrealistic thermal boundaries. We
+recommend to double-check it and compare among several models.</p></dd>
 
 
 <dt id="arg-suitability-threshold">suitability_threshold<a class="anchor" aria-label="anchor" href="#arg-suitability-threshold"></a></dt>
