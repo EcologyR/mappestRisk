@@ -189,7 +189,7 @@ To cite package 'mappestRisk' in publications use:
   San-Segundo Molina D, Barbosa A, Pérez-Luque A, Rodríguez-Sánchez F
   (2025). _mappestRisk: An R package for modelling and mapping risk of
   pest development based on known thermal limits_.
-  <https://ecologyr.github.io/mappestRisk>.
+  <https://ecologyr.github.io/mappestRisk/>.
 
 A BibTeX entry for LaTeX users is
 
@@ -198,7 +198,7 @@ A BibTeX entry for LaTeX users is
   known thermal limits},
     author = {Darío {San-Segundo Molina} and A. Márcia Barbosa and Antonio Jesús Pérez-Luque and Francisco Rodríguez-Sánchez},
     year = {2025},
-    url = {https://ecologyr.github.io/mappestRisk},
+    url = {https://ecologyr.github.io/mappestRisk/},
   }
 ```
 
