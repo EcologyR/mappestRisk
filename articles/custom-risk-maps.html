@@ -83,10 +83,10 @@ customize visualization for professional purposes. Since the output of
 <code>SpatRaster</code>, this raster can be then exported using
 <code><a href="https://rspatial.github.io/terra/reference/writeRaster.html" class="external-link">terra::writeRaster</a></code> in <em>*.tiff</em> format or it can be
 visualized using R packages for raster visualization such as
-<code>tidyterra</code> <span class="citation">[@tidyterra]</span> –under
-<code>ggplot2</code> <span class="citation">[@ggplot2]</span> logic– or
-<code>rasterVis</code> <span class="citation">[@rasterVis]</span>, among
-others.</p>
+<code>tidyterra</code> <span class="citation">(Hernangómez 2023)</span>
+–under <code>ggplot2</code> <span class="citation">(Wickham 2016)</span>
+logic– or <code>rasterVis</code> <span class="citation">(2023)</span>,
+among others.</p>
 <p>Here we provide an example of customization with
 <code>tidyterra</code> for the latest risk raster obtained in the <a href="articles/generate-risk-maps.html">Generating Risk Maps</a>
 article.</p>
@@ -225,9 +225,25 @@ approach as follows:</p>
 <span>          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
 <p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-tidyterra" class="csl-entry">
+Hernangómez, Diego. 2023. <span>“Using the
+<span></span>Tidyverse<span></span> with <span></span>Terra<span></span>
+Objects: The <span></span>Tidyterra<span></span> Package”</span> 8:
+5751. <a href="https://doi.org/10.21105/joss.05751" class="external-link">https://doi.org/10.21105/joss.05751</a>.
+</div>
+<div id="ref-rasterVis" class="csl-entry">
+Oscar Perpiñán, and Robert Hijmans. 2023.
+<span>“<span></span>rasterVis<span></span>.”</span> <a href="https://oscarperpinan.github.io/rastervis/" class="external-link">https://oscarperpinan.github.io/rastervis/</a>.
+</div>
+<div id="ref-ggplot2" class="csl-entry">
+Wickham, Hadley. 2016. <span>“Ggplot2: Elegant Graphics for Data
+Analysis.”</span> <a href="https://ggplot2.tidyverse.org" class="external-link">https://ggplot2.tidyverse.org</a>.
+</div>
+</div>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
