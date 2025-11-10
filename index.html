@@ -109,8 +109,8 @@
 <span>               species <span class="op">=</span> <span class="st">"Brachycaudus schwartzi"</span>,</span>
 <span>               life_stage <span class="op">=</span> <span class="st">"Nymphs"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
-<p>For a more complete explanation and example of model fitting and visualization, see <a href="articles/tpcs-model-fitting.html">TPCs model fitting</a> article.</p>
-<p>Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures with <em>residual resampling</em>, following vignettes of <code>rTPC</code> package (Padfield, O’Sullivan, and Pawar 2021). This can be done with the function <code><a href="reference/predict_curves.html">predict_curves()</a></code> by setting the argument <code>propagate_uncertainty</code> to be <code>TRUE</code>. Resulting predictions can be plotted using <code><a href="reference/plot_uncertainties.html">plot_uncertainties()</a></code>. A detailed explanation is given in the <a href="articles/tpcs-simulate-bootstrap.html">TPCs model fitting</a> article.</p>
+<p>For a more complete explanation and example of model fitting and visualization, see <a href="https://ecologyr.github.io/mappestRisk/articles/tpcs-model-fitting.html">TPCs model fitting</a> article.</p>
+<p>Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures with <em>residual resampling</em>, following vignettes of <code>rTPC</code> package (Padfield, O’Sullivan, and Pawar 2021). This can be done with the function <code><a href="reference/predict_curves.html">predict_curves()</a></code> by setting the argument <code>propagate_uncertainty</code> to be <code>TRUE</code>. Resulting predictions can be plotted using <code><a href="reference/plot_uncertainties.html">plot_uncertainties()</a></code>. A detailed explanation is given in the <a href="https://ecologyr.github.io/mappestRisk/articles/tpcs-model-fitting.html">TPCs model fitting</a> article.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">preds_boots</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/predict_curves.html">predict_curves</a></span><span class="op">(</span>temp <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">temperature</span>,          </span>
 <span>                              dev_rate <span class="op">=</span> <span class="va">aphid</span><span class="op">$</span><span class="va">rate_value</span>,</span>
@@ -283,7 +283,7 @@ Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, David G. Hall, Hossein A. 
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
