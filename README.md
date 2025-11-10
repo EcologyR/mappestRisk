@@ -109,7 +109,8 @@ plot_devmodels(temp = aphid$temperature,
 
 For a more complete explanation and example of model fitting and
 visualization, see [TPCs model
-fitting](articles/tpcs-model-fitting.html) article.
+fitting](https://ecologyr.github.io/mappestRisk/articles/tpcs-model-fitting.html)
+article.
 
 Additionally, we recommend here to propagate uncertainty in parameter
 estimation of the fitted and selected TPC models using bootstrap
@@ -118,7 +119,9 @@ package (Padfield, O’Sullivan, and Pawar 2021). This can be done with
 the function `predict_curves()` by setting the argument
 `propagate_uncertainty` to be `TRUE`. Resulting predictions can be
 plotted using `plot_uncertainties()`. A detailed explanation is given in
-the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
+the [TPCs model
+fitting](https://ecologyr.github.io/mappestRisk/articles/tpcs-model-fitting.html)
+article.
 
 ``` r
 preds_boots <- predict_curves(temp = aphid$temperature,          
