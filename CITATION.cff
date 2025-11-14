@@ -8,17 +8,15 @@ message: 'To cite package "mappestRisk" in publications use:'
 type: software
 license: GPL-3.0-or-later
 title: 'mappestRisk: Create Maps Forecasting Risk of Pest Occurrence'
-version: 0.1.1
-abstract: 'There are three different modules: (1) model fitting & selection using
+version: 0.1.2
+abstract: 'There are three different modules: (1) model fitting and selection using
   a set of the most commonly used equations describing developmental responses to
-  temperature helped by already existing R packages using equation helpers and parameters
-  from ''devRate'' (Rebaudo et al. 2018, <https://doi.org/10.1111/2041-210X.12935>)
-  ''rTPC'' and nonlinear regression model functions from ''nls.multstart'' (Padfield
-  et al. 2021, <https://doi.org/10.1111/2041-210X.13585>), with visualization of model
-  predictions to guide ecological criteria for model selection; (2) calculation of
-  suitability thermal limits, which consist on a temperature interval delimiting the
-  optimal performance zone or suitability; and (3) climatic data extraction & visualization
-  inspired on previous research (Taylor et al. 2019, <https://doi.org/10.1111/1365-2664.13455>),
+  temperature helped by already existing R packages (''rTPC'') and nonlinear regression
+  model functions from ''nls.multstart'' (Padfield et al. 2021, <https://doi.org/10.1111/2041-210X.13585>),
+  with visualization of model predictions to guide ecological criteria for model selection;
+  (2) calculation of suitability thermal limits, which consist on a temperature interval
+  delimiting the optimal performance zone or suitability; and (3) climatic data extraction
+  and visualization inspired on previous research (Taylor et al. 2019, <https://doi.org/10.1111/1365-2664.13455>),
   with either exportable rasters, static map images or html, interactive maps.'
 authors:
 - family-names: San-Segundo Molina
@@ -57,7 +55,7 @@ preferred-citation:
     email: f.rodriguez.sanc@gmail.com
     orcid: https://orcid.org/0000-0002-7981-1599
   year: '2025'
-  url: https://ecologyr.github.io/mappestRisk
+  url: https://ecologyr.github.io/mappestRisk/
 repository-code: https://github.com/EcologyR/mappestRisk
 url: https://ecologyr.github.io/mappestRisk/
 contact:
@@ -114,20 +112,6 @@ references:
     orcid: https://orcid.org/0000-0002-7111-0077
   year: '2025'
   doi: 10.32614/CRAN.package.leaflet
-- type: software
-  title: tidyterra
-  abstract: 'tidyterra: ''tidyverse'' Methods and ''ggplot2'' Helpers for ''terra''
-    Objects'
-  notes: Suggests
-  url: https://dieghernan.github.io/tidyterra/
-  repository: https://CRAN.R-project.org/package=tidyterra
-  authors:
-  - family-names: Hernangómez
-    given-names: Diego
-    email: diego.hernangomezherrero@gmail.com
-    orcid: https://orcid.org/0000-0001-8457-4658
-  year: '2025'
-  doi: 10.32614/CRAN.package.tidyterra
 - type: software
   title: testthat
   abstract: 'testthat: Unit Testing for R'
