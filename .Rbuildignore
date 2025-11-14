@@ -19,3 +19,4 @@ README_cache/
 ^codemeta\.json$
 ^CODE_OF_CONDUCT\.md$
 .mailmap
+^CRAN-SUBMISSION$
