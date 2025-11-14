@@ -1,5 +1,9 @@
 # Changelog
 
+## mappestRisk 0.1.2
+
+- Fix issue with modification of graphical parameters in `map_risk`.
+
 ## mappestRisk 0.1.1
 
 - Warn when models return large standard errors for a parameter (issue

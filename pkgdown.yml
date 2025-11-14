@@ -6,7 +6,7 @@ articles:
   articles/generate-risk-maps: generate-risk-maps.html
   articles/tpcs-model-fitting: tpcs-model-fitting.html
   articles/tpcs-simulate-bootstrap: tpcs-simulate-bootstrap.html
-last_built: 2025-11-14T10:52Z
+last_built: 2025-11-14T12:18Z
 urls:
   reference: https://ecologyr.github.io/mappestRisk/reference
   article: https://ecologyr.github.io/mappestRisk/articles
