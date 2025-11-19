@@ -196,6 +196,10 @@ plot_uncertainties(bootstrap_tpcs = preds_boots_aphid,
                    dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
+#> Warning: Removed 500 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 50 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
 ```
 
 ![](tpcs-simulate-bootstrap_files/figure-html/unnamed-chunk-4-1.png)

@@ -2,6 +2,8 @@
 
 ## mappestRisk 0.1.2
 
+CRAN release: 2025-11-19
+
 - Fix issue with modification of graphical parameters in `map_risk`.
 
 ## mappestRisk 0.1.1

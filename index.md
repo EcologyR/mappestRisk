@@ -40,7 +40,13 @@ map figures.
 
 ## Installation
 
-`mappestRisk` package’s latest version can be installed from the
+The stable version can be installed from CRAN:
+
+``` r
+install.packages('mappestRisk') 
+```
+
+The package latest version can be installed from the
 [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
 
 ``` r
@@ -83,7 +89,7 @@ plot_devmodels(temp = aphid$temperature,
                life_stage = "Nymphs")
 ```
 
-![](reference/figures/README-unnamed-chunk-4-1.png)
+![](reference/figures/README-plot.devmodels-1.png)
 
 For a more complete explanation and example of model fitting and
 visualization, see [TPCs model
@@ -126,7 +132,7 @@ plot_uncertainties(bootstrap_tpcs = preds_boots,
                    life_stage = "Nymphs")
 ```
 
-![](reference/figures/README-unnamed-chunk-5-1.png)
+![](reference/figures/README-plot.unc-1.png)
 
 ### 2. Calculate thermal suitability bounds:
 
@@ -161,7 +167,7 @@ risk_rast <- map_risk(t_vals = boundaries,
                       )
 ```
 
-![](reference/figures/README-unnamed-chunk-8-1.png)
+![](reference/figures/README-map-1.png)
 
 ### Citation
 
