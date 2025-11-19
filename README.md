@@ -5,8 +5,7 @@
 
 <!-- badges: start -->
 
-<!-- [![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
-
+[![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
 ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
 [![r-universe
 version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk)
@@ -19,8 +18,8 @@ coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://a
 [![Project Status: Active - The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-<!-- [![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
-<!-- [![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
+[![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+[![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
 
 <!-- badges: end -->
 
@@ -64,7 +63,13 @@ map figures.
 
 ## Installation
 
-`mappestRisk` package’s latest version can be installed from the
+The stable version can be installed from CRAN:
+
+``` r
+install.packages('mappestRisk') 
+```
+
+The package latest version can be installed from the
 [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
 
 ``` r
@@ -105,7 +110,7 @@ plot_devmodels(temp = aphid$temperature,
                life_stage = "Nymphs")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-plot.devmodels-1.png" width="100%" />
 
 For a more complete explanation and example of model fitting and
 visualization, see [TPCs model
@@ -146,7 +151,7 @@ plot_uncertainties(bootstrap_tpcs = preds_boots,
                    life_stage = "Nymphs")
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-plot.unc-1.png" width="100%" />
 
 ### 2. Calculate thermal suitability bounds:
 
@@ -179,7 +184,7 @@ risk_rast <- map_risk(t_vals = boundaries,
                       )
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-map-1.png" width="100%" />
 
 ### Citation
 

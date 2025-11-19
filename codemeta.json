@@ -8,13 +8,19 @@
   "codeRepository": "https://github.com/EcologyR/mappestRisk",
   "issueTracker": "https://github.com/EcologyR/mappestRisk/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
   "runtimePlatform": "R version 4.5.1 (2025-06-13)",
+  "provider": {
+    "@id": "https://cran.r-project.org",
+    "@type": "Organization",
+    "name": "Comprehensive R Archive Network (CRAN)",
+    "url": "https://cran.r-project.org"
+  },
   "author": [
     {
       "@type": "Person",
@@ -250,7 +256,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "804.364KB",
+  "fileSize": "767.894KB",
   "citation": [
     {
       "@type": "SoftwareSourceCode",

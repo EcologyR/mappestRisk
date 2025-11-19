@@ -18,9 +18,16 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 
-<!-- `r badger::badge_cran_release()` -->
-
-![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk) [![r-universe version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk) [![r-universe status](https://ecologyr.r-universe.dev/mappestRisk/badges/checks)](https://ecologyr.r-universe.dev/mappestRisk) [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk) `r badger::badge_lifecycle("stable")` `r badger::badge_repostatus("Active")` <!-- [![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk) --> <!-- [![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk) -->
+`r badger::badge_cran_release()`
+![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk) 
+[![r-universe version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk) 
+[![r-universe status](https://ecologyr.r-universe.dev/mappestRisk/badges/checks)](https://ecologyr.r-universe.dev/mappestRisk) 
+[![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml) 
+[![Codecov test coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk) 
+`r badger::badge_lifecycle("stable")` 
+`r badger::badge_repostatus("Active")` 
+[![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk) 
+[![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk) 
 
 <!-- badges: end -->
 
@@ -34,7 +41,13 @@ Therefore, `mappestRisk` has three different modules: *(1) model fitting & selec
 
 ## Installation
 
-`mappestRisk` package's latest version can be installed from the [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
+The stable version can be installed from CRAN:
+
+```{r, eval=FALSE}
+install.packages('mappestRisk') 
+```
+
+The package latest version can be installed from the [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
 
 ```{r, eval=FALSE}
 install.packages('mappestRisk', repos = c('https://ecologyr.r-universe.dev', 'https://cloud.r-project.org')) 
@@ -55,7 +68,7 @@ In this example, we'll show how to fit one to several thermal performance curves
 
 [^1]: At least 4 unique temperatures are required. Fore more details, see documentation and vignettes.
 
-```{r,  warning=FALSE, message=FALSE}
+```{r plot.devmodels,  warning=FALSE, message=FALSE}
 library("mappestRisk")
 data("aphid") 
 fitted_tpcs <- fit_devmodels(temp = aphid$temperature,  
@@ -73,7 +86,7 @@ For a more complete explanation and example of model fitting and visualization, 
 
 Additionally, we recommend here to propagate uncertainty in parameter estimation of the fitted and selected TPC models using bootstrap procedures with *residual resampling*, following vignettes of `rTPC` package [@padfield2021]. This can be done with the function `predict_curves()` by setting the argument `propagate_uncertainty` to be `TRUE`. Resulting predictions can be plotted using `plot_uncertainties()`. A detailed explanation is given in the [TPCs model fitting](https://ecologyr.github.io/mappestRisk/articles/tpcs-model-fitting.html) article.
 
-```{r, warning=FALSE, fig.width=12, fig.height=5, dpi=300, out.width="100%", cache = TRUE}
+```{r plot.unc, warning=FALSE, fig.width=12, fig.height=5, dpi=300, out.width="100%", cache = TRUE}
 preds_boots <- predict_curves(temp = aphid$temperature,          
                               dev_rate = aphid$rate_value,
                               fitted_parameters = fitted_tpcs,
@@ -102,14 +115,14 @@ boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
 
 These optimal thermal boundaries are used for spatial projection of pest risk. The `map_risk()` function automatically downloads temperature data into a `SpatRaster` format from [WorldClim](https://worldclim.org/data/worldclim21.html) masked into an user-defined region or area, and then calculates the number of months per year with highly suitable temperatures for pest development.
 
-```{r, message = FALSE, eval=FALSE}
+```{r message = FALSE, eval=FALSE}
 risk_rast <- map_risk(t_vals = boundaries, 
                       region = "Réunion",   
                       path = tempdir() # directory to download climate data 
                       )
 ```
 
-```{r, message = FALSE, eval=TRUE, echo=FALSE}
+```{r map, message = FALSE, eval=TRUE, echo=FALSE}
 t_rast <- terra::rast("vignettes/articles/REU_wc2.1_30s_tavg.tif")
 risk_rast <- map_risk(t_vals = boundaries, 
                       t_rast = t_rast,
