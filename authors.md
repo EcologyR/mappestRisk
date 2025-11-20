@@ -17,7 +17,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/EcologyR/mappestRisk/blob/v0.1.2/inst/CITATION)
+[`inst/CITATION`](https://github.com/EcologyR/mappestRisk/blob/main/inst/CITATION)
 
 San-Segundo Molina D, Barbosa A, Pérez-Luque A, Rodríguez-Sánchez F
 (2025). *mappestRisk: An R package for modelling and mapping risk of
