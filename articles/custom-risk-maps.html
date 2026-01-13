@@ -103,7 +103,7 @@ article.</p>
 <span><span class="co">#&gt; Computing summary layers...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Plotting map...</span></span></code></pre>
-<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="700"></p>
+<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="700"></p>
 <pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Finished!</span></span></code></pre>
 <p>First, let’s select the <em>risk</em> layer (if we don’t specifically
@@ -147,7 +147,7 @@ follows:</p>
 <span>                                breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">aphid_risk_map</span><span class="op">)</span></span></code></pre></div>
-<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" width="700"></p>
+<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="700"></p>
 <p>We can improve the legend visualization using
 <code><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">ggplot2::guides()</a></code> is not correct, but we may correct
 it:</p>
@@ -158,7 +158,7 @@ it:</p>
 <span>                             byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">aphid_risk_map</span><span class="op">)</span></span></code></pre></div>
-<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="700"></p>
+<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700"></p>
 <p>We can further improve visualization by changing the theme, adding
 titles and avoid borders overlapping with cells using adjacent region
 polygons:</p>
@@ -190,7 +190,7 @@ polygons:</p>
 <span>          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">tidyterra</span><span class="fu">::</span><span class="fu"><a href="https://dieghernan.github.io/tidyterra/reference/ggspatvector.html" class="external-link">geom_spatvector</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">india_sv</span>, fill <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
-<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" width="700"></p>
+<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="700"></p>
 <p>Similarly, a discrete <em>iso-risk</em> map can be generated using
 <code>terra::geom_spatraster_contour_filled()</code> with the previous
 approach as follows:</p>
@@ -223,7 +223,7 @@ approach as follows:</p>
 <span>          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">tidyterra</span><span class="fu">::</span><span class="fu"><a href="https://dieghernan.github.io/tidyterra/reference/ggspatvector.html" class="external-link">geom_spatvector</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">india_sv</span>, fill <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
-<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" width="700"></p>
+<p><img src="custom-risk-maps_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
