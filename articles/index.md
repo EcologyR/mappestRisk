@@ -2,6 +2,8 @@
 
 ### All vignettes
 
+- [Additional
+  Applications](https://ecologyr.github.io/mappestRisk/articles/additional_applications.md):
 - [Customize your Risk
   Maps](https://ecologyr.github.io/mappestRisk/articles/custom-risk-maps.md):
 - [Generating Risk
