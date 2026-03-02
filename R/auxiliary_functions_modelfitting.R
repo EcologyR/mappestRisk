@@ -9,6 +9,8 @@ crop_palette <- function(palette_vector, n_breaks) {
   return(palette_flex)
 }
 
+red    <- function(x) paste0("\033[31m", x, "\033[39m")
+
 #### a) working functions ----
 model_name_translate <- function(user_model_name) {
   if (!all(user_model_name %in% c("all", available_models$model_name))) {
@@ -28,7 +30,7 @@ model_name_translate <- function(user_model_name) {
 
 # take names from a fitted model to assign them as names for start values later
 extract_param_names <- function(nls_object){
-  parameter_est <- coef(nls_object)
+  parameter_est <- stats::coef(nls_object)
   param_names <- names(parameter_est)
   return(param_names)
 }
@@ -64,7 +66,8 @@ sim_tpc_gridparams <- function(grid_parameters, temperature, model_name){
   model_eq <- available_models |>
     dplyr::filter(model_name == model_i)
   tpc_sim_i <- purrr::map(.x = temperature,
-                          .f = reformulate(termlabels = unique(model_eq$params_formula))
+                          .f = stats::reformulate(
+                            termlabels = unique(model_eq$params_formula))
   )
   tpc_sim_tbl <- dplyr::tibble(temperature,
                                pred_devrate = tpc_sim_i) |>
@@ -78,45 +81,59 @@ start_vals_devRate <- function (model_name_2fit, temperature, dev_rate) {
   check_data(temp = temperature,
              dev_rate)
 
-  if (model_name_2fit$model_name == "briere1") {
-    start_vals_explore <- c(a = 2e-04, tmin = 8, tmax = 32)
-  message("Poorly informative start values for briere1 model")
-  } else {
-    model_name_devrate <- model_name_2fit$source_model_name
-    devdata <- dplyr::tibble(temp = temperature,
-                             rate_development = dev_rate)
-    start_vals_prev <- devRate::devRateEqStartVal[[model_name_devrate]]
-    names(start_vals_prev) <- startvals_names_translate_devrate(start_vals_prev,
-                                                                model_name = model_name_2fit$model_name)
-    start_upper_vals <- purrr::map(.x = start_vals_prev,
-                                   .f = ~.x + abs(.x/2))
-    start_lower_vals <- purrr::map(.x = start_vals_prev,
-                                   .f = ~.x - abs(.x/2))
+  model_name_devrate <- model_name_2fit$source_model_name
+  devdata <- dplyr::tibble(temp = temperature,
+                           rate_development = dev_rate)
 
-    multstart_vals_fit <- nls.multstart::nls_multstart(formula = reformulate(response = "rate_development",
-                                                                             termlabels = model_name_2fit |>
-                                                                               dplyr::pull(formula)),
-                                                       data = devdata,
-                                                       iter = 500,
-                                                       start_lower = start_lower_vals,
-                                                       start_upper = start_upper_vals,
-                                                       supp_errors = "Y")
-    sum_start_vals_fit <- summary(multstart_vals_fit)
+  #for future versions ->    start_vals_prev <- devRate::devRateEqStartVal[[model_name_devrate]]
+  if (model_name_devrate == "lactin1_95") {
+    start_vals_prev = list(aa = 0.1, Tmax = 35, deltaT = 6)
+  }
+  if (model_name_devrate == "poly4") {
+    start_vals_prev = list(a1 = 0.1, a2 = -0.01, a3 = 0.003, a4 = -4e-06)
+  }
+  if (model_name_devrate == "wang_82") {
+    start_vals_prev = list(K = 0.5, r = 0.2, T0 = 27, TL = 10, TH = 38, aa = 2)
+  }
+  if (model_name_devrate == "briere1_99") {
+    start_vals_prev = list(aa = 1.89e-04, Tmin = 5.27, Tmax = 37.67)
+  }
 
-    if (is.null(multstart_vals_fit)) {
-      start_vals_explore <- dplyr::tibble(param_name = names(start_vals_prev),
-                                          start_value = unlist(start_vals_prev),
-                                          model_name = model_name_2fit$model_name) |>
-        dplyr::pull(start_value)
+  names(start_vals_prev) <- startvals_names_translate_devrate(
+    start_vals_prev,
+    model_name = model_name_2fit$model_name)
+  start_upper_vals <- purrr::map(.x = start_vals_prev,
+                                 .f = ~.x + abs(.x/2))
+  start_lower_vals <- purrr::map(.x = start_vals_prev,
+                                 .f = ~.x - abs(.x/2))
 
-      message("generic starting values")
-    } else { start_vals_names <- extract_param_names(multstart_vals_fit)
-    start_vals <- sum_start_vals_fit$parameters[1:length(start_vals_names), 1]
-    start_vals_explore <- dplyr::tibble(param_name = start_vals_names,
-                                        start_value = start_vals,
-                                        model_name = model_name_2fit$model_name) |>
+  multstart_vals_fit <- nls.multstart::nls_multstart(
+    formula = stats::reformulate(response = "rate_development",
+                                 termlabels = model_name_2fit |>
+                                   dplyr::pull(formula)),
+    data = devdata,
+    iter = 500,
+    start_lower = start_lower_vals,
+    start_upper = start_upper_vals,
+    supp_errors = "Y")
+  sum_start_vals_fit <- summary(multstart_vals_fit)
+
+  if (is.null(multstart_vals_fit)) {
+    start_vals_explore <- dplyr::tibble(
+      param_name = names(start_vals_prev),
+      start_value = unlist(start_vals_prev),
+      model_name = model_name_2fit$model_name) |>
       dplyr::pull(start_value)
-    }
+
+    message("generic starting values")
+  } else { start_vals_names <- extract_param_names(multstart_vals_fit)
+  start_vals <- sum_start_vals_fit$parameters[seq_along(start_vals_names), 1]
+  start_vals_explore <- dplyr::tibble(
+    param_name = start_vals_names,
+    start_value = start_vals,
+    model_name = model_name_2fit$model_name
+  ) |>
+    dplyr::pull(start_value)
   }
   return(start_vals_explore)
 }

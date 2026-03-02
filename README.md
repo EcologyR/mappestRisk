@@ -1,17 +1,25 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mappestRisk
+# mappestRisk <a href="https://ecologyr.github.io/mappestRisk/"><img src="man/figures/logo.png" alt="mappestRisk website" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
 [![](https://www.r-pkg.org/badges/version/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
 ![](https://img.shields.io/github/r-package/v/EcologyR/mappestRisk)
+[![r-universe
+version](https://ecologyr.r-universe.dev/mappestRisk/badges/version)](https://ecologyr.r-universe.dev/mappestRisk)
+[![r-universe
+status](https://ecologyr.r-universe.dev/mappestRisk/badges/checks)](https://ecologyr.r-universe.dev/mappestRisk)
 [![R-CMD-check](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EcologyR/mappestRisk/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/EcologyR/mappestRisk/graph/badge.svg)](https://app.codecov.io/gh/EcologyR/mappestRisk)
 [![](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Project Status: Active - The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
+[![](https://cranlogs.r-pkg.org/badges/mappestRisk)](https://cran.r-project.org/package=mappestRisk)
 
 <!-- badges: end -->
 
@@ -55,18 +63,26 @@ map figures.
 
 ## Installation
 
-`mappestRisk` package can be installed from the
+The stable version can be installed from CRAN:
+
+``` r
+install.packages('mappestRisk') 
+```
+
+The package latest version can be installed from the
 [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
 
 ``` r
 install.packages('mappestRisk', repos = c('https://ecologyr.r-universe.dev', 'https://cloud.r-project.org')) 
 ```
 
-Or from the [GitHub
-repository](https://github.com/EcologyR/mappestRisk):
+You can also install its latest version from the [GitHub
+repository](https://github.com/EcologyR/mappestRisk) after installing
+either `remotes` or `devtools` R packages.
 
 ``` r
 remotes::install_github("EcologyR/mappestRisk")  
+#alternatively -> devtools::install_github("EcologyR/mappestRisk")
 ```
 
 ## Example: `mappestRisk` workflow
@@ -83,22 +99,23 @@ using `plot_devmodels()`.
 ``` r
 library("mappestRisk")
 data("aphid") 
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,  
-                                   dev_rate = aphid$rate_value, 
-                                   model_name = c("briere2", "lactin2", "ratkowsky"))
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,  
+                             dev_rate = aphid$rate_value, 
+                             model_name = c("briere2", "lactin2", "thomas"))
 
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
-               fitted_parameters = fitted_tpcs_aphid,
+               fitted_parameters = fitted_tpcs,
                species = "Brachycaudus schwartzi",
                life_stage = "Nymphs")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-plot.devmodels-1.png" width="100%" />
 
 For a more complete explanation and example of model fitting and
 visualization, see [TPCs model
-fitting](articles/tpcs-model-fitting.html) article.
+fitting](https://ecologyr.github.io/mappestRisk/articles/tpcs-model-fitting.html)
+article.
 
 Additionally, we recommend here to propagate uncertainty in parameter
 estimation of the fitted and selected TPC models using bootstrap
@@ -107,45 +124,48 @@ package (Padfield, O’Sullivan, and Pawar 2021). This can be done with
 the function `predict_curves()` by setting the argument
 `propagate_uncertainty` to be `TRUE`. Resulting predictions can be
 plotted using `plot_uncertainties()`. A detailed explanation is given in
-the [TPCs model fitting](articles/tpcs-simulate-bootstrap.html) article.
+the [TPCs model
+fitting](https://ecologyr.github.io/mappestRisk/articles/tpcs-model-fitting.html)
+article.
 
 ``` r
-preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
-                                   dev_rate = aphid$rate_value,
-                                   fitted_parameters = fitted_tpcs_aphid,
-                                   model_name_2boot = c("briere2", "lactin2", "ratkowsky"),
-                                   propagate_uncertainty = TRUE,
-                                   n_boots_samples = 100)
-#> Loading required namespace: boot
+preds_boots <- predict_curves(temp = aphid$temperature,          
+                              dev_rate = aphid$rate_value,
+                              fitted_parameters = fitted_tpcs,
+                              model_name_2boot = c("briere2", "lactin2", "thomas"),
+                              propagate_uncertainty = TRUE,
+                              n_boots_samples = 10)
 #> 
-#> ADVISE: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`
+#> Note: the simulation of new bootstrapped curves takes some time. Await patiently or reduce your `n_boots_samples`
 #> 
-#>  Bootstrapping simulations completed
+#>  Bootstrapping simulations completed for briere2
+#> 
+#>  Bootstrapping simulations completed for lactin2
+#> 
+#>  Bootstrapping simulations completed for thomas
 
-plot_uncertainties(bootstrap_uncertainties_tpcs = preds_boots_aphid,
+plot_uncertainties(bootstrap_tpcs = preds_boots,
                    temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
                    species = "Brachycaudus schwartzi",
                    life_stage = "Nymphs")
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-plot.unc-1.png" width="100%" />
 
 ### 2. Calculate thermal suitability bounds:
 
 After the previous steps, the user can calculate the thermal boundaries
 of the optimal zone of the TPC –i.e., those temperature values yielding
-the Y-th quantile of the development rate (default to
-$`\mathrm{Q}_{75}`$) at both sides of the curve peak or $`R_\max`$. Once
-a model has been selected under both ecological and statistical
-criteria, the `thermal_suitability_bounds()` function calculates these
-values:
+the Y-th quantile of the development rate (default to $\textrm{Q}_{75}$)
+at both sides of the curve peak or $R_\max$. Once a model has been
+selected under both ecological and statistical criteria, the
+`thermal_suitability_bounds()` function calculates these values:
 
 ``` r
-boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid |>
-                                        dplyr::filter(model_name == "lactin2"),       
-                                      model_name = "lactin2",        
-                                      suitability_threshold = 80) 
+boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
+                                model_name = "lactin2",        
+                                suitability_threshold = 80) 
 ```
 
 ### 3. Climatic data extraction and projection
@@ -158,27 +178,13 @@ user-defined region or area, and then calculates the number of months
 per year with highly suitable temperatures for pest development.
 
 ``` r
-risk_rast <- map_risk(t_vals = boundaries_aphid, 
-                      path = tempdir(), # directory to download data 
-                      region = "Réunion",    
-                      plot = TRUE,
-                      interactive = FALSE,
-                      verbose = TRUE)
-#> 
-#> (Down)loading countries map...
-#> 
-#> (Down)loading temperature rasters...
-#> 
-#> Cropping temperature rasters to region...
-#> 
-#> Masking temperature rasters with region...
-#> 
-#> Computing summary layers...
-#> 
-#> Plotting map...
+risk_rast <- map_risk(t_vals = boundaries, 
+                      region = "Réunion",   
+                      path = tempdir() # directory to download climate data 
+                      )
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-map-1.png" width="100%" />
 
 ### Citation
 
@@ -186,20 +192,21 @@ If using this package, please cite it:
 
 ``` r
 citation("mappestRisk") 
-To cite mappestRisk in publications use:
+To cite package 'mappestRisk' in publications use:
 
-  San Segundo Molina, D., Barbosa, A.M., Pérez-Luque, A.J. &
-  Rodríguez-Sánchez, F. 2024. mappestRisk: An R package for modelling
-  and mapping risk of pest development based on known thermal limits
-  https://ecologyr.github.io/templateRpackage/mappestRisk
+  San-Segundo Molina D, Barbosa A, Pérez-Luque A, Rodríguez-Sánchez F
+  (2025). _mappestRisk: An R package for modelling and mapping risk of
+  pest development based on known thermal limits_.
+  <https://ecologyr.github.io/mappestRisk/>.
 
 A BibTeX entry for LaTeX users is
 
   @Manual{,
-    title = {mappestRisk},
-    author = {Darío {San-Segundo  Molina} and A. Márcia Barbosa and Antonio Jesús Pérez-Luque and Francisco Rodríguez-Sánchez},
-    year = {2024},
-    url = {https://ecologyr.github.io/templateRpackage/mappestRisk},
+    title = {mappestRisk: An R package for modelling and mapping risk of pest development based on
+  known thermal limits},
+    author = {Darío {San-Segundo Molina} and A. Márcia Barbosa and Antonio Jesús Pérez-Luque and Francisco Rodríguez-Sánchez},
+    year = {2025},
+    url = {https://ecologyr.github.io/mappestRisk/},
   }
 ```
 
@@ -211,6 +218,13 @@ Industria, Conocimiento y Universidades of Junta de Andalucía (proyecto
 US-1381388, Universidad de Sevilla).
 
 ![](https://ecologyr.github.io/workshop/images/logos.png)
+
+## Code of Conduct
+
+Please note that the mappestRisk project is released with a [Contributor
+Code of
+Conduct](https://ecologyr.github.io/mappestRisk/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
 
 ## References:
 
@@ -238,7 +252,6 @@ Analysing Thermal Performance Curves.”
 Padfield, Daniel, Hannah O’Sullivan, and Samraat Pawar. 2021. “rTPC and
 Nls.multstart: A New Pipeline to Fit Thermal Performance Curves in r.”
 *Methods in Ecology and Evolution* 12 (6): 1138–43.
-<https://doi.org/10.1111/2041-210X.13585>.
 
 </div>
 
@@ -249,7 +262,7 @@ Alex H. H. Chan, Marta S. Shocket, Leah R. Johnson, Dimitrios-Georgios
 Kontopoulos, and Lauren J. Cator. 2024. “Variation in Temperature of
 Peak Trait Performance Constrains Adaptation of Arthropod Populations to
 Climatic Warming.” *Nature Ecology & Evolution*, January, 1–11.
-<https://doi.org/10.1038/s41559-023-02301-8>.
+<https://www.nature.com/articles/s41559-023-02301-8>.
 
 </div>
 
@@ -267,7 +280,6 @@ Rebaudo, François, Quentin Struelens, and Olivier Dangles. 2018.
 “Modelling Temperature-Dependent Development Rate and Phenology in
 Arthropods: The devRate Package for r.” *Methods in Ecology and
 Evolution* 9 (4): 1144–50.
-https://doi.org/<https://doi.org/10.1111/2041-210X.12935>.
 
 </div>
 
@@ -277,7 +289,6 @@ Schmalensee, Loke von, Katrín Hulda Gunnarsdóttir, Joacim Näslund, Karl
 Gotthard, and Philipp Lehmann. 2021. “Thermal Performance Under Constant
 Temperatures Can Accurately Predict Insect Development Times Across
 Naturally Variable Microclimates.” *Ecology Letters* 24 (8): 1633–45.
-<https://doi.org/10.1111/ele.13779>.
 
 </div>
 
@@ -287,7 +298,7 @@ Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, David G. Hall,
 Hossein A. Narouei-Khandan, Jason R. Rohr, and Leah R. Johnson. 2019.
 “Predicting the Fundamental Thermal Niche of Crop Pests and Diseases in
 a Changing World: A Case Study on Citrus Greening.” *Journal of Applied
-Ecology* 56 (8): 2057–68. <https://doi.org/10.1111/1365-2664.13455>.
+Ecology* 56 (8): 2057–68.
 
 </div>
 

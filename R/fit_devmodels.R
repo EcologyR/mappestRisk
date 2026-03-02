@@ -20,7 +20,7 @@
 #' fitting the Thermal Performance Curves. Options include "all" or specific
 #' models listed in [available_models]. These models typically exhibit a common unimodal, left-skewed shape.
 #'
-#' @returns A table in `tibble` format with estimates and standard errors
+#' @return A table in `tibble` format with estimates and standard errors
 #' for each parameter of the models specified by the user that have adequately
 #' converged. Models are sorted based on their Akaike Information Criterion (AIC) values,
 #' with the best fitting models shown first. Fitted models are also provided in list format
@@ -31,25 +31,32 @@
 #' we recommend using [plot_devmodels()] and consulting relevant literature.
 #'
 #' @source
-#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+#' The dataset used in the example was originally published in Satar & Yokomi (2022)
+#' under the CC-BY-NC license.
+#' The start values and equations for the 'briere1', 'lactin1', 'mod_polynomial'
+#' and 'wang' models have been obtained from
+#' the [devRate](https://cran.r-project.org/package=devRate) package.
 #'
 #' @seealso
 #'  [nls.multstart::nls_multstart()] for structure of model fitting approach
-#'
-#'  [devRate::devRateEqList()] for information on several equations
 #'
 #'  `browseVignettes("rTPC")` for model names, start values searching workflows and
 #'  bootstrapping procedures using both `rTPC` and `nls.multstart` packages.
 #'
 #' @references
-#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
-#'  (for reading on model selection in TPC framework)
+#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves.
+#'  <i>J. Therm. Biol.</i> 31: 541-545. (for model selection in TPC framework)
 #'
-#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
+#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>:
+#'  A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 12: 1138-1143.
 #'
-#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
+#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent
+#'  development rate and phenology in arthropods: The `devRate` package for `R`.
+#'  <i>Methods Ecol Evol</i>. 9: 1144-1150.
 #'
-#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
+#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development
+#'  of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae).
+#'  <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
 #'
 #' @export
 #'
@@ -57,16 +64,19 @@
 #' @examples
 #' data("aphid")
 #'
-#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                    dev_rate = aphid$rate_value,
-#'                                    model_name = c("lactin2", "briere2", "mod_weibull")
-#'                                    )
-#' fitted_tpcs_aphid
+#' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+#'                              dev_rate = aphid$rate_value,
+#'                              model_name = c("lactin2", "briere2",
+#'                                             "mod_weibull")
+#'                              )
+#' head(fitted_tpcs)
 #'
 
 fit_devmodels <- function(temp = NULL,
                           dev_rate = NULL,
                           model_name = NULL){
+
+
 
   n_params <- AIC <- BIC <- NULL
 
@@ -80,7 +90,10 @@ fit_devmodels <- function(temp = NULL,
   }
 
   if (any(model_name == "all")) {
+    message("By default, all models are fitted except `ratkowsky`, `mod_polynomial` and `wang` due to
+unrealistic behavior at some TPC regions. If you still want to fit them, please write all model names manually")
     models_2fit <- available_models |>
+      dplyr::filter(!model_name %in% c("ratkowsky", "mod_polynomial", "wang")) |>
       dplyr::filter(n_params <= dplyr::n_distinct(temp)) |>
       dplyr::pull(model_name)
   } else {
@@ -126,22 +139,36 @@ fit_devmodels <- function(temp = NULL,
             supp_errors = "Y")
 
           sum_fit_nls <- summary(fit_nls)
-          list_param_tbl <- dplyr::tibble(model_name = i,
-                                          param_name = extract_param_names(fit_nls),
-                                          start_vals = tidyr::replace_na(start_vals, 0),
-                                          param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                          param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                          model_AIC = AIC(fit_nls),
-                                          model_BIC = BIC(fit_nls),
-                                          model_fit = list(fit_nls))
+          list_param_tbl <- dplyr::tibble(
+            model_name = i,
+            param_name = extract_param_names(fit_nls),
+            start_vals = tidyr::replace_na(start_vals, 0),
+            param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+            param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+            model_AIC = AIC(fit_nls),
+            model_BIC = BIC(fit_nls))
+          ## Keep model fit only in first row
+          list_param_tbl <- list_param_tbl |>
+            dplyr::group_by(model_name) |>
+            dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
+                                                     list(fit_nls),
+                                                     list(NULL))) |>
+            dplyr::ungroup()
         }, # <- inside tryCatch
         error = function(e) e)
         if (inherits(possible_error, "error")) {
           fit_nls <- NULL
         }
+
+        if (!is.null(fit_nls) &&
+            any(is.nan(list_param_tbl$param_se))) {
+          message(red(paste0("TPC model ", i, " was excluded due to bad convergence (param_se = NaN)")))
+          fit_nls <- NULL
+        }
+
         if (is.null(fit_nls)) {
           list_param <- list_param
-        } else {
+          } else {
           list_param <- list_param |>
             dplyr::bind_rows(list_param_tbl)
         }
@@ -150,59 +177,83 @@ fit_devmodels <- function(temp = NULL,
     # end of devRate
 
     if (available_models$package[available_models$model_name == i] == "rTPC") {
-      possible_error <- tryCatch(expr = {start_vals <- rTPC::get_start_vals(x = temp,
-                                                                            y = dev_rate,
-                                                                            model_name = model_name_translate(i))
-      devdata <- dplyr::tibble(temp, dev_rate)
-      start_upper_vals <- purrr::map(.x = start_vals,
-                                     .f = ~.x + abs(.x/2))
-      start_lower_vals <- purrr::map(.x = start_vals,
-                                     .f = ~.x - abs(.x/2))
-      fit_nls <- nls.multstart::nls_multstart(formula = stats::reformulate(response = "dev_rate",
-                                                                           termlabels = unique(model_i$formula)),
-                                              data = devdata,
-                                              iter = 500,
-                                              start_lower = start_lower_vals,
-                                              start_upper = start_upper_vals,
-                                              lower = rTPC::get_lower_lims(devdata$temp,
-                                                                           devdata$dev_rate,
-                                                                           model_name = model_name_translate(i)),
-                                              upper = rTPC::get_upper_lims(devdata$temp,
-                                                                           devdata$dev_rate,
-                                                                           model_name = model_name_translate(i)),
-                                              supp_errors = "Y")
-      sum_fit_nls <- summary(fit_nls)
-      list_param_tbl <- dplyr::tibble(model_name = i,
-                                      param_name = extract_param_names(fit_nls),
-                                      start_vals = tidyr::replace_na(start_vals, 0),
-                                      param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
-                                      param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
-                                      model_AIC = AIC(fit_nls),
-                                      model_BIC = BIC(fit_nls),
-                                      model_fit = list(fit_nls))
+      possible_error <- tryCatch(expr = {
+        start_vals <- rTPC::get_start_vals(x = temp,
+                                           y = dev_rate,
+                                           model_name = model_name_translate(i))
+        devdata <- dplyr::tibble(temp, dev_rate)
+        start_upper_vals <- purrr::map(.x = start_vals,
+                                       .f = ~.x + abs(.x/2))
+        start_lower_vals <- purrr::map(.x = start_vals,
+                                       .f = ~.x - abs(.x/2))
+        fit_nls <- nls.multstart::nls_multstart(
+          formula = stats::reformulate(response = "dev_rate",
+                                       termlabels = unique(model_i$formula)),
+          data = devdata,
+          iter = 500,
+          start_lower = start_lower_vals,
+          start_upper = start_upper_vals,
+          lower = rTPC::get_lower_lims(devdata$temp,
+                                       devdata$dev_rate,
+                                       model_name = model_name_translate(i)),
+          upper = rTPC::get_upper_lims(devdata$temp,
+                                       devdata$dev_rate,
+                                       model_name = model_name_translate(i)),
+          supp_errors = "Y")
+        sum_fit_nls <- summary(fit_nls)
+        list_param_tbl <- dplyr::tibble(
+          model_name = i,
+          param_name = extract_param_names(fit_nls),
+          start_vals = tidyr::replace_na(start_vals, 0),
+          param_est = sum_fit_nls$parameters[1:model_i$n_params, 1],
+          param_se = sum_fit_nls$parameters[1:model_i$n_params, 2],
+          model_AIC = AIC(fit_nls),
+          model_BIC = BIC(fit_nls))
+        ## Keep model fit only in first row
+        list_param_tbl <- list_param_tbl |>
+          dplyr::group_by(model_name) |>
+          dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
+                                                   list(fit_nls),
+                                                   list(NULL))) |>
+          dplyr::ungroup()
       }, # <- inside tryCatch
       error = function(e) e)
       if (inherits(possible_error, "error")) {
         fit_nls <- NULL
       }
+
+      if (any(is.nan(list_param_tbl$param_se))) {
+        message(red(paste0("TPC model ", i, " was excluded due to bad convergence (param_se = NaN)")))
+        fit_nls <- NULL
+      }
+
       if (is.null(fit_nls)) {
         list_param <- list_param
       } else {list_param <- list_param |>
         dplyr::bind_rows(list_param_tbl)}
+    } # end of rTPC processing
+
+
+    ## warn of large standard errors
+    if (exists("list_param_tbl")) {
+
+      list_param_convergence_warning <- list_param_tbl |>
+        dplyr::mutate(
+          convergence_warning = ifelse(10*abs(param_est) < abs(param_se),
+                                       "warn",
+                                       "no warn"))
+      if (any(list_param_convergence_warning$convergence_warning == "warn", na.rm = TRUE)) {
+        warning(paste0("TPC model ", i, " had one or more parameters with unexpectedly large standard errors."))
+      }
+
     }
-    # end of rTPC processing
 
   } # <- loop ends
+
   if (length(list_param) == 0) {
     warning("no model converged adequately for fitting your data")
-  } else {
-    list_param <-   list_param |>
-    dplyr::group_by(model_name) |>
-    dplyr::mutate(model_fit = dplyr::if_else(dplyr::row_number() == 1,
-                                             model_fit,
-                                             list(NULL)))  |>
-    dplyr::ungroup()
-    }
+  }
   return(list_param)
+
 }
 

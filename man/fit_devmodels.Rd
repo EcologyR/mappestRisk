@@ -2,10 +2,13 @@
 % Please edit documentation in R/fit_devmodels.R
 \name{fit_devmodels}
 \alias{fit_devmodels}
-\title{Fits nonlinear regression models to data representing how development rate changes
-with temperature (known as Thermal Performance Curves).}
+\title{Fit Thermal Performance Curves}
 \source{
-The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+The dataset used in the example was originally published in Satar & Yokomi (2022)
+under the CC-BY-NC license.
+The start values and equations for the 'briere1', 'lactin1', 'mod_polynomial'
+and 'wang' models have been obtained from
+the \href{https://cran.r-project.org/package=devRate}{devRate} package.
 }
 \usage{
 fit_devmodels(temp = NULL, dev_rate = NULL, model_name = NULL)
@@ -25,16 +28,19 @@ fitting the Thermal Performance Curves. Options include "all" or specific
 models listed in \link{available_models}. These models typically exhibit a common unimodal, left-skewed shape.}
 }
 \value{
-returns a table in \code{tibble} format with estimates and
-standard errors for each parameter of the models specified by the user that have adequately
+A table in \code{tibble} format with estimates and standard errors
+for each parameter of the models specified by the user that have adequately
 converged. Models are sorted based on their Akaike Information Criterion (AIC) values,
-with the best fitting models shown first. Fitted models are also provided in list format and
-can be accessed using \code{your_parameters_tbl$fit[[x]]} with \code{x} refers to the desired row in the table.
-It's important to consider ecological criteria alongside statistical information. For additional help in model selection,
+with the best fitting models shown first. Fitted models are also provided in list format
+in the \code{model_list} column and can be accessed using \code{\link[=get_fitted_model]{get_fitted_model()}} for
+for further inspection.
+It is important to consider ecological criteria alongside statistical information.
+For additional help in model selection,
 we recommend using \code{\link[=plot_devmodels]{plot_devmodels()}} and consulting relevant literature.
 }
 \description{
-Fits nonlinear regression models (or Thermal Performance Curves) based on
+Fit nonlinear regression models to data representing how development rate changes
+with temperature (known as Thermal Performance Curves), based on
 \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} approach to development rate data across temperatures.
 The fitting procedure is built upon previous packages for starting values estimation,
 namely \code{rTPC} and \code{devRate}.
@@ -42,27 +48,31 @@ namely \code{rTPC} and \code{devRate}.
 \examples{
 data("aphid")
 
-fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-                                        dev_rate = aphid$rate_value,
-                                        model_name = c("lactin2", "briere2", "mod_weibull")
-                                        )
-print(fitted_tpcs_aphid)
+fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+                             dev_rate = aphid$rate_value,
+                             model_name = c("lactin2", "briere2",
+                                            "mod_weibull")
+                             )
+head(fitted_tpcs)
 
 }
 \references{
-Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. \if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545.
-(for reading on model selection in TPC framework)
+Angilletta, M.J., (2006). Estimating and comparing thermal performance curves.
+\if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545. (for model selection in TPC framework)
 
-Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}: A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 00: 1-6
+Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}:
+A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 12: 1138-1143.
 
-Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The \code{devRate} package for \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
+Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent
+development rate and phenology in arthropods: The \code{devRate} package for \code{R}.
+\if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
 
-Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae). \if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
+Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development
+of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae).
+\if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
 }
 \seealso{
 \code{\link[nls.multstart:nls_multstart]{nls.multstart::nls_multstart()}} for structure of model fitting approach
-
-\code{\link[devRate:devRateEqList]{devRate::devRateEqList()}} for information on several equations
 
 \code{browseVignettes("rTPC")} for model names, start values searching workflows and
 bootstrapping procedures using both \code{rTPC} and \code{nls.multstart} packages.

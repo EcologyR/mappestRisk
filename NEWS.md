@@ -1,3 +1,13 @@
-# templateRpackage 0.0.0.9000
+# mappestRisk 0.1.2
 
-* Added a `NEWS.md` file to track changes to the package.
+* Fix issue with modification of graphical parameters in `map_risk`.
+
+# mappestRisk 0.1.1
+
+* Warn when models return large standard errors for a parameter (issue #84)
+
+* Fully revised documentation
+
+# mappestRisk 0.1.0
+
+* First revised version.

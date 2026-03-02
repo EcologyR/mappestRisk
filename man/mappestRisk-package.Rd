@@ -6,7 +6,9 @@
 \alias{mappestRisk-package}
 \title{mappestRisk: Create Maps Forecasting Risk of Pest Occurrence}
 \description{
-mappestRisk has three different modules: (1) model fitting & selection using a set of the most commonly used equations describing developmental responses to temperature helped by already existing R packages using equation helpers from rTPC(Padfield and O’Sullivan 2023), with visualization of model predictions to guide ecological criteria for model selection; (2) calculation of suitability thermal limits, which consist on a temperature interval delimiting the optimal performance zone or suitability; and (3) climatic data extraction & visualization with either exportable rasters, static map images or html, interactive maps.
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
+There are three different modules: (1) model fitting and selection using a set of the most commonly used equations describing developmental responses to temperature helped by already existing R packages ('rTPC') and nonlinear regression model functions from 'nls.multstart' (Padfield et al. 2021, \doi{10.1111/2041-210X.13585}), with visualization of model predictions to guide ecological criteria for model selection; (2) calculation of suitability thermal limits, which consist on a temperature interval delimiting the optimal performance zone or suitability; and (3) climatic data extraction and visualization inspired on previous research (Taylor et al. 2019, \doi{10.1111/1365-2664.13455}), with either exportable rasters, static map images or html, interactive maps.
 }
 \seealso{
 Useful links:
@@ -18,13 +20,13 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Darío San-Segundo Molina \email{dario.ssm2@gmail.com} (\href{https://orcid.org/0000-0002-7831-9623}{ORCID})
+\strong{Maintainer}: Darío San-Segundo Molina \email{dario.ssm2@gmail.com} (\href{https://orcid.org/0000-0002-7831-9623}{ORCID}) [copyright holder]
 
 Authors:
 \itemize{
-  \item A. Márcia Barbosa (\href{https://orcid.org/0000-0001-8972-7713}{ORCID})
-  \item Antonio Jesús Pérez-Luque \email{ajpelu@gmail.com} (\href{https://orcid.org/0000-0002-1747-0469}{ORCID})
-  \item Francisco Rodríguez-Sánchez \email{f.rodriguez.sanc@gmail.com} (\href{https://orcid.org/0000-0002-7981-1599}{ORCID})
+  \item A. Márcia Barbosa (\href{https://orcid.org/0000-0001-8972-7713}{ORCID}) [copyright holder]
+  \item Antonio Jesús Pérez-Luque \email{ajpelu@gmail.com} (\href{https://orcid.org/0000-0002-1747-0469}{ORCID}) [copyright holder]
+  \item Francisco Rodríguez-Sánchez \email{f.rodriguez.sanc@gmail.com} (\href{https://orcid.org/0000-0002-7981-1599}{ORCID}) [copyright holder]
 }
 
 }

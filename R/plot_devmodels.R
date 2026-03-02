@@ -8,47 +8,36 @@
 #'
 #' @param fitted_parameters a `tibble` obtained with [fit_devmodels()],
 #' including parameter names, estimates, standard errors, AICs, and
-#' <nls> objects (fitted_models) using the [nls.multstart::nls_multstart()] approach.
+#' nls objects (fitted_models) using the [nls.multstart::nls_multstart()] approach.
 #'
-#' @param species <optional> a string of the target species that
+#' @param species optional a string of the target species that
 #' will constitute the plot title. Must be of type "character".
 #'
-#' @param life_stage <optional> a string of the target life stage that
+#' @param life_stage optional a string of the target life stage that
 #' will constitute the plot subtitle. Must be of type "character".
 #'
 #' @returns A plot with predicted values (development rate) across temperatures
 #' for models that have adequately converged using [fit_devmodels()] function.
-#' The facets of the resulting plots are automatically sorted by lowest AIC values
-#' in descending order, and additional information such as the number of parameters
-#' is displayed. It's a <ggplot> object, which can be assigned to a user-defined object.
+#' It's a ggplot object, which can be assigned to a user-defined object.
 #'
-#' @seealso [fit_devmodels()] for fitting Thermal Performance Curves to development rate data, which is in turn based on [nls.multstart::nls_multstart()].
+#' @seealso [fit_devmodels()] for fitting Thermal Performance Curves to
+#' development rate data, which is in turn based on [nls.multstart::nls_multstart()].
 #'
-#' @references
-#'  Angilletta, M.J., (2006). Estimating and comparing thermal performance curves. <i>J. Therm. Biol.</i> 31: 541-545.
-#'  (for reading on model selection in TPC framework)
 #'
-#'  Padfield, D., O'Sullivan, H. and Pawar, S. (2021). <i>rTPC</i> and <i>nls.multstart</i>: A new pipeline to fit thermal performance curves in `R`. <i>Methods Ecol Evol</i>. 00: 1-6
-#'
-#'  Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent development rate and phenology in arthropods: The `devRate` package for `R`. <i>Methods Ecol Evol</i>. 9: 1144-1150.
-#'
-#'  Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development of <i>Brachycaudus schwartzi</i> (Homoptera: Aphididae). <i>Ann. Entomol. Soc. Am.</i> 95: 597-602.
-#'
-#' @source
-#' The dataset used in the example was originally published in Satar & Yokomi (2022) under the CC-BY-NC license
+#' @inherit fit_devmodels references
 #'
 #' @export
 #'
 #' @examples
 #' data("aphid")
 #'
-#' fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
-#'                                    dev_rate = aphid$rate_value,
-#'                                    model_name = c("lactin2", "briere2", "ratkowsky"))
+#' fitted_tpcs <- fit_devmodels(temp = aphid$temperature,
+#'                              dev_rate = aphid$rate_value,
+#'                              model_name = c("lactin2", "briere2", "mod_weibull"))
 #'
 #' plot_devmodels(temp = aphid$temperature,
 #'                dev_rate = aphid$rate_value,
-#'                fitted_parameters = fitted_tpcs_aphid,
+#'                fitted_parameters = fitted_tpcs,
 #'                species = "Brachycaudus schwartzi",
 #'                life_stage = "Nymphs")
 
@@ -120,16 +109,19 @@ plot_devmodels <- function(temp = NULL,
     fit_vals_tbl <- explore_preds |>
       dplyr::select(temp, model_name, model_AIC, n_params) |>
       dplyr::mutate(formula = formula_i) |>
-      dplyr::mutate(preds = purrr::map_dbl(.x = temp,
-                                           .f = stats::reformulate(unique(formula_i)))) |>
+      dplyr::mutate(
+        preds = purrr::map_dbl(.x = temp,
+                               .f = stats::reformulate(unique(formula_i)))) |>
       dplyr::filter(preds >= 0) |>
       dplyr::select(-formula) |>
-      dplyr::mutate(preds = dplyr::case_when(model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
-                                             model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
-                                             model_name == "briere1" & temp < params_i[1] ~ NA_real_,
-                                             model_name == "briere2" & temp < params_i[1] ~ NA_real_,
-                                             TRUE ~ preds)
-      ) # to exclude biological non-sense predictions due to model mathematical properties
+      dplyr::mutate(preds = dplyr::case_when(
+        model_name == "ratkowsky" & temp > params_i[2] ~ NA_real_,
+        model_name == "ratkowsky" & temp < params_i[1] ~ NA_real_,
+        model_name == "briere1" & temp < params_i[1] ~ NA_real_,
+        model_name == "briere2" & temp < params_i[1] ~ NA_real_,
+        TRUE ~ preds)
+      ) # to exclude biological non-sense predictions due to model
+    #     mathematical properties
     predict2fill <- predict2fill |>
       dplyr::bind_rows(fit_vals_tbl)
   }
@@ -148,7 +140,9 @@ plot_devmodels <- function(temp = NULL,
   my_title <- substitute(italic(paste(especie)), list(especie = species))
   ggplot_models <- ggplot2::ggplot() +
     ggplot2::geom_line(data = predict2fill |>
-                         dplyr::filter(preds < (1.5*max(devdata$development_rate))),
+                         dplyr::filter(
+                           preds < (1.5*max(devdata$development_rate)
+                                    )),
                        ggplot2::aes(x = temp, y = preds, color = model_name),
                        linewidth = 1.3) +
     ggplot2::geom_point(data = devdata, ggplot2::aes(x = temperature,
