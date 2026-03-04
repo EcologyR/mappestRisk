@@ -28,7 +28,6 @@ While static maps are useful for reporting results, interactive visualization al
 ```{r setup}
 library(mappestRisk)
 library(leaflet)
-library(leaflet.opacity)
 library(leafem)
 
 library(terra)
@@ -138,8 +137,6 @@ m <- leaflet() |>
     colors = pal_uncertainty
   ) |>
   addMiniMap(toggleDisplay = TRUE) |>
-  leaflet.opacity::addOpacitySlider(layerId = "Risk Map") |>
-  leaflet.opacity::addOpacitySlider(layerId = "Uncertainty") |>
   addLayersControl(
     position = "bottomright",
     baseGroups = c("Satellite", "Basemap"),
@@ -177,7 +174,13 @@ m <- leaflet() |>
   ) |>
   hideGroup("Uncertainty")
 
-m
+
+if (requireNamespace("leaflet.opacity", quietly = TRUE)) {
+  m <- m |>
+    leaflet.opacity::addOpacitySlider(layerId = "Risk Map") |>
+    leaflet.opacity::addOpacitySlider(layerId = "Uncertainty")
+}
+
 ```
 
 # Exporting the map
