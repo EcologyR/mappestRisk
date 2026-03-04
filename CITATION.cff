@@ -9,6 +9,9 @@ type: software
 license: GPL-3.0-or-later
 title: 'mappestRisk: Create Maps Forecasting Risk of Pest Occurrence'
 version: 0.1.2
+identifiers:
+- type: doi
+  value: 10.32614/CRAN.package.mappestRisk
 abstract: 'There are three different modules: (1) model fitting and selection using
   a set of the most commonly used equations describing developmental responses to
   temperature helped by already existing R packages (''rTPC'') and nonlinear regression
@@ -56,6 +59,7 @@ preferred-citation:
     orcid: https://orcid.org/0000-0002-7981-1599
   year: '2025'
   url: https://ecologyr.github.io/mappestRisk/
+repository: https://CRAN.R-project.org/package=mappestRisk
 repository-code: https://github.com/EcologyR/mappestRisk
 url: https://ecologyr.github.io/mappestRisk/
 contact:
@@ -73,7 +77,7 @@ references:
   institution:
     name: R Foundation for Statistical Computing
     address: Vienna, Austria
-  year: '2025'
+  year: '2026'
   version: '>= 4.3.0'
 - type: software
   title: covr
@@ -85,8 +89,57 @@ references:
   - family-names: Hester
     given-names: Jim
     email: james.f.hester@gmail.com
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.covr
+- type: software
+  title: htmlwidgets
+  abstract: 'htmlwidgets: HTML Widgets for R'
+  notes: Suggests
+  url: https://github.com/ramnathv/htmlwidgets
+  repository: https://CRAN.R-project.org/package=htmlwidgets
+  authors:
+  - family-names: Vaidyanathan
+    given-names: Ramnath
+  - family-names: Xie
+    given-names: Yihui
+  - family-names: Allaire
+    given-names: JJ
+  - family-names: Cheng
+    given-names: Joe
+    email: joe@posit.co
+  - family-names: Sievert
+    given-names: Carson
+    email: carson@posit.co
+    orcid: https://orcid.org/0000-0002-4958-2844
+  - family-names: Russell
+    given-names: Kenton
+  year: '2026'
+  doi: 10.32614/CRAN.package.htmlwidgets
+- type: software
+  title: knitr
+  abstract: 'knitr: A General-Purpose Package for Dynamic Report Generation in R'
+  notes: Suggests
+  url: https://yihui.org/knitr/
+  repository: https://CRAN.R-project.org/package=knitr
+  authors:
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  year: '2026'
+  doi: 10.32614/CRAN.package.knitr
+- type: software
+  title: leafem
+  abstract: 'leafem: ''leaflet'' Extensions for ''mapview'''
+  notes: Suggests
+  url: https://r-spatial.github.io/leafem/
+  repository: https://CRAN.R-project.org/package=leafem
+  authors:
+  - family-names: Appelhans
+    given-names: Tim
+    email: tim.appelhans@gmail.com
+  year: '2026'
+  doi: 10.32614/CRAN.package.leafem
 - type: software
   title: leaflet
   abstract: 'leaflet: Create Interactive Web Maps with the JavaScript ''Leaflet''
@@ -110,8 +163,52 @@ references:
     given-names: Garrick
     email: garrick@posit.co
     orcid: https://orcid.org/0000-0002-7111-0077
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.leaflet
+- type: software
+  title: rmarkdown
+  abstract: 'rmarkdown: Dynamic Documents for R'
+  notes: Suggests
+  url: https://pkgs.rstudio.com/rmarkdown/
+  repository: https://CRAN.R-project.org/package=rmarkdown
+  authors:
+  - family-names: Allaire
+    given-names: JJ
+    email: jj@posit.co
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  - family-names: Dervieux
+    given-names: Christophe
+    email: cderv@posit.co
+    orcid: https://orcid.org/0000-0003-4474-2498
+  - family-names: McPherson
+    given-names: Jonathan
+    email: jonathan@posit.co
+  - family-names: Luraschi
+    given-names: Javier
+  - family-names: Ushey
+    given-names: Kevin
+    email: kevin@posit.co
+  - family-names: Atkins
+    given-names: Aron
+    email: aron@posit.co
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Cheng
+    given-names: Joe
+    email: joe@posit.co
+  - family-names: Chang
+    given-names: Winston
+    email: winston@posit.co
+  - family-names: Iannone
+    given-names: Richard
+    email: rich@posit.co
+    orcid: https://orcid.org/0000-0003-3925-190X
+  year: '2026'
+  doi: 10.32614/CRAN.package.rmarkdown
 - type: software
   title: testthat
   abstract: 'testthat: Unit Testing for R'
@@ -122,7 +219,7 @@ references:
   - family-names: Wickham
     given-names: Hadley
     email: hadley@posit.co
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.testthat
   version: '>= 3.0.0'
 - type: software
@@ -148,7 +245,7 @@ references:
     given-names: Davis
     email: davis@posit.co
     orcid: https://orcid.org/0000-0003-4777-038X
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.dplyr
 - type: software
   title: geodata
@@ -161,7 +258,7 @@ references:
     given-names: Robert J.
     email: r.hijmans@gmail.com
     orcid: https://orcid.org/0000-0001-5872-2872
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.geodata
 - type: software
   title: ggplot2
@@ -201,7 +298,7 @@ references:
     given-names: Teun
     name-particle: van den
     orcid: https://orcid.org/0000-0002-9335-7468
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.ggplot2
 - type: software
   title: khroma
@@ -214,7 +311,7 @@ references:
     given-names: Nicolas
     email: nicolas.frerebeau@u-bordeaux-montaigne.fr
     orcid: https://orcid.org/0000-0001-5759-4944
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.khroma
 - type: software
   title: nls.multstart
@@ -231,7 +328,7 @@ references:
   - family-names: Windram
     given-names: Francis
     email: francis.windram17@imperial.ac.uk
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.nls.multstart
 - type: software
   title: progress
@@ -245,7 +342,7 @@ references:
     email: csardi.gabor@gmail.com
   - family-names: FitzJohn
     given-names: Rich
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.progress
 - type: software
   title: purrr
@@ -261,7 +358,7 @@ references:
   - family-names: Henry
     given-names: Lionel
     email: lionel@posit.co
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.purrr
 - type: software
   title: rTPC
@@ -276,7 +373,7 @@ references:
   - family-names: O'Sullivan
     given-names: Hannah
     email: hjosullivan123@gmail.com
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.rTPC
 - type: software
   title: terra
@@ -289,7 +386,7 @@ references:
     given-names: Robert J.
     email: r.hijmans@gmail.com
     orcid: https://orcid.org/0000-0001-5872-2872
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.terra
 - type: software
   title: tidyr
@@ -306,6 +403,6 @@ references:
     email: davis@posit.co
   - family-names: Girlich
     given-names: Maximilian
-  year: '2025'
+  year: '2026'
   doi: 10.32614/CRAN.package.tidyr
 
