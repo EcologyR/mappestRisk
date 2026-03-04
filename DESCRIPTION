@@ -32,8 +32,11 @@ Depends:
 LazyData: true
 Suggests: 
     covr,
+    htmlwidgets,
     knitr,
+    leafem,
     leaflet,
+    leaflet.opacity,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
