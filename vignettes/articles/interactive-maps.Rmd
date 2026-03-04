@@ -28,7 +28,6 @@ While static maps are useful for reporting results, interactive visualization al
 ```{r setup}
 library(mappestRisk)
 library(leaflet)
-library(leaflegend)
 library(leaflet.opacity)
 library(leafem)
 
