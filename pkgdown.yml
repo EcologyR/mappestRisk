@@ -5,9 +5,10 @@ articles:
   articles/additional_applications: additional_applications.html
   articles/custom-risk-maps: custom-risk-maps.html
   articles/generate-risk-maps: generate-risk-maps.html
+  articles/interactive-maps: interactive-maps.html
   articles/tpcs-model-fitting: tpcs-model-fitting.html
   articles/tpcs-simulate-bootstrap: tpcs-simulate-bootstrap.html
-last_built: 2026-03-04T17:53Z
+last_built: 2026-03-04T22:27Z
 urls:
   reference: https://ecologyr.github.io/mappestRisk/reference
   article: https://ecologyr.github.io/mappestRisk/articles
