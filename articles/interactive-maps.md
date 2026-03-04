@@ -162,6 +162,8 @@ if (requireNamespace("leaflet.opacity", quietly = TRUE)) {
     leaflet.opacity::addOpacitySlider(layerId = "Risk Map") |>
     leaflet.opacity::addOpacitySlider(layerId = "Uncertainty")
 }
+
+m
 ```
 
 ## Exporting the map
