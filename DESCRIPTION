@@ -32,7 +32,9 @@ Depends:
 LazyData: true
 Suggests: 
     covr,
+    knitr,
     leaflet,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
@@ -47,3 +49,4 @@ Imports:
     terra,
     tidyr
 Config/Needs/website: rmarkdown
+VignetteBuilder: knitr
