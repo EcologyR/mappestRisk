@@ -30,7 +30,7 @@ A data.frame/tibble with 13 rows and 6 columns:
   to obtain appropriate start values for the user-provided data. When
   the package is [rTPC package](https://padpadpadpad.github.io/rTPC/),
   start values are automatically computed with
-  [`rTPC::get_start_vals()`](https://rdrr.io/pkg/rTPC/man/get_start_vals.html),
+  [`rTPC::get_start_vals()`](https://padpadpadpad.github.io/rTPC/reference/get_start_vals.html),
   which in turn relies on
   [`nls.multstart::nls_multstart()`](https://rdrr.io/pkg/nls.multstart/man/nls_multstart.html).
   When the package is [devRate

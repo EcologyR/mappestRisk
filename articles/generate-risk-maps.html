@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Generating Risk Maps">
 </head>
@@ -128,7 +128,7 @@ it has a <code>suitability_threshold</code> argument to allow the user
 to specify which quantile of the TPC is being used. In other words, a
 <code>suitability_threshold = .75</code> will calculate the two
 temperature values at which the TPC predicts a value
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>T</mi><mn>75</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.75</mn><mo>×</mo><mspace width="0.222em"></mspace><msub><mi>r</mi><mo>max</mo></msub></mrow><annotation encoding="application/x-tex">R(T_{75}) = 0.75\times\ r_\max</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>T</mi><mn>75</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.75</mn><mo>×</mo><mspace width="0.222em"></mspace><msub><mi>r</mi><mi mathvariant="normal">max</mi></msub></mrow><annotation encoding="application/x-tex">R(T_{75}) = 0.75\times\ r_\max</annotation></semantics></math>
 , one at each side of the TPC peak. If multiple TPCs are given due to
 setting the <code><a href="../reference/predict_curves.html">predict_curves()</a></code> argument
 <code>propagate_uncertainty</code> to <code>TRUE</code>, two boundaries
@@ -138,9 +138,9 @@ curve.</p>
 <p>Note that setting <code>suitability_threshold</code> to
 <code>0</code> will yield the thermal limits of the complete TPC, i.e.,
 the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mo>min</mo></msub></mrow><annotation encoding="application/x-tex">CT_\min</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mi mathvariant="normal">min</mi></msub></mrow><annotation encoding="application/x-tex">CT_\min</annotation></semantics></math>
 and the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mo>max</mo></msub></mrow><annotation encoding="application/x-tex">CT_\max</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mi mathvariant="normal">max</mi></msub></mrow><annotation encoding="application/x-tex">CT_\max</annotation></semantics></math>.
 While the map resulting from default (.75) or similar threshold measures
 indicates severe risk (populations may rapidly develop), maps from
 permissive measures such as critical thermal limits may rather indicate
@@ -209,12 +209,12 @@ spatial resolution through <code>res</code> argument –our function uses
 2.5 resolution or ~4.625km at the equator by default. If the
 <code>region</code> argument is a string with any country name available
 in <code>data(country_names)</code>, the function calls
-<code><a href="https://rdrr.io/pkg/geodata/man/worldclim.html" class="external-link">geodata::worldclim_country()</a></code>. Alternatively, if the
+<code><a href="https://rspatial.github.io/geodata/reference/worldclim.html" class="external-link">geodata::worldclim_country()</a></code>. Alternatively, if the
 <code>region</code> argument is either a <code>SpatExtent</code>, a
 vector with the numeric boundaries of this spatial extent or a
 <code>sf</code> or <code>SpatVector</code> object –i.e., polygons, the
 <code><a href="../reference/map_risk.html">map_risk()</a></code> function will download data for the entire world
-using <code><a href="https://rdrr.io/pkg/geodata/man/worldclim.html" class="external-link">geodata::worldclim_global()</a></code><a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;We recommend to think carefully where to extract data
+using <code><a href="https://rspatial.github.io/geodata/reference/worldclim.html" class="external-link">geodata::worldclim_global()</a></code><a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;We recommend to think carefully where to extract data
 since a simple call to &lt;code&gt;&lt;a href="../reference/map_risk.html"&gt;map_risk()&lt;/a&gt;&lt;/code&gt; without a country name
 will download ~450MB of climate data with default conditions
 (&lt;code&gt;res = 2.5&lt;/code&gt;). Note that the &lt;code&gt;path&lt;/code&gt; argument must
@@ -373,51 +373,45 @@ examples:</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-amarasekare2012" class="csl-entry">
 Amarasekare, Priyanga, and Van Savage. 2012. <span>“A framework for
 elucidating the temperature dependence of fitness.”</span> <em>The
 American Naturalist</em> 179 (2): 178–91. <a href="https://doi.org/10.1086/663677" class="external-link">https://doi.org/10.1086/663677</a>.
 </div>
 <div id="ref-khroma" class="csl-entry">
-Frerebeau, Nicolas. 2025. <span>“<span></span>Khroma: Colour Schemes for
-Scientific Data Visualization<span></span>.”</span> <a href="https://doi.org/10.5281/zenodo.1472077" class="external-link">https://doi.org/10.5281/zenodo.1472077</a>.
+Frerebeau, Nicolas. 2025. <em><span></span>Khroma: Colour Schemes for
+Scientific Data Visualization<span></span></em>. <a href="https://doi.org/10.5281/zenodo.1472077" class="external-link">https://doi.org/10.5281/zenodo.1472077</a>.
 </div>
 <div id="ref-efsa2023" class="csl-entry">
-Health (PLH), EFSA Panel on Plant, Claude Bragard, Paula Baptista,
-Elisavet Chatzivassiliou, Francesco Di Serio, Paolo Gonthier, Josep
-Anton Jaques Miret, et al. 2023. <span>“Assessment of the Probability of
-Introduction of Thaumatotibia Leucotreta into the European Union with
-Import of Cut Roses.”</span> <em>EFSA Journal</em> 21 (10): e08107. <a href="https://doi.org/10.2903/j.efsa.2023.8107" class="external-link">https://doi.org/10.2903/j.efsa.2023.8107</a>.
+Health (PLH), EFSA Panel on Plant, Claude Bragard, Paula Baptista, et
+al. 2023. <span>“Assessment of the Probability of Introduction of
+Thaumatotibia Leucotreta into the European Union with Import of Cut
+Roses.”</span> <em>EFSA Journal</em> 21 (10): e08107. <a href="https://doi.org/10.2903/j.efsa.2023.8107" class="external-link">https://doi.org/10.2903/j.efsa.2023.8107</a>.
 </div>
 <div id="ref-efsa2017" class="csl-entry">
-Health (PLH), EFSA Panel on Plant, Michael Jeger, Claude Bragard, David
-Caffier, Thierry Candresse, Elisavet Chatzivassiliou, Katharina
-Dehnen-Schmutz, et al. 2017. <span>“Pest Categorisation of Spodoptera
-Frugiperda.”</span> <em>EFSA Journal</em> 15 (7): e04927. <a href="https://doi.org/10.2903/j.efsa.2017.4927" class="external-link">https://doi.org/10.2903/j.efsa.2017.4927</a>.
+Health (PLH), EFSA Panel on Plant, Michael Jeger, Claude Bragard, et al.
+2017. <span>“Pest Categorisation of Spodoptera Frugiperda.”</span>
+<em>EFSA Journal</em> 15 (7): e04927. <a href="https://doi.org/10.2903/j.efsa.2017.4927" class="external-link">https://doi.org/10.2903/j.efsa.2017.4927</a>.
 </div>
 <div id="ref-hijmans2024" class="csl-entry">
 Hijmans, Robert J., Márcia Barbosa, Aniruddha Ghosh, and Alex Mandel.
 2024. <em>Geodata: Download Geographic Data</em>. <a href="https://cran.r-project.org/web/packages/geodata/index.html" class="external-link">https://cran.r-project.org/web/packages/geodata/index.html</a>.
 </div>
 <div id="ref-pawar2024" class="csl-entry">
-Pawar, Samraat, Paul J. Huxley, Thomas R. C. Smallwood, Miles L. Nesbit,
-Alex H. H. Chan, Marta S. Shocket, Leah R. Johnson, Dimitrios-Georgios
-Kontopoulos, and Lauren J. Cator. 2024. <span>“Variation in Temperature
-of Peak Trait Performance Constrains Adaptation of Arthropod Populations
-to Climatic Warming.”</span> <em>Nature Ecology &amp; Evolution</em>,
-January, 1–11. <a href="https://doi.org/10.1038/s41559-023-02301-8" class="external-link">https://doi.org/10.1038/s41559-023-02301-8</a>.
+Pawar, Samraat, Paul J. Huxley, Thomas R. C. Smallwood, et al. 2024.
+<span>“Variation in Temperature of Peak Trait Performance Constrains
+Adaptation of Arthropod Populations to Climatic Warming.”</span>
+<em>Nature Ecology &amp; Evolution</em>, January 25, 1–11. <a href="https://doi.org/10.1038/s41559-023-02301-8" class="external-link">https://doi.org/10.1038/s41559-023-02301-8</a>.
 </div>
 <div id="ref-simmonds2022" class="csl-entry">
-Simmonds, Emily G., Kwaku Peprah Adjei, Christoffer Wold Andersen, Janne
-Cathrin Hetle Aspheim, Claudia Battistin, Nicola Bulso, Hannah M.
-Christensen, et al. 2022. <span>“Insights into the Quantification and
-Reporting of Model-Related Uncertainty Across Different
-Disciplines.”</span> <em>iScience</em> 25 (12): 105512. <a href="https://doi.org/10.1016/j.isci.2022.105512" class="external-link">https://doi.org/10.1016/j.isci.2022.105512</a>.
+Simmonds, Emily G., Kwaku Peprah Adjei, Christoffer Wold Andersen, et
+al. 2022. <span>“Insights into the Quantification and Reporting of
+Model-Related Uncertainty Across Different Disciplines.”</span>
+<em>iScience</em> 25 (12): 105512. <a href="https://doi.org/10.1016/j.isci.2022.105512" class="external-link">https://doi.org/10.1016/j.isci.2022.105512</a>.
 </div>
 <div id="ref-taylor2019" class="csl-entry">
-Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, David G. Hall,
-Hossein A. Narouei-Khandan, Jason R. Rohr, and Leah R. Johnson. 2019.
+Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, et al. 2019.
 <span>“Predicting the Fundamental Thermal Niche of Crop Pests and
 Diseases in a Changing World: A Case Study on Citrus Greening.”</span>
 <em>Journal of Applied Ecology</em> 56 (8): 2057–68. <a href="https://doi.org/10.1111/1365-2664.13455" class="external-link">https://doi.org/10.1111/1365-2664.13455</a>.

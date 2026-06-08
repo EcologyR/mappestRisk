@@ -1,10 +1,11 @@
 # Simulate TPCs with bootstrap to propagate uncertainty
 
 ``` r
+
 library(mappestRisk)
 ```
 
-## Simulate $n$-thermal performance curves using bootstrap with residual resampling
+## Simulate $`n`$-thermal performance curves using bootstrap with residual resampling
 
 ### Why propagating uncertainty?
 
@@ -26,27 +27,26 @@ addressed in forecasts:
     in the [TPCs model
     fitting](https://ecologyr.github.io/mappestRisk/articles/articles/tpcs-model-fitting.md)
     article, the `briere2` model yields
-    $CT_{\max} = 36.5 \pm 3.40\ \text{ºC}$. Let’s imagine a forecaster
+    $`CT_\max=36.5\pm3.40 \ \textrm{ºC}`$. Let’s imagine a forecaster
     aiming to identify “safe” regions where the pest may not be
     established due to extremely high maximum temperatures (e.g.,
-    $T_{\max} > {\bar{CT}}_{\max}$). It’s possible that all the
-    forecasting regions have monthly maximum temperatures of about 34ºC,
-    which lie below the $CT_{\max}$ estimate of 36.5 ºC, leading to
-    identify no risk for the assessment. However, if we incorporate how
-    the uncertainty of each parameter contributes to the variability of
-    the predicted TPC with simulated TPC ribbons in the plot –see e.g.,
+    $`T_\max > \bar{CT}_\max`$). It’s possible that all the forecasting
+    regions have monthly maximum temperatures of about 34ºC, which lie
+    below the $`CT_\max`$ estimate of 36.5 ºC, leading to identify no
+    risk for the assessment. However, if we incorporate how the
+    uncertainty of each parameter contributes to the variability of the
+    predicted TPC with simulated TPC ribbons in the plot –see e.g.,
     below with
     [`plot_uncertainties()`](https://ecologyr.github.io/mappestRisk/reference/plot_uncertainties.md),
     there are possible scenarios at which several TPC-calculated
-    $CT_{\max}$’s lie below 34ºC, yielding a not-negligible risk
+    $`CT_\max`$’s lie below 34ºC, yielding a not-negligible risk
     likelihood.
 2.  **Predictor uncertainty:** incorporating the variability of the
     predictor –in the above case, monthly maximum temperatures– will
     also yield a probability distribution of forecast outcomes (let’s
-    say $T_{\max} = 34\text{ºC},\ CI = \lbrack 31.2,36.8\rbrack$). This
-    would result in some scenarios with maximum temperatures above
-    $CT_{\max}$ estimate of $36.5$ºC and some others where they have
-    not.
+    say $`T_\max = 34 \textrm{ºC}, \ CI =[31.2, 36.8]`$). This would
+    result in some scenarios with maximum temperatures above $`CT_\max`$
+    estimate of $`36.5`$ºC and some others where they have not.
 3.  **Source data uncertainty:** additionally, TPCs are usually fitted
     to summarized data from experiments in laboratory conditions. These
     measures incorporate both both measurement error (at the individual
@@ -54,20 +54,19 @@ addressed in forecasts:
     estimates at the population level.
 
 For now, `mappestRisk` enables to explicitly account for parameter
-uncertainty by simulating $n$ TPCs using bootstrapping techniques with
+uncertainty by simulating $`n`$ TPCs using bootstrapping techniques with
 residual resampling, as suggested and implemented by `rTPC` package (see
 [this
 vignette/article](https://padpadpadpad.github.io/rTPC/articles/bootstrapping_many_curves.html)
-(Padfield, O’Sullivan, and Windram 2025)) as described in the section
-below. Measurement uncertainty of source data might be further
-incorporated in future enhancement updates of the package through a
-`weights` argument of
+(Padfield et al. 2025)) as described in the section below. Measurement
+uncertainty of source data might be further incorporated in future
+enhancement updates of the package through a `weights` argument of
 [`fit_devmodels()`](https://ecologyr.github.io/mappestRisk/reference/fit_devmodels.md)
 and
 [`predict_curves()`](https://ecologyr.github.io/mappestRisk/reference/predict_curves.md)
-(Padfield, O’Sullivan, and Pawar 2021) since they are based on the
-`rTPC` - `nls.multstart` framework that has recently incorporated an
-[article on how to simulate curves by weighted
+(Padfield et al. 2021) since they are based on the `rTPC` -
+`nls.multstart` framework that has recently incorporated an [article on
+how to simulate curves by weighted
 bootstrapping](https://padpadpadpad.github.io/rTPC/articles/weighted_bootstrapping.html).
 Finally, a discussion on how to deal with predictor uncertainty of the
 forecasts and how to overcome communication uncertainty is given in the
@@ -91,7 +90,7 @@ please refer to the [the original `rTPC`
 vignette](https://padpadpadpad.github.io/rTPC/articles/bootstrapping_models.html#residual-resampling).
 Further updates of the package may incorporate variance modelling for
 heteroscedastic residuals, as well as an argument to choice between
-*residual* *resampling* and *case resampling*[¹](#fn1).
+*residual* *resampling* and *case resampling*[^1].
 
 The
 [`predict_curves()`](https://ecologyr.github.io/mappestRisk/reference/predict_curves.md)
@@ -106,26 +105,30 @@ residuals and the fitted values of the estimated TPC from
 [`fit_devmodels()`](https://ecologyr.github.io/mappestRisk/reference/fit_devmodels.md).
 Then, it resamples with replacement these residuals. Next, the function
 automatically calculates the new resampled observations for the
-iteration $i$ (i.e., $y_{i}$) as follows:
+iteration $`i`$ (i.e., $`y_i`$) as follows:
 
-$$y_{i} = \widehat{y} + e_{i}\ \ ,$$ where $\widehat{y_{i}}$ represent
-the fitted values from the TPC model and $e_{i}$ denotes the resampled
-residuals of that model. Note that $i$-th iteration is given by
-`n_boots_samples`, or $n$. This results in $n$ resampled data sets. Each
-of them is next used for fitting a new nonlinear model using
+``` math
+y_i = \hat{y} + e_i \ \ ,
+```
+where $`\hat{y_i}`$ represent the fitted values from the TPC model and
+$`e_i`$ denotes the resampled residuals of that model. Note that
+$`i`$-th iteration is given by `n_boots_samples`, or $`n`$. This results
+in $`n`$ resampled data sets. Each of them is next used for fitting a
+new nonlinear model using
 [`fit_devmodels()`](https://ecologyr.github.io/mappestRisk/reference/fit_devmodels.md);
-those that adequately converged (a total $k$ models) constitute newly
+those that adequately converged (a total $`k`$ models) constitute newly
 bootstrapped nonlinear regression model. Finally, the function
 calculates the predictions of these bootstrapped models along
 temperature data –more specifically, 20ºC below and 15ºC above the
 minimum and maximum temperature values, respectively, in `temp` argument
-each 0.01ºC. This results in a total $n - k$ simulated thermal
+each 0.01ºC. This results in a total $`n-k`$ simulated thermal
 performance curves that are used for propagating parameter uncertainty
 for inference.
 
 Here we have an example:
 
 ``` r
+
 #fit previously:
 data("aphid")
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -149,6 +152,7 @@ fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
 ```
 
 ``` r
+
 preds_boots_aphid <- predict_curves(temp = aphid$temperature,          
                                    dev_rate = aphid$rate_value,
                                    fitted_parameters = fitted_tpcs_aphid,
@@ -191,6 +195,7 @@ than one model has been successfully bootstrapped, predicted curves will
 be plotted along different facets.
 
 ``` r
+
 plot_uncertainties(bootstrap_tpcs = preds_boots_aphid,
                    temp = aphid$temperature,
                    dev_rate = aphid$rate_value,
@@ -221,20 +226,18 @@ Nls.multstart: A New Pipeline to Fit Thermal Performance Curves in r.”
 *Methods in Ecology and Evolution* 12 (6): 1138–43.
 <https://doi.org/10.1111/2041-210X.13585>.
 
-Padfield, Daniel, Hannah O’Sullivan, and Francis Windram. 2025. “rTPC:
-Fitting and Analysing Thermal Performance Curves.”
+Padfield, Daniel, Hannah O’Sullivan, and Francis Windram. 2025. *rTPC:
+Fitting and Analysing Thermal Performance Curves*.
 <https://github.com/padpadpadpad/rTPC>.
 
-Simmonds, Emily G., Kwaku Peprah Adjei, Christoffer Wold Andersen, Janne
-Cathrin Hetle Aspheim, Claudia Battistin, Nicola Bulso, Hannah M.
-Christensen, et al. 2022. “Insights into the Quantification and
-Reporting of Model-Related Uncertainty Across Different Disciplines.”
-*iScience* 25 (12): 105512.
-<https://doi.org/10.1016/j.isci.2022.105512>.
+Simmonds, Emily G., Kwaku Peprah Adjei, Christoffer Wold Andersen, et
+al. 2022. “Insights into the Quantification and Reporting of
+Model-Related Uncertainty Across Different Disciplines.” *iScience* 25
+(12): 105512. <https://doi.org/10.1016/j.isci.2022.105512>.
 
-Sonderegger, Derek L., and Robert Buscaglia. 2020. “Appendix a :
+Sonderegger, Derek L., and Robert Buscaglia. 2020. *Appendix a :
 Resampling Linear Models \| Introduction to Statistical Methodology,
-Second Edition.” In. Bookdown.
+Second Edition*. Bookdown.
 <https://bookdown.org/dereksonderegger/570/appendix-a-resampling-linear-models.html>.
 
 Woods, H. Arthur, Joel G. Kingsolver, Samuel B. Fey, and David A.
@@ -242,7 +245,5 @@ Vasseur. 2018. “Uncertainty in Geographical Estimates of Performance and
 Fitness.” *Methods in Ecology and Evolution* 9 (9): 1996–2008.
 <https://doi.org/10.1111/2041-210X.13035>.
 
-------------------------------------------------------------------------
-
-1.  More methods to perform these bootstrap resampling techniques are
+[^1]: More methods to perform these bootstrap resampling techniques are
     given in (Sonderegger and Buscaglia 2020).

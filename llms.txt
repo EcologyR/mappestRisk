@@ -43,6 +43,7 @@ map figures.
 The stable version can be installed from CRAN:
 
 ``` r
+
 install.packages('mappestRisk') 
 ```
 
@@ -50,6 +51,7 @@ The package latest version can be installed from the
 [r-universe](https://ecologyr.r-universe.dev/mappestRisk):
 
 ``` r
+
 install.packages('mappestRisk', repos = c('https://ecologyr.r-universe.dev', 'https://cloud.r-project.org')) 
 ```
 
@@ -58,6 +60,7 @@ repository](https://github.com/EcologyR/mappestRisk) after installing
 either `remotes` or `devtools` R packages.
 
 ``` r
+
 remotes::install_github("EcologyR/mappestRisk")  
 #alternatively -> devtools::install_github("EcologyR/mappestRisk")
 ```
@@ -68,14 +71,14 @@ remotes::install_github("EcologyR/mappestRisk")
 
 In this example, we’ll show how to fit one to several thermal
 performance curves to a data set of development rate variation across
-temperatures[¹](#fn1). The following code provides an example as given
-in
+temperatures[^1]. The following code provides an example as given in
 [`fit_devmodels()`](https://ecologyr.github.io/mappestRisk/reference/fit_devmodels.md)
 function documentation, with a data table showing the output of fitted
 models, and how to visualize them for selecting curves using
 [`plot_devmodels()`](https://ecologyr.github.io/mappestRisk/reference/plot_devmodels.md).
 
 ``` r
+
 library("mappestRisk")
 data("aphid") 
 fitted_tpcs <- fit_devmodels(temp = aphid$temperature,  
@@ -110,6 +113,7 @@ fitting](https://ecologyr.github.io/mappestRisk/articles/tpcs-model-fitting.html
 article.
 
 ``` r
+
 preds_boots <- predict_curves(temp = aphid$temperature,          
                               dev_rate = aphid$rate_value,
                               fitted_parameters = fitted_tpcs,
@@ -138,12 +142,14 @@ plot_uncertainties(bootstrap_tpcs = preds_boots,
 
 After the previous steps, the user can calculate the thermal boundaries
 of the optimal zone of the TPC –i.e., those temperature values yielding
-the Y-th quantile of the development rate (default to $\text{Q}_{75}$)
-at both sides of the curve peak or $R_{\max}$. Once a model has been
-selected under both ecological and statistical criteria, the
-`thermal_suitability_bounds()` function calculates these values:
+the Y-th quantile of the development rate (default to
+$`\textrm{Q}_{75}`$) at both sides of the curve peak or $`R_\max`$. Once
+a model has been selected under both ecological and statistical
+criteria, the `thermal_suitability_bounds()` function calculates these
+values:
 
 ``` r
+
 boundaries <- therm_suit_bounds(preds_tbl = preds_boots,
                                 model_name = "lactin2",        
                                 suitability_threshold = 80) 
@@ -161,6 +167,7 @@ number of months per year with highly suitable temperatures for pest
 development.
 
 ``` r
+
 risk_rast <- map_risk(t_vals = boundaries, 
                       region = "Réunion",   
                       path = tempdir() # directory to download climate data 
@@ -250,10 +257,8 @@ Hossein A. Narouei-Khandan, Jason R. Rohr, and Leah R. Johnson. 2019.
 a Changing World: A Case Study on Citrus Greening.” *Journal of Applied
 Ecology* 56 (8): 2057–68.
 
-------------------------------------------------------------------------
-
-1.  At least 4 unique temperatures are required. Fore more details, see
-    documentation and vignettes.
+[^1]: At least 4 unique temperatures are required. Fore more details,
+    see documentation and vignettes.
 
 # Package index
 

@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="TPCs model fitting">
 </head>
@@ -81,16 +81,15 @@
 the nonlinear temperature dependence of several biological rates <span class="citation">(Amarasekare and Savage 2012)</span>. TPC shapes are
 usually unimodal and left-skewed <span class="citation">(Huey and
 Stevenson 1979)</span>, which is also the case for development rate TPCs
-of insects <span class="citation">(Régnier, Legrand, and Rebaudo
-2022)</span>. Fitting these nonlinear regression models requires to
-incorporate <em>a priori</em> knowledge on model parameters. For that
-purpose, the R packages <code>rTPC</code> <span class="citation">(Padfield, O’Sullivan, and Pawar 2021; Padfield,
-O’Sullivan, and Windram 2025)</span>and <code>devRate</code><span class="citation">(Francois Rebaudo and Regnier 2025; François Rebaudo,
-Struelens, and Dangles 2018)</span> have provided R functions and
-workflows to facilitate model fitting, start values selection and
-parameter calculation of TPCs. Additionally, <code>nls.multstart</code>
-package <span class="citation">(Padfield, O’Sullivan, and Pawar 2021;
-Padfield, Matheson, and Windram 2025)</span> provides a nonlinear,
+of insects <span class="citation">(Régnier et al. 2022)</span>. Fitting
+these nonlinear regression models requires to incorporate <em>a
+priori</em> knowledge on model parameters. For that purpose, the R
+packages <code>rTPC</code> <span class="citation">(Padfield et al. 2021;
+Padfield, O’Sullivan, et al. 2025)</span>and <code>devRate</code><span class="citation">(Rebaudo and Regnier 2025; Rebaudo et al. 2018)</span>
+have provided R functions and workflows to facilitate model fitting,
+start values selection and parameter calculation of TPCs. Additionally,
+<code>nls.multstart</code> package <span class="citation">(Padfield et
+al. 2021; Padfield, Matheson, et al. 2025)</span> provides a nonlinear,
 least-squares framework to facilitate fitting these curves to
 experimental data in a flexible and efficient manner.</p>
 <p>However, we believe that most researchers obtaining experimental data
@@ -108,12 +107,12 @@ development rate data. The user can select which models to fit among
 those included in <code>available_models</code> (or use them all). Then,
 for each model equation, the function will search for the most
 appropriate start values data for performing nonlinear regression models
-using <code><a href="https://rdrr.io/pkg/rTPC/man/get_start_vals.html" class="external-link">rTPC::get_start_vals()</a></code> when possible, or
+using <code><a href="https://padpadpadpad.github.io/rTPC/reference/get_start_vals.html" class="external-link">rTPC::get_start_vals()</a></code> when possible, or
 alternatively <code>devRate</code> parameter data set for models not
 included in the former package. Once selected, the function will also
 search for lower and upper thermal limits when possible using
-<code><a href="https://rdrr.io/pkg/rTPC/man/get_lower_lims.html" class="external-link">rTPC::get_lower_lims()</a></code> or
-<code><a href="https://rdrr.io/pkg/rTPC/man/get_upper_lims.html" class="external-link">rTPC::get_upper_lims()</a></code>. Next, the function performs
+<code><a href="https://padpadpadpad.github.io/rTPC/reference/get_lower_lims.html" class="external-link">rTPC::get_lower_lims()</a></code> or
+<code><a href="https://padpadpadpad.github.io/rTPC/reference/get_upper_lims.html" class="external-link">rTPC::get_upper_lims()</a></code>. Next, the function performs
 sequentially the nonlinear least-squares regression models using
 <code><a href="https://rdrr.io/pkg/nls.multstart/man/nls_multstart.html" class="external-link">nls.multstart::nls_multstart()</a></code> function for each set of
 model equation, start values and limits with default configuration of
@@ -157,18 +156,18 @@ This <code>tibble</code> has the following aspect:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fitted_tpcs_aphid</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 53 × 8</span></span></span>
-<span><span class="co">#&gt;    model_name param_name start_vals param_est    param_se model_AIC model_BIC</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> beta       a               0.145     0.143     0.006<span style="text-decoration: underline;">30</span>     -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> beta       b              25        26.7       1.10        -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> beta       c              25       202.    <span style="text-decoration: underline;">13</span>598.          -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> beta       d               2       100     <span style="text-decoration: underline;">12</span>046.          -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> beta       e               2        32.6    <span style="text-decoration: underline;">2</span>282.          -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> boatman    rmax            0.145     0.142     0.006<span style="text-decoration: underline;">48</span>     -<span style="color: #BB0000;">42.4</span>     -<span style="color: #BB0000;">42.7</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> boatman    tmin           15         0       104.          -<span style="color: #BB0000;">42.4</span>     -<span style="color: #BB0000;">42.7</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> boatman    tmax           32.5      43.7      66.7         -<span style="color: #BB0000;">42.4</span>     -<span style="color: #BB0000;">42.7</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> boatman    a               1.1       1.42      1.03        -<span style="color: #BB0000;">42.4</span>     -<span style="color: #BB0000;">42.7</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> boatman    b               0.4       2.44     20.0         -<span style="color: #BB0000;">42.4</span>     -<span style="color: #BB0000;">42.7</span></span></span>
+<span><span class="co">#&gt;    model_name param_name start_vals param_est     param_se model_AIC model_BIC</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> beta       a               0.145     0.143      0.006<span style="text-decoration: underline;">22</span>     -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> beta       b              25        26.7        1.10        -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> beta       c              25       955.    <span style="text-decoration: underline;">746</span>610.          -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> beta       d               2      <span style="text-decoration: underline;">1</span>000     <span style="text-decoration: underline;">963</span>161.          -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> beta       e               2        78.8    <span style="text-decoration: underline;">15</span>517.          -<span style="color: #BB0000;">43.0</span>     -<span style="color: #BB0000;">43.3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> boatman    rmax            0.145     0.143      0.006<span style="text-decoration: underline;">33</span>     -<span style="color: #BB0000;">42.9</span>     -<span style="color: #BB0000;">43.2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> boatman    tmin           15       -<span style="color: #BB0000;">38.8</span>     <span style="text-decoration: underline;">1</span>633.          -<span style="color: #BB0000;">42.9</span>     -<span style="color: #BB0000;">43.2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> boatman    tmax           32.5      58.7      473.          -<span style="color: #BB0000;">42.9</span>     -<span style="color: #BB0000;">43.2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> boatman    a               1.1       1.75      14.7         -<span style="color: #BB0000;">42.9</span>     -<span style="color: #BB0000;">43.2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> boatman    b               0.4      10        335.          -<span style="color: #BB0000;">42.9</span>     -<span style="color: #BB0000;">43.2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 43 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: model_fit &lt;list&gt;</span></span></span></code></pre></div>
 <p>Despite the output yields a table with explicit statistical
@@ -215,7 +214,7 @@ functions with <code>ggplot2</code>.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-amarasekare2012" class="csl-entry">
 Amarasekare, Priyanga, and Van Savage. 2012. <span>“A framework for
 elucidating the temperature dependence of fitness.”</span> <em>The
@@ -228,8 +227,8 @@ Approaches.”</span> <em>American Zoologist</em> 19 (February). <a href="https:
 </div>
 <div id="ref-nls.multstart" class="csl-entry">
 Padfield, Daniel, Granville Matheson, and Francis Windram. 2025.
-<span>“Nls.multstart: Robust Non-Linear Regression Using AIC
-Scores.”</span> <a href="https://CRAN.R-project.org/package=nls.multstart" class="external-link">https://CRAN.R-project.org/package=nls.multstart</a>.
+<em>Nls.multstart: Robust Non-Linear Regression Using AIC Scores</em>.
+<a href="https://CRAN.R-project.org/package=nls.multstart" class="external-link">https://CRAN.R-project.org/package=nls.multstart</a>.
 </div>
 <div id="ref-padfield2021" class="csl-entry">
 Padfield, Daniel, Hannah O’Sullivan, and Samraat Pawar. 2021.
@@ -239,13 +238,12 @@ Curves in r.”</span> <em>Methods in Ecology and Evolution</em> 12 (6):
 </div>
 <div id="ref-rTPC" class="csl-entry">
 Padfield, Daniel, Hannah O’Sullivan, and Francis Windram. 2025.
-<span>“rTPC: Fitting and Analysing Thermal Performance Curves.”</span>
-<a href="https://github.com/padpadpadpad/rTPC" class="external-link">https://github.com/padpadpadpad/rTPC</a>.
+<em>rTPC: Fitting and Analysing Thermal Performance Curves</em>. <a href="https://github.com/padpadpadpad/rTPC" class="external-link">https://github.com/padpadpadpad/rTPC</a>.
 </div>
 <div id="ref-devRate" class="csl-entry">
-Rebaudo, Francois, and Baptiste Regnier. 2025. <span>“devRate: Quantify
-the Relationship Between Development Rate and Temperature in
-Ectotherms.”</span> <a href="https://CRAN.R-project.org/package=devRate" class="external-link">https://CRAN.R-project.org/package=devRate</a>.
+Rebaudo, Francois, and Baptiste Regnier. 2025. <em>devRate: Quantify the
+Relationship Between Development Rate and Temperature in
+Ectotherms</em>. <a href="https://CRAN.R-project.org/package=devRate" class="external-link">https://CRAN.R-project.org/package=devRate</a>.
 </div>
 <div id="ref-rebaudo2018" class="csl-entry">
 Rebaudo, François, Quentin Struelens, and Olivier Dangles. 2018.

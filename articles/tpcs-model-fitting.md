@@ -6,18 +6,16 @@ The Thermal Performance Curves can be understood as models describing
 the nonlinear temperature dependence of several biological rates
 (Amarasekare and Savage 2012). TPC shapes are usually unimodal and
 left-skewed (Huey and Stevenson 1979), which is also the case for
-development rate TPCs of insects (Régnier, Legrand, and Rebaudo 2022).
-Fitting these nonlinear regression models requires to incorporate *a
-priori* knowledge on model parameters. For that purpose, the R packages
-`rTPC` (Padfield, O’Sullivan, and Pawar 2021; Padfield, O’Sullivan, and
-Windram 2025)and `devRate`(Francois Rebaudo and Regnier 2025; François
-Rebaudo, Struelens, and Dangles 2018) have provided R functions and
+development rate TPCs of insects (Régnier et al. 2022). Fitting these
+nonlinear regression models requires to incorporate *a priori* knowledge
+on model parameters. For that purpose, the R packages `rTPC` (Padfield
+et al. 2021; Padfield, O’Sullivan, et al. 2025)and `devRate`(Rebaudo and
+Regnier 2025; Rebaudo et al. 2018) have provided R functions and
 workflows to facilitate model fitting, start values selection and
 parameter calculation of TPCs. Additionally, `nls.multstart` package
-(Padfield, O’Sullivan, and Pawar 2021; Padfield, Matheson, and Windram
-2025) provides a nonlinear, least-squares framework to facilitate
-fitting these curves to experimental data in a flexible and efficient
-manner.
+(Padfield et al. 2021; Padfield, Matheson, et al. 2025) provides a
+nonlinear, least-squares framework to facilitate fitting these curves to
+experimental data in a flexible and efficient manner.
 
 However, we believe that most researchers obtaining experimental data on
 rate development across temperatures may not have enough R programming
@@ -35,13 +33,13 @@ user can select which models to fit among those included in
 `available_models` (or use them all). Then, for each model equation, the
 function will search for the most appropriate start values data for
 performing nonlinear regression models using
-[`rTPC::get_start_vals()`](https://rdrr.io/pkg/rTPC/man/get_start_vals.html)
+[`rTPC::get_start_vals()`](https://padpadpadpad.github.io/rTPC/reference/get_start_vals.html)
 when possible, or alternatively `devRate` parameter data set for models
 not included in the former package. Once selected, the function will
 also search for lower and upper thermal limits when possible using
-[`rTPC::get_lower_lims()`](https://rdrr.io/pkg/rTPC/man/get_lower_lims.html)
+[`rTPC::get_lower_lims()`](https://padpadpadpad.github.io/rTPC/reference/get_lower_lims.html)
 or
-[`rTPC::get_upper_lims()`](https://rdrr.io/pkg/rTPC/man/get_upper_lims.html).
+[`rTPC::get_upper_lims()`](https://padpadpadpad.github.io/rTPC/reference/get_upper_lims.html).
 Next, the function performs sequentially the nonlinear least-squares
 regression models using
 [`nls.multstart::nls_multstart()`](https://rdrr.io/pkg/nls.multstart/man/nls_multstart.html)
@@ -52,13 +50,13 @@ discarded.
 
 In this example, we’ll show how to fit one to several thermal
 performance curves to a data set of development rate variation across
-temperatures[¹](#fn1). The following code provides an example as given
-in
+temperatures[^1]. The following code provides an example as given in
 [`fit_devmodels()`](https://ecologyr.github.io/mappestRisk/reference/fit_devmodels.md)
 function documentation, with a data table showing the output of fitted
 models.
 
 ``` r
+
 data("aphid")
 
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -92,20 +90,21 @@ stored as an object (here we call it `fitted_tpcs_aphid`). This `tibble`
 has the following aspect:
 
 ``` r
+
 print(fitted_tpcs_aphid)
 #> # A tibble: 53 × 8
-#>    model_name param_name start_vals param_est    param_se model_AIC model_BIC
-#>    <chr>      <chr>           <dbl>     <dbl>       <dbl>     <dbl>     <dbl>
-#>  1 beta       a               0.145     0.143     0.00630     -43.0     -43.3
-#>  2 beta       b              25        26.7       1.10        -43.0     -43.3
-#>  3 beta       c              25       202.    13598.          -43.0     -43.3
-#>  4 beta       d               2       100     12046.          -43.0     -43.3
-#>  5 beta       e               2        32.6    2282.          -43.0     -43.3
-#>  6 boatman    rmax            0.145     0.142     0.00648     -42.4     -42.7
-#>  7 boatman    tmin           15         0       104.          -42.4     -42.7
-#>  8 boatman    tmax           32.5      43.7      66.7         -42.4     -42.7
-#>  9 boatman    a               1.1       1.42      1.03        -42.4     -42.7
-#> 10 boatman    b               0.4       2.44     20.0         -42.4     -42.7
+#>    model_name param_name start_vals param_est     param_se model_AIC model_BIC
+#>    <chr>      <chr>           <dbl>     <dbl>        <dbl>     <dbl>     <dbl>
+#>  1 beta       a               0.145     0.143      0.00622     -43.0     -43.3
+#>  2 beta       b              25        26.7        1.10        -43.0     -43.3
+#>  3 beta       c              25       955.    746610.          -43.0     -43.3
+#>  4 beta       d               2      1000     963161.          -43.0     -43.3
+#>  5 beta       e               2        78.8    15517.          -43.0     -43.3
+#>  6 boatman    rmax            0.145     0.143      0.00633     -42.9     -43.2
+#>  7 boatman    tmin           15       -38.8     1633.          -42.9     -43.2
+#>  8 boatman    tmax           32.5      58.7      473.          -42.9     -43.2
+#>  9 boatman    a               1.1       1.75      14.7         -42.9     -43.2
+#> 10 boatman    b               0.4      10        335.          -42.9     -43.2
 #> # ℹ 43 more rows
 #> # ℹ 1 more variable: model_fit <list>
 ```
@@ -147,6 +146,7 @@ compatible functions with `ggplot2`.
 Following the previous example:
 
 ``` r
+
 plot_devmodels(temp = aphid$temperature,
                dev_rate = aphid$rate_value,
                fitted_parameters = fitted_tpcs_aphid,
@@ -171,7 +171,7 @@ Physiology and Ecology of Ectotherms: A Discussion of Approaches.”
 <https://doi.org/10.1093/icb/19.1.357>.
 
 Padfield, Daniel, Granville Matheson, and Francis Windram. 2025.
-“Nls.multstart: Robust Non-Linear Regression Using AIC Scores.”
+*Nls.multstart: Robust Non-Linear Regression Using AIC Scores*.
 <https://CRAN.R-project.org/package=nls.multstart>.
 
 Padfield, Daniel, Hannah O’Sullivan, and Samraat Pawar. 2021. “rTPC and
@@ -179,12 +179,12 @@ Nls.multstart: A New Pipeline to Fit Thermal Performance Curves in r.”
 *Methods in Ecology and Evolution* 12 (6): 1138–43.
 <https://doi.org/10.1111/2041-210X.13585>.
 
-Padfield, Daniel, Hannah O’Sullivan, and Francis Windram. 2025. “rTPC:
-Fitting and Analysing Thermal Performance Curves.”
+Padfield, Daniel, Hannah O’Sullivan, and Francis Windram. 2025. *rTPC:
+Fitting and Analysing Thermal Performance Curves*.
 <https://github.com/padpadpadpad/rTPC>.
 
-Rebaudo, Francois, and Baptiste Regnier. 2025. “devRate: Quantify the
-Relationship Between Development Rate and Temperature in Ectotherms.”
+Rebaudo, Francois, and Baptiste Regnier. 2025. *devRate: Quantify the
+Relationship Between Development Rate and Temperature in Ectotherms*.
 <https://CRAN.R-project.org/package=devRate>.
 
 Rebaudo, François, Quentin Struelens, and Olivier Dangles. 2018.
@@ -198,7 +198,5 @@ Temperature-Dependent Development Rate in Insects and Implications of
 Experimental Design.” *Environmental Entomology* 51 (1): 132–44.
 <https://doi.org/10.1093/ee/nvab115>.
 
-------------------------------------------------------------------------
-
-1.  At least 4 unique temperatures are required. Fore more details, see
-    documentation.
+[^1]: At least 4 unique temperatures are required. Fore more details,
+    see documentation.

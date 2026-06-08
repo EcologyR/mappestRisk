@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Additional Applications">
 </head>
@@ -114,9 +114,9 @@ functions can address this task.</p>
 <p>In this example, we use experimental data on the thermal biology of
 the Peach Fly (<em>Bactrocera zonata</em>) for the larval stage from
 different studies<span class="citation">(Choudhary et al. 2020; Ali
-2016; Ullah et al. 2022; Bayoumy et al. 2021; Duyck, Sterlin, and
-Quilici 2004; Akel 2015)</span>. First, we fit thermal performance
-curves (TPCs) using <code><a href="../reference/fit_devmodels.html">fit_devmodels()</a></code> and visualize it with
+2016; Ullah et al. 2022; Bayoumy et al. 2021; Duyck et al. 2004; Akel
+2015)</span>. First, we fit thermal performance curves (TPCs) using
+<code><a href="../reference/fit_devmodels.html">fit_devmodels()</a></code> and visualize it with
 <code><a href="../reference/plot_devmodels.html">plot_devmodels()</a></code>. Then, we calculate bootstrapped curves
 and visualize them with <code><a href="../reference/predict_curves.html">predict_curves()</a></code> and
 <code><a href="../reference/plot_uncertainties.html">plot_uncertainties()</a></code>, respectively. These steps follow the
@@ -308,7 +308,7 @@ default. This will incorporate implicitly all the calculations
 illustrated in this example.&lt;/p&gt;'><sup>1</sup></a>.
 This outputs a raster with average temperatures at each month:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">worldclim_tavg_turkey</span> <span class="op">&lt;-</span> <span class="fu">geodata</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/geodata/man/worldclim.html" class="external-link">worldclim_country</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Turkey"</span>,</span>
+<code class="sourceCode R"><span><span class="va">worldclim_tavg_turkey</span> <span class="op">&lt;-</span> <span class="fu">geodata</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/geodata/reference/worldclim.html" class="external-link">worldclim_country</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Turkey"</span>,</span>
 <span>                                                    var <span class="op">=</span> <span class="st">"tavg"</span>,</span>
 <span>                                                    path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#terra::plot(worldclim_tavg_turkey) # &lt;- we can plot the raster of temperatures</span></span>
@@ -440,7 +440,7 @@ variable temperatures throughout the year enables to predict the
 progress of the population as it goes through its life cycle. For
 instance, if a daily average temperature of 25ºC corresponds to a full
 life cycle TPC-estimated rate of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.05</mn><mspace width="0.222em"></mspace><msup><mtext mathvariant="normal">days</mtext><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">0.05 \ \textrm{days}^{-1}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.05</mn><mspace width="0.222em"></mspace><msup><mtext mathvariant="normal">days</mtext><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">0.05 \ \textrm{days}^{-1}</annotation></semantics></math>,
 that population will have completed during that day a 5% of the required
 physiological age fulfill its life cycle. One the cumulative rate
 achieves the 100%, a new generation begins. In this example, we apply
@@ -553,7 +553,7 @@ these two methods to predict thermal suitability maps is given in <span class="c
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-akel2015" class="csl-entry">
 Akel, Mohamed WF Younes Faten A. 2015. <span>“EFFECT OF TEMPERATURE ON
 DEVELOPMENT AND REPRODUCTION OF PEACH FRUIT FLY, BACTROCERA ZONATA
@@ -579,11 +579,10 @@ organismal vulnerabilities.”</span> <em>Global Change Biology</em> 22
 (12): 3829–42. <a href="https://doi.org/10.1111/gcb.13313" class="external-link">https://doi.org/10.1111/gcb.13313</a>.
 </div>
 <div id="ref-choudhary2020" class="csl-entry">
-Choudhary, Jaipal Singh, Santosh S. Mali, Naiyar Naaz, Debu Mukherjee,
-L. Moanaro, Bikash Das, A. K. Singh, M. Srinivasa Rao, and B. P. Bhatt.
-2020. <span>“Predicting the Population Growth Potential of Bactrocera
-Zonata (Saunders) (Diptera: Tephritidae) Using Temperature Development
-Growth Models and Their Validation in Fluctuating Temperature
+Choudhary, Jaipal Singh, Santosh S. Mali, Naiyar Naaz, et al. 2020.
+<span>“Predicting the Population Growth Potential of Bactrocera Zonata
+(Saunders) (Diptera: Tephritidae) Using Temperature Development Growth
+Models and Their Validation in Fluctuating Temperature
 Condition.”</span> <em>Phytoparasitica</em> 48 (1): 1–13. <a href="https://doi.org/10.1007/s12600-019-00777-4" class="external-link">https://doi.org/10.1007/s12600-019-00777-4</a>.
 </div>
 <div id="ref-duyck2004" class="csl-entry">
@@ -612,40 +611,34 @@ Lactin, Derek J., N. J. Holliday, D. L. Johnson, and R. Craigen. 1995.
 Arthropods.”</span> <em>Environmental Entomology</em> 24 (1): 68–75. <a href="https://doi.org/10.1093/ee/24.1.68" class="external-link">https://doi.org/10.1093/ee/24.1.68</a>.
 </div>
 <div id="ref-mordecai2017" class="csl-entry">
-Mordecai, Erin A., Jeremy M. Cohen, Michelle V. Evans, Prithvi Gudapati,
-Leah R. Johnson, Catherine A. Lippi, Kerri Miazgowicz, et al. 2017.
+Mordecai, Erin A., Jeremy M. Cohen, Michelle V. Evans, et al. 2017.
 <span>“Detecting the Impact of Temperature on Transmission of Zika,
 Dengue, and Chikungunya Using Mechanistic Models.”</span> <em>PLOS
 Neglected Tropical Diseases</em> 11 (4): e0005568. <a href="https://doi.org/10.1371/journal.pntd.0005568" class="external-link">https://doi.org/10.1371/journal.pntd.0005568</a>.
 </div>
 <div id="ref-shocket2025" class="csl-entry">
-Shocket, Marta S., Joey R. Bernhardt, Kerri L. Miazgowicz, Alyzeh
-Orakzai, Van M. Savage, Richard J. Hall, Sadie J. Ryan, and Courtney C.
-Murdock. 2025. <span>“Mean Daily Temperatures Predict the Thermal Limits
-of Malaria Transmission Better Than Hourly Rate Summation.”</span>
-<em>Nature Communications</em> 16 (1): 3441. <a href="https://doi.org/10.1038/s41467-025-58612-w" class="external-link">https://doi.org/10.1038/s41467-025-58612-w</a>.
+Shocket, Marta S., Joey R. Bernhardt, Kerri L. Miazgowicz, et al. 2025.
+<span>“Mean Daily Temperatures Predict the Thermal Limits of Malaria
+Transmission Better Than Hourly Rate Summation.”</span> <em>Nature
+Communications</em> 16 (1): 3441. <a href="https://doi.org/10.1038/s41467-025-58612-w" class="external-link">https://doi.org/10.1038/s41467-025-58612-w</a>.
 </div>
 <div id="ref-taylor2019" class="csl-entry">
-Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, David G. Hall,
-Hossein A. Narouei-Khandan, Jason R. Rohr, and Leah R. Johnson. 2019.
+Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, et al. 2019.
 <span>“Predicting the Fundamental Thermal Niche of Crop Pests and
 Diseases in a Changing World: A Case Study on Citrus Greening.”</span>
 <em>Journal of Applied Ecology</em> 56 (8): 2057–68. <a href="https://doi.org/10.1111/1365-2664.13455" class="external-link">https://doi.org/10.1111/1365-2664.13455</a>.
 </div>
 <div id="ref-ullah2022" class="csl-entry">
-Ullah, Farman, Ihsan ul Haq, Hina Gul, Ali Güncan, Muhammad Hafeez,
-Kaleem Tariq, Nicolas Desneux, and Zhihong Li. 2022. <span>“Short-Term
+Ullah, Farman, Ihsan ul Haq, Hina Gul, et al. 2022. <span>“Short-Term
 Temperature Stress Modulates Fitness Traits in Bactrocera Zonata,
 Through Negative Impact on Larval Stage.”</span> <em>Agronomy</em> 12
 (11): 2903. <a href="https://doi.org/10.3390/agronomy12112903" class="external-link">https://doi.org/10.3390/agronomy12112903</a>.
 </div>
 <div id="ref-vasseur2014" class="csl-entry">
-Vasseur, David A., John P. DeLong, Benjamin Gilbert, Hamish S. Greig,
-Christopher D. G. Harley, Kevin S. McCann, Van Savage, Tyler D. Tunney,
-and Mary I. O’Connor. 2014. <span>“Increased Temperature Variation Poses
-a Greater Risk to Species Than Climate Warming.”</span> <em>Proceedings
-of the Royal Society B: Biological Sciences</em> 281 (1779): 20132612.
-<a href="https://doi.org/10.1098/rspb.2013.2612" class="external-link">https://doi.org/10.1098/rspb.2013.2612</a>.
+Vasseur, David A., John P. DeLong, Benjamin Gilbert, et al. 2014.
+<span>“Increased Temperature Variation Poses a Greater Risk to Species
+Than Climate Warming.”</span> <em>Proceedings of the Royal Society B:
+Biological Sciences</em> 281 (1779): 20132612. <a href="https://doi.org/10.1098/rspb.2013.2612" class="external-link">https://doi.org/10.1098/rspb.2013.2612</a>.
 </div>
 </div>
 </div>

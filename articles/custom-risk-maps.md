@@ -24,6 +24,7 @@ article.
 
 ``` r
 
+
 risk_rast_bhutan <- map_risk(t_vals = boundaries_aphid, 
                              path = tempdir(), # directory to download data 
                              region = "Bhutan",    
@@ -44,9 +45,10 @@ risk_rast_bhutan <- map_risk(t_vals = boundaries_aphid,
     #> Finished!
 
 First, let’s select the *risk* layer (if we don’t specifically select
-it, the latest –sd– is used by default[¹](#fn1)).
+it, the latest –sd– is used by default[^1]).
 
 ``` r
+
 library(ggplot2)
 risk_layer_bhutan <- risk_rast_bhutan |> 
   tidyterra::select("mean") # or alternatively, risk_layer_bhutan <- risk_rast_bhutan["mean"]
@@ -56,6 +58,7 @@ First, we will obtain the contour of world countries using `geodata` to
 place underneath the risk map:
 
 ``` r
+
 worldmap_sv <- geodata::world()
 ```
 
@@ -63,6 +66,7 @@ Then, we will crop it using the boundaries of our risk raster without
 `NAs`.
 
 ``` r
+
 noNA_risk_rast <- risk_layer_bhutan |> 
   tidyterra::drop_na()
 bhutan_sv <- terra::crop(worldmap_sv, noNA_risk_rast)
@@ -72,6 +76,7 @@ Then, we will use a custom palette based on *lajolla* palette from
 `khroma` package with a custom color for `0`’s:
 
 ``` r
+
 my_risk_palette <- c("#AFC8C8", khroma::color(palette = "lajolla", reverse = TRUE)(12))
 ```
 
@@ -80,6 +85,7 @@ For now, the map with these custom options and
 function will look as follows:
 
 ``` r
+
 max_risk_bhutan <- terra::minmax(noNA_risk_rast)[2] # for manual scale fill visualization 
 
 aphid_risk_map <- ggplot2::ggplot() +
@@ -102,6 +108,7 @@ We can improve the legend visualization using
 is not correct, but we may correct it:
 
 ``` r
+
 aphid_risk_map <- aphid_risk_map +
   guides(fill = guide_legend(ncol = 13, #from 0 to 12 possible values
                              nrow = 1, 
@@ -117,6 +124,7 @@ titles and avoid borders overlapping with cells using adjacent region
 polygons:
 
 ``` r
+
 #add borders:
 china_sv <- worldmap_sv |> 
   dplyr::filter(NAME_0 == "China")
@@ -153,6 +161,7 @@ Similarly, a discrete *iso-risk* map can be generated using
 follows:
 
 ``` r
+
 breaks_levels <- purrr::map_chr(.x = seq(0, max_risk_bhutan),
                                 .f = ~paste0("[", .x, " ", .x+1,")")) |> 
   as.factor()
@@ -187,18 +196,16 @@ ggplot2::ggplot() +
 
 ## References
 
-Hernangómez, Diego. 2023. “Using the Tidyverse with Terra Objects: The
-Tidyterra Package” 8: 5751. <https://doi.org/10.21105/joss.05751>.
+Hernangómez, Diego. 2023. *Using the Tidyverse with Terra Objects: The
+Tidyterra Package*. 8: 5751. <https://doi.org/10.21105/joss.05751>.
 
-Oscar Perpiñán, and Robert Hijmans. 2023. “rasterVis.”
+Oscar Perpiñán, and Robert Hijmans. 2023. *rasterVis*.
 <https://oscarperpinan.github.io/rastervis/>.
 
-Wickham, Hadley. 2016. “Ggplot2: Elegant Graphics for Data Analysis.”
+Wickham, Hadley. 2016. *Ggplot2: Elegant Graphics for Data Analysis*.
 <https://ggplot2.tidyverse.org>.
 
-------------------------------------------------------------------------
-
-1.  Please, note that if the aim is to generate a custom map for risk
+[^1]: Please, note that if the aim is to generate a custom map for risk
     uncertainty –i.e., the *uncertainty sd layer*, it must be selected
     and, accordingly, one may need to manually adjust the breaks of the
     color palettes and its related code.

@@ -39,8 +39,8 @@ organisms, the `mappestRisk` functions can address this task.
 In this example, we use experimental data on the thermal biology of the
 Peach Fly (*Bactrocera zonata*) for the larval stage from different
 studies(Choudhary et al. 2020; Ali 2016; Ullah et al. 2022; Bayoumy et
-al. 2021; Duyck, Sterlin, and Quilici 2004; Akel 2015). First, we fit
-thermal performance curves (TPCs) using
+al. 2021; Duyck et al. 2004; Akel 2015). First, we fit thermal
+performance curves (TPCs) using
 [`fit_devmodels()`](https://ecologyr.github.io/mappestRisk/reference/fit_devmodels.md)
 and visualize it with
 [`plot_devmodels()`](https://ecologyr.github.io/mappestRisk/reference/plot_devmodels.md).
@@ -53,6 +53,7 @@ respectively. These steps follow the suggested workflow of the core of
 et al. 1995) model.
 
 ``` r
+
 bactrocera_zonata_larva <- readr::read_delim("thermal_biology_peach_fly.csv") |> 
   dplyr::filter(life_stage == "larva")
 
@@ -81,6 +82,7 @@ Fitted Thermal Performance Curves for development rates of *Bactrocera
 zonata* larvae
 
 ``` r
+
 preds_boots_fly <- predict_curves(
   temp = bactrocera_zonata_larva$temperature,
   dev_rate = bactrocera_zonata_larva$development_rate,
@@ -123,6 +125,7 @@ less convex behavior at the TPC cold end (see Khelifa et al. (2019) for
 discussion).
 
 ``` r
+
 peach_fly_tol_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
                                           model_name = "lactin2",
                                           suitability_threshold = 0)
@@ -140,10 +143,11 @@ year 2024.
 The following code pipeline masks the E-OBS data set to Turkey vector
 shape, and then calculates, at each pixel, whether there are six
 consecutive rows with maximum daily temperatures above the estimated
-upper thermal limit (or $T_{\text{max}}$ ) of 38.7ºC. In those cases,
+upper thermal limit (or $`T_\textrm{max}`$ ) of 38.7ºC. In those cases,
 these cells will be marked as 1’s, or 0’s otherwise.
 
 ``` r
+
 # 1. Prepare the raster of temperatures for Turkey (2024)
 tmax_rast_eobs <- terra::rast("EOBS31_tmax_01_2024.tiff") # <- read the raster
 turkey_vect <- rnaturalearth::countries110 |> #ensure CRSs match with `terra::crs()`
@@ -184,6 +188,7 @@ boundaries with default values and we obtain a new raster map with
 default options (i.e., monthly temperature data from WorldClim).
 
 ``` r
+
 peach_fly_suitability_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
                                           model_name = "lactin2",
                                           suitability_threshold = 75)
@@ -208,6 +213,7 @@ obtained a risk map with heat-stress exclusion areas using the
 *tidyterra* package:
 
 ``` r
+
 library(tidyterra)
 library(ggplot2)
 
@@ -262,10 +268,11 @@ zonata* larvae obtained in the previous example.
 First, we manually extract climatic data from WorldClim using the
 `geodata` package, as
 [`map_risk()`](https://ecologyr.github.io/mappestRisk/reference/map_risk.md)
-implicitly does[¹](#fn1). This outputs a raster with average
-temperatures at each month:
+implicitly does[^1]. This outputs a raster with average temperatures at
+each month:
 
 ``` r
+
 worldclim_tavg_turkey <- geodata::worldclim_country(country = "Turkey",
                                                     var = "tavg",
                                                     path = tempdir())
@@ -293,17 +300,19 @@ Next, we iterate over each layer (month) of the raster to calculate, at
 each pixel, whether the average temperature lie within the range defined
 by the thermal suitability boundaries (`peach_fly_suitability_bounds`).
 Since we have an bootstrapped distribution of these values (with
-$n$-simulated values), we iterate the operations for each simulated set
-of boundaries. This results in $n$-binary rasters for each month, i.e.,
-with 0’s (at pixels with no suitability) and 1’s at pixels with
+$`n`$-simulated values), we iterate the operations for each simulated
+set of boundaries. This results in $`n`$-binary rasters for each month,
+i.e., with 0’s (at pixels with no suitability) and 1’s at pixels with
 suitability (those with temperatures within the range defined by the set
-of thermal suitability values at the $i$-^(th) iteration). Finally, for
-each month, we average the value of the $n$-iterated binary rasters.
-This results in a final raster with 12 layers, one for each month, whose
-pixels have a value between 0 and 1 representing the probability of each
-cell to have highly suitable temperatures for the pest at that month.
+of thermal suitability values at the $`i`$-^(th) iteration). Finally,
+for each month, we average the value of the $`n`$-iterated binary
+rasters. This results in a final raster with 12 layers, one for each
+month, whose pixels have a value between 0 and 1 representing the
+probability of each cell to have highly suitable temperatures for the
+pest at that month.
 
 ``` r
+
 ## ADVICE -> this loop may take a while to execute
 for(month_i in 1:12){
   t_rast_i <- turkey_rast_wc[[month_i]] # <- extract each month layer
@@ -343,6 +352,7 @@ larval development of *Bactrocera zonata* at each month.
 
 ``` r
 
+
 # only august and september have probability of pest risk
 months_peach_suitable_positive <- months_peach_suitable[[6:9]]
 ```
@@ -351,6 +361,7 @@ And now we can customize the visualization for the months with
 identified positive risk:
 
 ``` r
+
 palette_lajolla <- (khroma::color(palette = "lajolla", 
                                  reverse = TRUE))(100)
 terra::plot(months_peach_suitable_positive, 
@@ -405,7 +416,7 @@ summation approach, see liu1995) predicted by a fitted TPC under
 variable temperatures throughout the year enables to predict the
 progress of the population as it goes through its life cycle. For
 instance, if a daily average temperature of 25ºC corresponds to a full
-life cycle TPC-estimated rate of $0.05\ \text{days}^{- 1}$, that
+life cycle TPC-estimated rate of $`0.05 \ \textrm{days}^{-1}`$, that
 population will have completed during that day a 5% of the required
 physiological age fulfill its life cycle. One the cumulative rate
 achieves the 100%, a new generation begins. In this example, we apply
@@ -414,9 +425,10 @@ voltinism of *B. zonata* based on nonlinear-TPCs.
 
 First, we apply the standard modelling framework of the `mappestRisk`
 package, in this case for the development data of the total life
-cycle[²](#fn2).
+cycle[^2].
 
 ``` r
+
 # 1. Prepare the raster of temperatures for Turkey (2024)
 tavg_rast_eobs <- terra::rast("EOBS31_tavg_01_2024.tiff")
 turkey_vect <- rnaturalearth::countries110 |> #ensure CRSs match with `terra::crs()`
@@ -450,6 +462,7 @@ Thermal Performance Curve fitted for development rate data of
 *Bactrocera zonata* total life cycle.
 
 ``` r
+
 
 preds_boots_fly <- predict_curves(
   temp = bactrocera_zonata_total$temperature,
@@ -485,6 +498,7 @@ predict daily rates, we use the
 temperature data at each pixel, using the `terra` function `app()`:
 
 ``` r
+
 peach_fly_lactin1 <-  mappestRisk::get_fitted_model(peach_fly_total_tpcs, "lactin1") # <- obtain the model object
 
 generations_peach_fly <- app(
@@ -503,6 +517,7 @@ And now we can customize the visualization of the voltinism map based on
 TPC models for development rate using the `tidyterra` package:
 
 ``` r
+
 
 ggplot() +
   tidyterra::geom_spatraster_contour_filled(data = generations_peach_fly) +
@@ -552,9 +567,8 @@ geographic patterns, recent changes, and implications for organismal
 vulnerabilities.” *Global Change Biology* 22 (12): 3829–42.
 <https://doi.org/10.1111/gcb.13313>.
 
-Choudhary, Jaipal Singh, Santosh S. Mali, Naiyar Naaz, Debu Mukherjee,
-L. Moanaro, Bikash Das, A. K. Singh, M. Srinivasa Rao, and B. P. Bhatt.
-2020. “Predicting the Population Growth Potential of Bactrocera Zonata
+Choudhary, Jaipal Singh, Santosh S. Mali, Naiyar Naaz, et al. 2020.
+“Predicting the Population Growth Potential of Bactrocera Zonata
 (Saunders) (Diptera: Tephritidae) Using Temperature Development Growth
 Models and Their Validation in Fluctuating Temperature Condition.”
 *Phytoparasitica* 48 (1): 1–13.
@@ -582,49 +596,41 @@ Lactin, Derek J., N. J. Holliday, D. L. Johnson, and R. Craigen. 1995.
 Arthropods.” *Environmental Entomology* 24 (1): 68–75.
 <https://doi.org/10.1093/ee/24.1.68>.
 
-Mordecai, Erin A., Jeremy M. Cohen, Michelle V. Evans, Prithvi Gudapati,
-Leah R. Johnson, Catherine A. Lippi, Kerri Miazgowicz, et al. 2017.
+Mordecai, Erin A., Jeremy M. Cohen, Michelle V. Evans, et al. 2017.
 “Detecting the Impact of Temperature on Transmission of Zika, Dengue,
 and Chikungunya Using Mechanistic Models.” *PLOS Neglected Tropical
 Diseases* 11 (4): e0005568.
 <https://doi.org/10.1371/journal.pntd.0005568>.
 
-Shocket, Marta S., Joey R. Bernhardt, Kerri L. Miazgowicz, Alyzeh
-Orakzai, Van M. Savage, Richard J. Hall, Sadie J. Ryan, and Courtney C.
-Murdock. 2025. “Mean Daily Temperatures Predict the Thermal Limits of
-Malaria Transmission Better Than Hourly Rate Summation.” *Nature
-Communications* 16 (1): 3441.
-<https://doi.org/10.1038/s41467-025-58612-w>.
+Shocket, Marta S., Joey R. Bernhardt, Kerri L. Miazgowicz, et al. 2025.
+“Mean Daily Temperatures Predict the Thermal Limits of Malaria
+Transmission Better Than Hourly Rate Summation.” *Nature Communications*
+16 (1): 3441. <https://doi.org/10.1038/s41467-025-58612-w>.
 
-Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, David G. Hall,
-Hossein A. Narouei-Khandan, Jason R. Rohr, and Leah R. Johnson. 2019.
+Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, et al. 2019.
 “Predicting the Fundamental Thermal Niche of Crop Pests and Diseases in
 a Changing World: A Case Study on Citrus Greening.” *Journal of Applied
 Ecology* 56 (8): 2057–68. <https://doi.org/10.1111/1365-2664.13455>.
 
-Ullah, Farman, Ihsan ul Haq, Hina Gul, Ali Güncan, Muhammad Hafeez,
-Kaleem Tariq, Nicolas Desneux, and Zhihong Li. 2022. “Short-Term
+Ullah, Farman, Ihsan ul Haq, Hina Gul, et al. 2022. “Short-Term
 Temperature Stress Modulates Fitness Traits in Bactrocera Zonata,
 Through Negative Impact on Larval Stage.” *Agronomy* 12 (11): 2903.
 <https://doi.org/10.3390/agronomy12112903>.
 
-Vasseur, David A., John P. DeLong, Benjamin Gilbert, Hamish S. Greig,
-Christopher D. G. Harley, Kevin S. McCann, Van Savage, Tyler D. Tunney,
-and Mary I. O’Connor. 2014. “Increased Temperature Variation Poses a
-Greater Risk to Species Than Climate Warming.” *Proceedings of the Royal
-Society B: Biological Sciences* 281 (1779): 20132612.
+Vasseur, David A., John P. DeLong, Benjamin Gilbert, et al. 2014.
+“Increased Temperature Variation Poses a Greater Risk to Species Than
+Climate Warming.” *Proceedings of the Royal Society B: Biological
+Sciences* 281 (1779): 20132612.
 <https://doi.org/10.1098/rspb.2013.2612>.
 
-------------------------------------------------------------------------
-
-1.  Please, note that future releases will incorporate an argument
+[^1]: Please, note that future releases will incorporate an argument
     inside the
     [`map_risk()`](https://ecologyr.github.io/mappestRisk/reference/map_risk.md)
     function to calculate a 12-layer raster instead of the summary
     raster that is now output by default. This will incorporate
     implicitly all the calculations illustrated in this example.
 
-2.  Here we use this limited data (only 4 temperature treatments) for
+[^2]: Here we use this limited data (only 4 temperature treatments) for
     consistency with the examples in this article, but data with five or
     more temperature treatments and data points above the thermal
     optimum (i.e., with observable decay in measured development rate)

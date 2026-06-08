@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Customize your Risk Maps">
 </head>
@@ -120,7 +120,7 @@ of the color palettes and its related code.&lt;/p&gt;"><sup>1</sup></a>).</p>
 <p>First, we will obtain the contour of world countries using
 <code>geodata</code> to place underneath the risk map:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">worldmap_sv</span> <span class="op">&lt;-</span> <span class="fu">geodata</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/geodata/man/world.html" class="external-link">world</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">worldmap_sv</span> <span class="op">&lt;-</span> <span class="fu">geodata</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/geodata/reference/world.html" class="external-link">world</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Then, we will crop it using the boundaries of our risk raster without
 <code>NAs</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -230,20 +230,20 @@ approach as follows:</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-tidyterra" class="csl-entry">
-Hernangómez, Diego. 2023. <span>“Using the
+Hernangómez, Diego. 2023. <em>Using the
 <span></span>Tidyverse<span></span> with <span></span>Terra<span></span>
-Objects: The <span></span>Tidyterra<span></span> Package”</span> 8:
-5751. <a href="https://doi.org/10.21105/joss.05751" class="external-link">https://doi.org/10.21105/joss.05751</a>.
+Objects: The <span></span>Tidyterra<span></span> Package</em>. 8: 5751.
+<a href="https://doi.org/10.21105/joss.05751" class="external-link">https://doi.org/10.21105/joss.05751</a>.
 </div>
 <div id="ref-rasterVis" class="csl-entry">
 Oscar Perpiñán, and Robert Hijmans. 2023.
-<span>“<span></span>rasterVis<span></span>.”</span> <a href="https://oscarperpinan.github.io/rastervis/" class="external-link">https://oscarperpinan.github.io/rastervis/</a>.
+<em><span></span>rasterVis<span></span></em>. <a href="https://oscarperpinan.github.io/rastervis/" class="external-link">https://oscarperpinan.github.io/rastervis/</a>.
 </div>
 <div id="ref-ggplot2" class="csl-entry">
-Wickham, Hadley. 2016. <span>“Ggplot2: Elegant Graphics for Data
-Analysis.”</span> <a href="https://ggplot2.tidyverse.org" class="external-link">https://ggplot2.tidyverse.org</a>.
+Wickham, Hadley. 2016. <em>Ggplot2: Elegant Graphics for Data
+Analysis</em>. <a href="https://ggplot2.tidyverse.org" class="external-link">https://ggplot2.tidyverse.org</a>.
 </div>
 </div>
 </div>

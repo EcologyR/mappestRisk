@@ -1,6 +1,7 @@
 # Generating Risk Maps
 
 ``` r
+
 library(mappestRisk)
 ```
 
@@ -19,7 +20,7 @@ for pest risk assessment based on biological responses to
 temperature(Health (PLH) et al. 2023), nonlinear TPC modelling of
 development rates variation across temperatures, already available after
 decades of experimental data collection, can help inform pest risk
-assessment throughout multiple crop pests[¹](#fn1).
+assessment throughout multiple crop pests[^1].
 
 The approach followed by `mappestRisk` is inspired by the one developed
 by Taylor et al. (2019). These researchers compose a mathematical model
@@ -54,23 +55,24 @@ boundaries at a time. Additionally, it has a `suitability_threshold`
 argument to allow the user to specify which quantile of the TPC is being
 used. In other words, a `suitability_threshold = .75` will calculate the
 two temperature values at which the TPC predicts a value
-$R\left( T_{75} \right) = 0.75 \times \ r_{\max}$ , one at each side of
-the TPC peak. If multiple TPCs are given due to setting the
+$`R(T_{75}) = 0.75\times\ r_\max`$ , one at each side of the TPC peak.
+If multiple TPCs are given due to setting the
 [`predict_curves()`](https://ecologyr.github.io/mappestRisk/reference/predict_curves.md)
 argument `propagate_uncertainty` to `TRUE`, two boundaries will be
 calculated for each TPC. This function outputs a `tibble` with the
 thermal suitability boundaries for each curve.
 
 Note that setting `suitability_threshold` to `0` will yield the thermal
-limits of the complete TPC, i.e., the $CT_{\min}$ and the $CT_{\max}$.
+limits of the complete TPC, i.e., the $`CT_\min`$ and the $`CT_\max`$.
 While the map resulting from default (.75) or similar threshold measures
 indicates severe risk (populations may rapidly develop), maps from
 permissive measures such as critical thermal limits may rather indicate
 risk of the pest to find a refuge in the selected region.
 
-Here we provide a example[²](#fn2):
+Here we provide a example[^2]:
 
 ``` r
+
 #fit previously:
 data("aphid")
 fitted_tpcs_aphid <- fit_devmodels(temp = aphid$temperature,
@@ -87,6 +89,7 @@ preds_boots_aphid <- predict_curves(temp = aphid$temperature,
 
 ``` r
 
+
 boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,       
                                       model_name = "lactin2",        
                                       suitability_threshold = 80) 
@@ -95,6 +98,7 @@ boundaries_aphid <- therm_suit_bounds(preds_tbl = preds_boots_aphid,
 The output has the following aspect:
 
 ``` r
+
 print(boundaries_aphid)
 #> # A tibble: 11 × 6
 #>    model_name suitability tval_left tval_right pred_suit iter    
@@ -136,13 +140,13 @@ The workflow of the function is as follows:
     resolution or ~4.625km at the equator by default. If the `region`
     argument is a string with any country name available in
     `data(country_names)`, the function calls
-    [`geodata::worldclim_country()`](https://rdrr.io/pkg/geodata/man/worldclim.html).
+    [`geodata::worldclim_country()`](https://rspatial.github.io/geodata/reference/worldclim.html).
     Alternatively, if the `region` argument is either a `SpatExtent`, a
     vector with the numeric boundaries of this spatial extent or a `sf`
     or `SpatVector` object –i.e., polygons, the
     [`map_risk()`](https://ecologyr.github.io/mappestRisk/reference/map_risk.md)
     function will download data for the entire world using
-    [`geodata::worldclim_global()`](https://rdrr.io/pkg/geodata/man/worldclim.html)[³](#fn3).
+    [`geodata::worldclim_global()`](https://rspatial.github.io/geodata/reference/worldclim.html)[^3].
 2.  **Spatial operations**: Once the temperature raster is available
     (either through user-input in `t_rast` or by downloading from
     WorldClim), the
@@ -216,6 +220,7 @@ download data cropped for this country. In this case, we will use
 
 ``` r
 
+
 # Create a Risk Map for Bhutan
 
 risk_rast_bhutan <- map_risk(t_vals = boundaries_aphid, 
@@ -253,9 +258,10 @@ projection that is used by default in
 [`map_risk()`](https://ecologyr.github.io/mappestRisk/reference/map_risk.md)
 function. First, let’s convert the numeric extent into a `SpatExtent`
 using
-[`terra::ext()`](https://rspatial.github.io/terra/reference/ext.html)[⁴](#fn4):
+[`terra::ext()`](https://rspatial.github.io/terra/reference/ext.html)[^4]:
 
 ``` r
+
 bhutan_spatextent <- terra::ext(risk_rast_bhutan)
 ```
 
@@ -263,6 +269,7 @@ Then, we would apply the same function as before for the `aphid`
 workflow, with the new `region` argument set to `"bhutan_spatextent"`.
 
 ``` r
+
 risk_rast_bhutan_v2 <- map_risk(t_vals = boundaries_aphid, 
                                 path = tempdir(), # directory to download data 
                                 region = bhutan_spatextent,    
@@ -293,6 +300,7 @@ function will automatically transform it for the climate extraction and
 the procedure performs similar to the previous examples:
 
 ``` r
+
 worldmap_sv <- terra::unwrap(readRDS("gadm36_adm0_r5_pk.rds"))
 
 bhutan_sv <- worldmap_sv |> 
@@ -313,61 +321,52 @@ Amarasekare, Priyanga, and Van Savage. 2012. “A framework for
 elucidating the temperature dependence of fitness.” *The American
 Naturalist* 179 (2): 178–91. <https://doi.org/10.1086/663677>.
 
-Frerebeau, Nicolas. 2025. “Khroma: Colour Schemes for Scientific Data
-Visualization.” <https://doi.org/10.5281/zenodo.1472077>.
+Frerebeau, Nicolas. 2025. *Khroma: Colour Schemes for Scientific Data
+Visualization*. <https://doi.org/10.5281/zenodo.1472077>.
 
-Health (PLH), EFSA Panel on Plant, Claude Bragard, Paula Baptista,
-Elisavet Chatzivassiliou, Francesco Di Serio, Paolo Gonthier, Josep
-Anton Jaques Miret, et al. 2023. “Assessment of the Probability of
-Introduction of Thaumatotibia Leucotreta into the European Union with
-Import of Cut Roses.” *EFSA Journal* 21 (10): e08107.
+Health (PLH), EFSA Panel on Plant, Claude Bragard, Paula Baptista, et
+al. 2023. “Assessment of the Probability of Introduction of
+Thaumatotibia Leucotreta into the European Union with Import of Cut
+Roses.” *EFSA Journal* 21 (10): e08107.
 <https://doi.org/10.2903/j.efsa.2023.8107>.
 
-Health (PLH), EFSA Panel on Plant, Michael Jeger, Claude Bragard, David
-Caffier, Thierry Candresse, Elisavet Chatzivassiliou, Katharina
-Dehnen-Schmutz, et al. 2017. “Pest Categorisation of Spodoptera
-Frugiperda.” *EFSA Journal* 15 (7): e04927.
-<https://doi.org/10.2903/j.efsa.2017.4927>.
+Health (PLH), EFSA Panel on Plant, Michael Jeger, Claude Bragard, et al.
+2017. “Pest Categorisation of Spodoptera Frugiperda.” *EFSA Journal* 15
+(7): e04927. <https://doi.org/10.2903/j.efsa.2017.4927>.
 
 Hijmans, Robert J., Márcia Barbosa, Aniruddha Ghosh, and Alex Mandel.
 2024. *Geodata: Download Geographic Data*.
 <https://cran.r-project.org/web/packages/geodata/index.html>.
 
-Pawar, Samraat, Paul J. Huxley, Thomas R. C. Smallwood, Miles L. Nesbit,
-Alex H. H. Chan, Marta S. Shocket, Leah R. Johnson, Dimitrios-Georgios
-Kontopoulos, and Lauren J. Cator. 2024. “Variation in Temperature of
-Peak Trait Performance Constrains Adaptation of Arthropod Populations to
-Climatic Warming.” *Nature Ecology & Evolution*, January, 1–11.
+Pawar, Samraat, Paul J. Huxley, Thomas R. C. Smallwood, et al. 2024.
+“Variation in Temperature of Peak Trait Performance Constrains
+Adaptation of Arthropod Populations to Climatic Warming.” *Nature
+Ecology & Evolution*, January 25, 1–11.
 <https://doi.org/10.1038/s41559-023-02301-8>.
 
-Simmonds, Emily G., Kwaku Peprah Adjei, Christoffer Wold Andersen, Janne
-Cathrin Hetle Aspheim, Claudia Battistin, Nicola Bulso, Hannah M.
-Christensen, et al. 2022. “Insights into the Quantification and
-Reporting of Model-Related Uncertainty Across Different Disciplines.”
-*iScience* 25 (12): 105512.
-<https://doi.org/10.1016/j.isci.2022.105512>.
+Simmonds, Emily G., Kwaku Peprah Adjei, Christoffer Wold Andersen, et
+al. 2022. “Insights into the Quantification and Reporting of
+Model-Related Uncertainty Across Different Disciplines.” *iScience* 25
+(12): 105512. <https://doi.org/10.1016/j.isci.2022.105512>.
 
-Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, David G. Hall,
-Hossein A. Narouei-Khandan, Jason R. Rohr, and Leah R. Johnson. 2019.
+Taylor, Rachel A., Sadie J. Ryan, Catherine A. Lippi, et al. 2019.
 “Predicting the Fundamental Thermal Niche of Crop Pests and Diseases in
 a Changing World: A Case Study on Citrus Greening.” *Journal of Applied
 Ecology* 56 (8): 2057–68. <https://doi.org/10.1111/1365-2664.13455>.
 
-------------------------------------------------------------------------
-
-1.  For theoretical insights on the relationship between development
+[^1]: For theoretical insights on the relationship between development
     rate TPCs and other population growth rates approximating fitness,
     see (Pawar et al. 2024; Amarasekare and Savage 2012).
 
-2.  Warnings have been omitted to avoid overwhelming information in the
-    article, but they usually refer to TPC simulations yielding `NA`
+[^2]: Warnings have been omitted to avoid overwhelming information in
+    the article, but they usually refer to TPC simulations yielding `NA`
     values for thermal suitability boundaries (see “chopped” simulation
     curves in the `plot_uncertainty()` output in [Simulate TPCs with
     bootstrap to propagate
     uncertainty](https://ecologyr.github.io/mappestRisk/articles/articles/tpcs-simulate-bootstrap.md)article.
 
-3.  We recommend to think carefully where to extract data since a simple
-    call to
+[^3]: We recommend to think carefully where to extract data since a
+    simple call to
     [`map_risk()`](https://ecologyr.github.io/mappestRisk/reference/map_risk.md)
     without a country name will download ~450MB of climate data with
     default conditions (`res = 2.5`). Note that the `path` argument must
@@ -377,7 +376,7 @@ Ecology* 56 (8): 2057–68. <https://doi.org/10.1111/1365-2664.13455>.
     [`tempdir()`](https://rdrr.io/r/base/tempfile.html) is recommended
     to avoid large data storage.
 
-4.  Note that
+[^4]: Note that
     [`map_risk()`](https://ecologyr.github.io/mappestRisk/reference/map_risk.md)
     will also work for a numeric vector with this four values, so using
     [`terra::ext()`](https://rspatial.github.io/terra/reference/ext.html)

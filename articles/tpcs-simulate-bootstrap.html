@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulate TPCs with bootstrap to propagate uncertainty">
 </head>
@@ -101,30 +101,30 @@ addressed in forecasts:</p>
 parameters of the models may affect the confidence of the predictions.
 For example in the <a href="articles/tpcs-model-fitting.html">TPCs model
 fitting</a> article, the <code>briere2</code> model yields
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mo>max</mo></msub><mo>=</mo><mn>36.5</mn><mo>±</mo><mn>3.40</mn><mspace width="0.222em"></mspace><mtext mathvariant="normal">ºC</mtext></mrow><annotation encoding="application/x-tex">CT_\max=36.5\pm3.40 \ \textrm{ºC}</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mi mathvariant="normal">max</mi></msub><mo>=</mo><mn>36.5</mn><mo>±</mo><mn>3.40</mn><mspace width="0.222em"></mspace><mtext mathvariant="normal">ºC</mtext></mrow><annotation encoding="application/x-tex">CT_\max=36.5\pm3.40 \ \textrm{ºC}</annotation></semantics></math>.
 Let’s imagine a forecaster aiming to identify “safe” regions where the
 pest may not be established due to extremely high maximum temperatures
 (e.g.,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mo>max</mo></msub><mo>&gt;</mo><msub><mover><mrow><mi>C</mi><mi>T</mi></mrow><mo accent="true">‾</mo></mover><mo>max</mo></msub></mrow><annotation encoding="application/x-tex">T_\max &gt; \bar{CT}_\max</annotation></semantics></math>).
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi mathvariant="normal">max</mi></msub><mo>&gt;</mo><msub><mover><mrow><mi>C</mi><mi>T</mi></mrow><mo accent="true">‾</mo></mover><mi mathvariant="normal">max</mi></msub></mrow><annotation encoding="application/x-tex">T_\max &gt; \bar{CT}_\max</annotation></semantics></math>).
 It’s possible that all the forecasting regions have monthly maximum
 temperatures of about 34ºC, which lie below the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mo>max</mo></msub></mrow><annotation encoding="application/x-tex">CT_\max</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mi mathvariant="normal">max</mi></msub></mrow><annotation encoding="application/x-tex">CT_\max</annotation></semantics></math>
 estimate of 36.5 ºC, leading to identify no risk for the assessment.
 However, if we incorporate how the uncertainty of each parameter
 contributes to the variability of the predicted TPC with simulated TPC
 ribbons in the plot –see e.g., below with
 <code><a href="../reference/plot_uncertainties.html">plot_uncertainties()</a></code>, there are possible scenarios at which
 several TPC-calculated
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mo>max</mo></msub></mrow><annotation encoding="application/x-tex">CT_\max</annotation></semantics></math>’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mi mathvariant="normal">max</mi></msub></mrow><annotation encoding="application/x-tex">CT_\max</annotation></semantics></math>’s
 lie below 34ºC, yielding a not-negligible risk likelihood.</li>
 <li>
 <strong>Predictor uncertainty:</strong> incorporating the
 variability of the predictor –in the above case, monthly maximum
 temperatures– will also yield a probability distribution of forecast
 outcomes (let’s say
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mo>max</mo></msub><mo>=</mo><mn>34</mn><mtext mathvariant="normal">ºC</mtext><mo>,</mo><mspace width="0.222em"></mspace><mi>C</mi><mi>I</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>31.2</mn><mo>,</mo><mn>36.8</mn><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">T_\max = 34 \textrm{ºC}, \ CI =[31.2, 36.8]</annotation></semantics></math>).
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi mathvariant="normal">max</mi></msub><mo>=</mo><mn>34</mn><mtext mathvariant="normal">ºC</mtext><mo>,</mo><mspace width="0.222em"></mspace><mi>C</mi><mi>I</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>31.2</mn><mo>,</mo><mn>36.8</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">T_\max = 34 \textrm{ºC}, \ CI =[31.2, 36.8]</annotation></semantics></math>).
 This would result in some scenarios with maximum temperatures above
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mo>max</mo></msub></mrow><annotation encoding="application/x-tex">CT_\max</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>T</mi><mi mathvariant="normal">max</mi></msub></mrow><annotation encoding="application/x-tex">CT_\max</annotation></semantics></math>
 estimate of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>36.5</mn><annotation encoding="application/x-tex">36.5</annotation></semantics></math>ºC
 and some others where they have not.</li>
@@ -140,14 +140,12 @@ parameter uncertainty by simulating
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
 TPCs using bootstrapping techniques with residual resampling, as
 suggested and implemented by <code>rTPC</code> package (see <a href="https://padpadpadpad.github.io/rTPC/articles/bootstrapping_many_curves.html" class="external-link">this
-vignette/article</a> <span class="citation">(Padfield, O’Sullivan, and
-Windram 2025)</span>) as described in the section below. Measurement
-uncertainty of source data might be further incorporated in future
-enhancement updates of the package through a <code>weights</code>
-argument of <code><a href="../reference/fit_devmodels.html">fit_devmodels()</a></code> and
-<code><a href="../reference/predict_curves.html">predict_curves()</a></code> <span class="citation">(Padfield,
-O’Sullivan, and Pawar 2021)</span> since they are based on the
-<code>rTPC</code> - <code>nls.multstart</code> framework that has
+vignette/article</a> <span class="citation">(Padfield et al.
+2025)</span>) as described in the section below. Measurement uncertainty
+of source data might be further incorporated in future enhancement
+updates of the package through a <code>weights</code> argument of
+<code><a href="../reference/fit_devmodels.html">fit_devmodels()</a></code> and <code><a href="../reference/predict_curves.html">predict_curves()</a></code> <span class="citation">(Padfield et al. 2021)</span> since they are based on
+the <code>rTPC</code> - <code>nls.multstart</code> framework that has
 recently incorporated an <a href="https://padpadpadpad.github.io/rTPC/articles/weighted_bootstrapping.html" class="external-link">article
 on how to simulate curves by weighted bootstrapping</a>. Finally, a
 discussion on how to deal with predictor uncertainty of the forecasts
@@ -298,7 +296,7 @@ procedures.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-padfield2021" class="csl-entry">
 Padfield, Daniel, Hannah O’Sullivan, and Samraat Pawar. 2021.
 <span>“rTPC and Nls.multstart: A New Pipeline to Fit Thermal Performance
@@ -307,20 +305,18 @@ Curves in r.”</span> <em>Methods in Ecology and Evolution</em> 12 (6):
 </div>
 <div id="ref-rTPC" class="csl-entry">
 Padfield, Daniel, Hannah O’Sullivan, and Francis Windram. 2025.
-<span>“rTPC: Fitting and Analysing Thermal Performance Curves.”</span>
-<a href="https://github.com/padpadpadpad/rTPC" class="external-link">https://github.com/padpadpadpad/rTPC</a>.
+<em>rTPC: Fitting and Analysing Thermal Performance Curves</em>. <a href="https://github.com/padpadpadpad/rTPC" class="external-link">https://github.com/padpadpadpad/rTPC</a>.
 </div>
 <div id="ref-simmonds2022" class="csl-entry">
-Simmonds, Emily G., Kwaku Peprah Adjei, Christoffer Wold Andersen, Janne
-Cathrin Hetle Aspheim, Claudia Battistin, Nicola Bulso, Hannah M.
-Christensen, et al. 2022. <span>“Insights into the Quantification and
-Reporting of Model-Related Uncertainty Across Different
-Disciplines.”</span> <em>iScience</em> 25 (12): 105512. <a href="https://doi.org/10.1016/j.isci.2022.105512" class="external-link">https://doi.org/10.1016/j.isci.2022.105512</a>.
+Simmonds, Emily G., Kwaku Peprah Adjei, Christoffer Wold Andersen, et
+al. 2022. <span>“Insights into the Quantification and Reporting of
+Model-Related Uncertainty Across Different Disciplines.”</span>
+<em>iScience</em> 25 (12): 105512. <a href="https://doi.org/10.1016/j.isci.2022.105512" class="external-link">https://doi.org/10.1016/j.isci.2022.105512</a>.
 </div>
 <div id="ref-sonderegger2020" class="csl-entry">
-Sonderegger, Derek L., and Robert Buscaglia. 2020. <span>“Appendix a :
+Sonderegger, Derek L., and Robert Buscaglia. 2020. <em>Appendix a :
 Resampling Linear Models | Introduction to Statistical Methodology,
-Second Edition.”</span> In. Bookdown. <a href="https://bookdown.org/dereksonderegger/570/appendix-a-resampling-linear-models.html" class="external-link">https://bookdown.org/dereksonderegger/570/appendix-a-resampling-linear-models.html</a>.
+Second Edition</em>. Bookdown. <a href="https://bookdown.org/dereksonderegger/570/appendix-a-resampling-linear-models.html" class="external-link">https://bookdown.org/dereksonderegger/570/appendix-a-resampling-linear-models.html</a>.
 </div>
 <div id="ref-woods2018" class="csl-entry">
 Woods, H. Arthur, Joel G. Kingsolver, Samuel B. Fey, and David A.

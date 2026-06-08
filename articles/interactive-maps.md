@@ -27,6 +27,7 @@ using the **leaflet** ecosystem in R.
 ## Setup
 
 ``` r
+
 library(mappestRisk)
 library(leaflet)
 library(leafem)
@@ -55,6 +56,7 @@ function. The typical steps of the mappestRisk workflow include:
 - First, we obtained the layers and create several custom palettes.
 
 ``` r
+
 risk <- risk_rast[["mean"]]
 uncertainty <- risk_rast[["sd"]]
 
@@ -103,6 +105,7 @@ facilitate data exploration:
   predictions.
 
 ``` r
+
 m <- leaflet() |>
   addProviderTiles(providers$CartoDB.Positron, group = "Basemap") |>
   addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") |>
@@ -179,6 +182,7 @@ The function
 self-contained HTML file that includes all necessary dependencies.
 
 ``` r
+
 outfile <- file.path(tempdir(), "interactive_map.html")
 
 htmlwidgets::saveWidget(

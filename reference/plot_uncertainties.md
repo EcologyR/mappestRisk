@@ -81,7 +81,7 @@ Entomol. Soc. Am.* 95: 597-602.
 
 `browseVignettes("rTPC")` for model names, start values searching
 workflows, and bootstrapping procedures using both
-[`rTPC::get_start_vals()`](https://rdrr.io/pkg/rTPC/man/get_start_vals.html)
+[`rTPC::get_start_vals()`](https://padpadpadpad.github.io/rTPC/reference/get_start_vals.html)
 and
 [`nls.multstart::nls_multstart()`](https://rdrr.io/pkg/nls.multstart/man/nls_multstart.html)
 

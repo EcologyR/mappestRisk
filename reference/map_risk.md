@@ -45,7 +45,7 @@ map_risk(
   with monthly mean temperatures for the region of interest. If not
   provided, global WorldClim raster layers will be automatically
   (down)loaded using
-  [`geodata::worldclim_global()`](https://rdrr.io/pkg/geodata/man/worldclim.html),
+  [`geodata::worldclim_global()`](https://rspatial.github.io/geodata/reference/worldclim.html),
   and cropped to `region` (if provided). Note that the download can be
   slow the first time you use the function in a new `path`. If you get a
   download error, consider running e.g `options(timeout = 500)` (or
@@ -79,7 +79,7 @@ map_risk(
 - res:
 
   Argument to pass to
-  [`geodata::worldclim_global()`](https://rdrr.io/pkg/geodata/man/worldclim.html)
+  [`geodata::worldclim_global()`](https://rspatial.github.io/geodata/reference/worldclim.html)
   specifying the spatial resolution for the raster maps to download, if
   `t_rast` is not provided. The default is 2.5 arc-minutes. Beware that
   lower values (e.g., 0.5) may lead to extremely heavy data sets and
@@ -88,11 +88,11 @@ map_risk(
 - path:
 
   Argument to pass to
-  [`geodata::worldclim_global()`](https://rdrr.io/pkg/geodata/man/worldclim.html)
+  [`geodata::worldclim_global()`](https://rspatial.github.io/geodata/reference/worldclim.html)
   (if `t_rast` is not provided) and/or to
-  [`geodata::world()`](https://rdrr.io/pkg/geodata/man/world.html) (if
-  `region` is a vector of country names) specifying the folder path for
-  the downloaded maps.
+  [`geodata::world()`](https://rspatial.github.io/geodata/reference/world.html)
+  (if `region` is a vector of country names) specifying the folder path
+  for the downloaded maps.
 
 - mask:
 
