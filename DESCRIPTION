@@ -31,11 +31,7 @@ Depends:
 LazyData: true
 Suggests: 
     covr,
-    htmlwidgets,
-    knitr,
-    leafem,
     leaflet,
-    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
