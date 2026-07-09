@@ -8,7 +8,7 @@ Authors@R: c(
       comment = c(ORCID = "0000-0001-8972-7713")),
     person("Antonio Jesús", "Pérez-Luque", role = c("aut", "cph"),
       email = "ajpelu@gmail.com", comment = c(ORCID = "0000-0002-1747-0469")),
-    person("Francisco", "Rodríguez-Sánchez", role = c("aut", "cph"),
+    person("Francisco", "Rodriguez-Sanchez", role = c("aut", "cph"),
       email = "f.rodriguez.sanc@gmail.com", comment = c(ORCID = "0000-0002-7981-1599")))
 Description: There are three different modules: (1) model fitting and selection 
     using a set of the most commonly used equations describing developmental 
@@ -24,7 +24,6 @@ Description: There are three different modules: (1) model fitting and selection
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 URL: https://github.com/EcologyR/mappestRisk, https://ecologyr.github.io/mappestRisk/
 BugReports: https://github.com/EcologyR/mappestRisk/issues
 Depends: 
@@ -47,3 +46,4 @@ Imports:
     terra,
     tidyr
 Config/Needs/website: rmarkdown
+Config/roxygen2/version: 8.0.0

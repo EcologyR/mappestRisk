@@ -1,7 +1,6 @@
 bibentry(
-  bibtype  = "Manual",
-  title    = "mappestRisk: An R package for modelling and mapping risk of pest development based on
-  known thermal limits",
+  bibtype  = "Article",
+  title    = "mappestRisk: an R package for modelling and mapping risk of crop pest development based on their thermal biology",
   author   =  c(
     person("Darío", "San-Segundo Molina", role = c("aut", "cre"),
       email = "dario.ssm2@gmail.com", comment = c(ORCID = "0000-0002-7831-9623")),
@@ -9,14 +8,14 @@ bibentry(
       comment = c(ORCID = "0000-0001-8972-7713")),
     person("Antonio Jesús", "Pérez-Luque", role = c("aut"),
       email = "ajpelu@gmail.com", comment = c(ORCID = "0000-0002-1747-0469")),
-    person("Francisco", "Rodríguez-Sánchez", role = c("aut"),
+    person("Francisco", "Rodriguez-Sanchez", role = c("aut"),
       email = "f.rodriguez.sanc@gmail.com", comment = c(ORCID = "0000-0002-7981-1599"))
   ),
-#  journal  = ,
-  year     = "2025",
-#  volume   = ,
+  journal  = "PeerJ",
+  year     = "2026",
+  volume   = "14",
 #  number   = ,
-#  pages    = ,
-#  doi      =
+  pages    = "e21428",
+  doi      = "https://doi.org/10.7717/peerj.21428",
   url = "https://ecologyr.github.io/mappestRisk/"
 )

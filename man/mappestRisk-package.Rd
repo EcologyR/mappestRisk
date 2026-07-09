@@ -24,9 +24,10 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Darío San-Segundo Molina \email{dario.ssm2@gmail.com} (\href{https://orcid.org/0000-0002-7831-9623}{ORCID}) [copyright holder]
   \item A. Márcia Barbosa (\href{https://orcid.org/0000-0001-8972-7713}{ORCID}) [copyright holder]
   \item Antonio Jesús Pérez-Luque \email{ajpelu@gmail.com} (\href{https://orcid.org/0000-0002-1747-0469}{ORCID}) [copyright holder]
-  \item Francisco Rodríguez-Sánchez \email{f.rodriguez.sanc@gmail.com} (\href{https://orcid.org/0000-0002-7981-1599}{ORCID}) [copyright holder]
+  \item Francisco Rodriguez-Sanchez \email{f.rodriguez.sanc@gmail.com} (\href{https://orcid.org/0000-0002-7981-1599}{ORCID}) [copyright holder]
 }
 
 }

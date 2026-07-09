@@ -17,7 +17,7 @@ map_risk(
 )
 }
 \arguments{
-\item{t_vals}{a \code{data.frame} or \code{\link[dplyr:reexports]{dplyr::tibble()}} as produced by \code{\link[=therm_suit_bounds]{therm_suit_bounds()}}.
+\item{t_vals}{a \code{data.frame} or \code{\link[dplyr:tibble]{dplyr::tibble()}} as produced by \code{\link[=therm_suit_bounds]{therm_suit_bounds()}}.
 \code{t_vals} must contain results derived from a single model.
 It must contain at least one row of numeric values.
 Additionally, the minimum ("left") thermal boundary or \code{tval_left}
@@ -25,32 +25,32 @@ must be lower than the maximum ("right") one, or \code{tval_right} for all rows.
 Nominative columns must be present in the input (i.e., \code{model_name},
 \code{suitability}, \code{pred_suit} and \code{iter}).}
 
-\item{t_rast}{Optional 12-layer \code{\link[terra:SpatRaster-class]{terra::SpatRaster()}} with monthly mean
+\item{t_rast}{Optional 12-layer \code{\link[terra:SpatRaster]{terra::SpatRaster()}} with monthly mean
 temperatures for the region of interest. If not provided, global
 WorldClim raster layers will be automatically (down)loaded
-using \code{\link[geodata:worldclim]{geodata::worldclim_global()}}, and cropped to \code{region} (if provided).
+using \code{\link[geodata:worldclim_global]{geodata::worldclim_global()}}, and cropped to \code{region} (if provided).
 Note that the download can be slow the first time you use the function in a new
 \code{path}. If you get a download error, consider running e.g \code{options(timeout = 500)} (or more).}
 
 \item{region}{Optional object specifying the region to map. Must overlap the
-extent of \code{t_rast} if both are provided. Can be a \code{\link[terra:SpatVector-class]{terra::SpatVector()}}
+extent of \code{t_rast} if both are provided. Can be a \code{\link[terra:SpatVector]{terra::SpatVector()}}
 polygon (obtained with \code{\link[terra:vect]{terra::vect()}}); or an \code{sf} polygon,
-in which case it will be coerced with \code{\link[terra:vect]{terra::vect()}}) to a \code{\link[terra:SpatVector-class]{terra::SpatVector()}};
+in which case it will be coerced with \code{\link[terra:vect]{terra::vect()}}) to a \code{\link[terra:SpatVector]{terra::SpatVector()}};
 or a character vector of country
 name(s) in English (see \link{country_names}), in which case climate maps will be
-downloaded for those countries; or a \code{\link[terra:SpatExtent-class]{terra::SpatExtent()}} object (obtained with
+downloaded for those countries; or a \code{\link[terra:SpatExtent]{terra::SpatExtent()}} object (obtained with
 \code{\link[terra:ext]{terra::ext()}}); or a numeric vector of length 4 specifying the region
 coordinates as follows: \code{c(xmin, xmax, ymin, ymax)}. The latter two must be in
 the same CRS as\code{t_rast} if \code{t_rast} is provided, or in unprojected lon-lat
 coordinates (WGS84, EPSG:4326) otherwise. If NULL, the output maps will
 cover the entire \code{t_rast} if provided, or the entire world otherwise.}
 
-\item{res}{Argument to pass to \code{\link[geodata:worldclim]{geodata::worldclim_global()}} specifying
+\item{res}{Argument to pass to \code{\link[geodata:worldclim_global]{geodata::worldclim_global()}} specifying
 the spatial resolution for the raster maps to download, if \code{t_rast} is not
 provided. The default is 2.5 arc-minutes. Beware that lower values (e.g., 0.5)
 may lead to extremely heavy data sets and large computation times.}
 
-\item{path}{Argument to pass to \code{\link[geodata:worldclim]{geodata::worldclim_global()}} (if \code{t_rast}
+\item{path}{Argument to pass to \code{\link[geodata:worldclim_global]{geodata::worldclim_global()}} (if \code{t_rast}
 is not provided) and/or to \code{\link[geodata:world]{geodata::world()}} (if \code{region} is a vector of
 country names) specifying the folder path for the downloaded maps.}
 
@@ -64,14 +64,14 @@ what the function is doing at possibly slow steps. The default is FALSE.
 Setting it to TRUE can be useful for checking progress when maps are large.}
 
 \item{plot}{Logical value specifying whether to plot the results in a map.
-Defaults to TRUE. Note that the function will always return a \code{\link[terra:SpatRaster-class]{terra::SpatRaster()}}
+Defaults to TRUE. Note that the function will always return a \code{\link[terra:SpatRaster]{terra::SpatRaster()}}
 object even if \code{plot = TRUE}.}
 
 \item{interactive}{Logical value specifying whether the plotted map should be
 interactive (if plot=TRUE). The default is TRUE if the 'leaflet' package is installed.}
 }
 \value{
-This function returns a \code{\link[terra:SpatRaster-class]{terra::SpatRaster()}} with up to 2 layers:
+This function returns a \code{\link[terra:SpatRaster]{terra::SpatRaster()}} with up to 2 layers:
 the (\code{\link[=mean]{mean()}}) number of months with temperature within the species' thermal
 bounds; and (if \code{t_vals} has >1 rows) the standard deviation (\code{\link[stats:sd]{stats::sd()}}) around
 that mean.
