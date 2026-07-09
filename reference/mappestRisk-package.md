@@ -32,11 +32,14 @@ Useful links:
 
 Authors:
 
+- Darío San-Segundo Molina <dario.ssm2@gmail.com>
+  ([ORCID](https://orcid.org/0000-0002-7831-9623)) \[copyright holder\]
+
 - A. Márcia Barbosa ([ORCID](https://orcid.org/0000-0001-8972-7713))
   \[copyright holder\]
 
 - Antonio Jesús Pérez-Luque <ajpelu@gmail.com>
   ([ORCID](https://orcid.org/0000-0002-1747-0469)) \[copyright holder\]
 
-- Francisco Rodríguez-Sánchez <f.rodriguez.sanc@gmail.com>
+- Francisco Rodriguez-Sanchez <f.rodriguez.sanc@gmail.com>
   ([ORCID](https://orcid.org/0000-0002-7981-1599)) \[copyright holder\]

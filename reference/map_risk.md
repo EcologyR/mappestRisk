@@ -28,7 +28,7 @@ map_risk(
 - t_vals:
 
   a `data.frame` or
-  [`dplyr::tibble()`](https://dplyr.tidyverse.org/reference/reexports.html)
+  [`dplyr::tibble()`](https://tibble.tidyverse.org/reference/tibble.html)
   as produced by
   [`therm_suit_bounds()`](https://ecologyr.github.io/mappestRisk/reference/therm_suit_bounds.md).
   `t_vals` must contain results derived from a single model. It must
