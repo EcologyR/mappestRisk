@@ -122,5 +122,131 @@ test_that("`therm_suit_bounds()` should give a warning recommending uncertainty 
                             "No bootstrapped predictions were performed.\n    We strongly recommend to propagate uncertainty by setting the `predict_curves()`\n            arguments to `propagate_uncertainty = TRUE` and `n_boots_samples = 100`")
             })
 
+test_that("`therm_suit_bounds()` sets suitability_threshold to 5 when a value below 5 is provided", {
 
+  pool_warns <- capture_warnings(
+    bounds_5 <- therm_suit_bounds(
+      preds_tbl = curves,
+      model_name = "lactin2",
+      suitability_threshold = 2
+    )
+  )
 
+  expect_true(
+    any(grepl(
+      "`suitability_threshold` values below 5% are not allowed",
+      pool_warns,
+      fixed = TRUE
+    ))
+  )
+
+  expect_equal(
+    bounds_5$suitability,
+    rep("5%", 3)
+  )
+})
+
+test_that("`therm_suit_bounds()` sets suitability_threshold to 5 when a value below 5 is provided", {
+
+  pool_warns <- capture_warnings(
+    bounds_0 <- therm_suit_bounds(
+      preds_tbl = curves,
+      model_name = "lactin2",
+      suitability_threshold = 0
+    )
+  )
+
+  expect_true(
+    any(grepl(
+      "`suitability_threshold` values below 5% are not allowed",
+      pool_warns,
+      fixed = TRUE
+    ))
+  )
+
+  expect_equal(
+    bounds_0$suitability,
+    rep("5%", 3)
+  )
+})
+
+test_that("`therm_suit_bounds()` works with suitability_threshold = 'OPS'", {
+
+  bounds_ops <- expect_no_error(
+    therm_suit_bounds(
+      preds_tbl = curves,
+      model_name = "lactin2",
+      suitability_threshold = "OPS"
+    )
+  )
+
+  expect_equal(
+    bounds_ops$model_name,
+    rep("lactin2", 3)
+  )
+
+  expect_equal(
+    bounds_ops$iter,
+    c("1", "2", "estimate")
+  )
+
+  expect_equal(
+    bounds_ops$suitability,
+    rep("OPS", 3)
+  )
+
+  expect_type(bounds_ops$tval_left, "double")
+  expect_type(bounds_ops$tval_right, "double")
+  expect_type(bounds_ops$pred_suit, "double")
+})
+
+test_that("`therm_suit_bounds()` errors when suitability_threshold is invalid", {
+
+  expect_error(
+    therm_suit_bounds(
+      preds_tbl = curves,
+      model_name = "lactin2",
+      suitability_threshold = "foo"
+    ),
+    "`suitability_threshold` must be numeric or equal to 'OPS'",
+    fixed = TRUE
+  )
+})
+
+test_that("`therm_suit_bounds()` errors when multiple suitability thresholds are provided", {
+
+  expect_error(
+    therm_suit_bounds(
+      preds_tbl = curves,
+      model_name = "lactin2",
+      suitability_threshold = c(50, 75)
+    )
+  )
+})
+
+test_that("`bounds_iter()` accepts model_name explicitly for OPS calculations", {
+
+  boot_iter <- curves |>
+    dplyr::filter(
+      model_name == "lactin2",
+      boot_iter == 1
+    ) |>
+    dplyr::mutate(
+      model = model_name,
+      iter = as.character(boot_iter)
+    )
+
+  result <- expect_no_error(
+    bounds_iter(
+      df = boot_iter,
+      suit_threshold = "OPS",
+      model_iter = "lactin2"
+    )
+  )
+
+  expect_true(is.data.frame(result))
+  expect_equal(nrow(result), 1)
+  expect_type(result$tval_left, "double")
+  expect_type(result$tval_right, "double")
+  expect_type(result$pred_suit, "double")
+})

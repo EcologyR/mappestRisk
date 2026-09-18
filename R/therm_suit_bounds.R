@@ -17,7 +17,14 @@
 #' For instance, setting `suitability_threshold` to 80 identifies the top 20%
 #' (or quantile 80) of the maximum values of the development rate predicted by
 #' the chosen TPC model. If `suitability_threshold` equals 100, the function
-#' returns the optimum temperature for development rate.
+#' returns the optimum temperature for development rate. Alternatively,
+#' `suitability_threshold` can be set to "OPS" to calculate an interval of
+#' values between the quantile-50 by the left of the thermal optimum and the
+#' thermal optimum itself. This TPC region name comes from
+#' "Optimal Performance Safe". By "safe", we refer to temperatures at which
+#' the population still has margin before large heat-induced performance
+#' decreases under varying temperatures. A more detailed explanation is
+#' available in  San-Segundo Molina et al. (2026) and the references therein.
 #'
 #' @returns A tibble with six columns:
 #'  - `model_name`: A string indicating the selected TPC model used for projections.
@@ -37,6 +44,11 @@
 #'
 #' @inherit fit_devmodels references
 #' @inherit plot_uncertainties seealso
+#'
+#' @references
+#'  San-Segundo Molina, D., Morales-Castilla, I., & Villén-Pérez, S. (2026).
+#'  Future warming enhances rates of population increase of arthropod crop
+#'  pests globally. <i>Ecography</i> 2026: e08568.
 #'
 #' @export
 #'
@@ -121,6 +133,11 @@ therm_suit_bounds <- function(preds_tbl = NULL,
     risk of thermal tolerance at each location rather than risk of optimal performance or high pest pressure."
     )
   }
+
+  if (length(suitability_threshold) != 1) {
+    stop("`suitability_threshold` must be a single value")
+  }
+
   if (is.null(model_name)) {
     stop("No model name was provided by the user. Please provide any model present in `pred_tbl`")
   }
@@ -194,8 +211,11 @@ therm_suit_bounds <- function(preds_tbl = NULL,
     # dplyr::filter(!is.na(tval_left)) |>
     dplyr::mutate(
       model_name = model,
-      suitability = paste0(suitability_threshold, "%")
-    ) |>
+      suitability = if (identical(suitability_threshold, "OPS")) {
+        "OPS"
+      } else {
+        paste0(suitability_threshold, "%")
+      }    ) |>
     dplyr::select(model_name, suitability, tval_left, tval_right, pred_suit, iter)
 
   return(out)
@@ -206,7 +226,9 @@ therm_suit_bounds <- function(preds_tbl = NULL,
 
 
 # calculate boundaries for each iteration
-bounds_iter <- function(df = NULL, suit_threshold = NULL, model_iter = NULL) {
+bounds_iter <- function(df = NULL,
+                        suit_threshold = NULL,
+                        model_iter = NULL) {
 
   stopifnot(is.data.frame(df))
   devrate_max <- max(df$dev_rate, na.rm = TRUE)

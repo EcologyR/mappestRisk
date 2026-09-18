@@ -159,14 +159,19 @@ test_that("no failure when plot = TRUE, and output is a SpatRaster", {
   expect_no_failure(map10 <- map_risk(t_vals = bound, t_rast = tavg, plot = TRUE))
   expect_no_failure(map11 <- map_risk(t_vals = bound, t_rast = tavg, interactive = TRUE))
   expect_no_failure(map12 <- map_risk(t_vals = bounds, t_rast = tavg, plot = TRUE))
-  file.remove("Rplots.pdf")
+
+  while (grDevices::dev.cur() != 1) {
+    grDevices::dev.off()
+  }
+
+  if (file.exists("Rplots.pdf")) {
+    file.remove("Rplots.pdf")
+  }
 
   expect_true(inherits(map10, "SpatRaster"))
   expect_true(inherits(map11, "SpatRaster"))
   expect_true(inherits(map12, "SpatRaster"))
-
 })
-
 
 test_that("error is produced if mask is not logical", {
 
