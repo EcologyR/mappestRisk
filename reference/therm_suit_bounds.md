@@ -41,6 +41,14 @@ therm_suit_bounds(
   quantile 80) of the maximum values of the development rate predicted
   by the chosen TPC model. If `suitability_threshold` equals 100, the
   function returns the optimum temperature for development rate.
+  Alternatively, `suitability_threshold` can be set to "OPS" to
+  calculate an interval of values between the quantile-50 by the left of
+  the thermal optimum and the thermal optimum itself. This TPC region
+  name comes from "Optimal Performance Safe". By "safe", we refer to
+  temperatures at which the population still has margin before large
+  heat-induced performance decreases under varying temperatures. A more
+  detailed explanation is available in San-Segundo Molina et al. (2026)
+  and the references therein.
 
 ## Value
 
@@ -70,21 +78,9 @@ A tibble with six columns:
 
 ## References
 
-Angilletta, M.J., (2006). Estimating and comparing thermal performance
-curves. *J. Therm. Biol.* 31: 541-545. (for model selection in TPC
-framework)
-
-Padfield, D., O'Sullivan, H. and Pawar, S. (2021). *rTPC* and
-*nls.multstart*: A new pipeline to fit thermal performance curves in
-`R`. *Methods Ecol Evol*. 12: 1138-1143.
-
-Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling
-temperature-dependent development rate and phenology in arthropods: The
-`devRate` package for `R`. *Methods Ecol Evol*. 9: 1144-1150.
-
-Satar, S. and Yokomi, R. (2002). Effect of temperature and host on
-development of *Brachycaudus schwartzi* (Homoptera: Aphididae). *Ann.
-Entomol. Soc. Am.* 95: 597-602.
+San-Segundo Molina, D., Morales-Castilla, I., & Villén-Pérez, S. (2026).
+Future warming enhances rates of population increase of arthropod crop
+pests globally. *Ecography* 2026: e08568.
 
 ## See also
 
