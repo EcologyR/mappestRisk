@@ -39,5 +39,7 @@ utils::globalVariables(
     "model",
     "pred_suit",
     "suitability",
-    "param_se"
+    "param_se",
+    "bounds_iter", # <- therm_suit_bounds()
+    "temp" # <- bounds_iter, therm_suit_bounds()
   ))
