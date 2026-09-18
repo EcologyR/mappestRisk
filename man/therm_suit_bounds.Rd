@@ -25,7 +25,14 @@ the quantile of the curve that provides the user-defined optimal performance.
 For instance, setting \code{suitability_threshold} to 80 identifies the top 20\%
 (or quantile 80) of the maximum values of the development rate predicted by
 the chosen TPC model. If \code{suitability_threshold} equals 100, the function
-returns the optimum temperature for development rate.}
+returns the optimum temperature for development rate. Alternatively,
+\code{suitability_threshold} can be set to "OPS" to calculate an interval of
+values between the quantile-50 by the left of the thermal optimum and the
+thermal optimum itself. This TPC region name comes from
+"Optimal Performance Safe". By "safe", we refer to temperatures at which
+the population still has margin before large heat-induced performance
+decreases under varying temperatures. A more detailed explanation is
+available in  San-Segundo Molina et al. (2026) and the references therein.}
 }
 \value{
 A tibble with six columns:
@@ -87,19 +94,9 @@ head(boundaries)
 \dontshow{\}) # examplesIf}
 }
 \references{
-Angilletta, M.J., (2006). Estimating and comparing thermal performance curves.
-\if{html}{\out{<i>}}J. Therm. Biol.\if{html}{\out{</i>}} 31: 541-545. (for model selection in TPC framework)
-
-Padfield, D., O'Sullivan, H. and Pawar, S. (2021). \if{html}{\out{<i>}}rTPC\if{html}{\out{</i>}} and \if{html}{\out{<i>}}nls.multstart\if{html}{\out{</i>}}:
-A new pipeline to fit thermal performance curves in \code{R}. \if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 12: 1138-1143.
-
-Rebaudo, F., Struelens, Q. and Dangles, O. (2018). Modelling temperature-dependent
-development rate and phenology in arthropods: The \code{devRate} package for \code{R}.
-\if{html}{\out{<i>}}Methods Ecol Evol\if{html}{\out{</i>}}. 9: 1144-1150.
-
-Satar, S. and Yokomi, R. (2002). Effect of temperature and host on development
-of \if{html}{\out{<i>}}Brachycaudus schwartzi\if{html}{\out{</i>}} (Homoptera: Aphididae).
-\if{html}{\out{<i>}}Ann. Entomol. Soc. Am.\if{html}{\out{</i>}} 95: 597-602.
+San-Segundo Molina, D., Morales-Castilla, I., & Villén-Pérez, S. (2026).
+Future warming enhances rates of population increase of arthropod crop
+pests globally. \if{html}{\out{<i>}}Ecography\if{html}{\out{</i>}} 2026: e08568.
 }
 \seealso{
 \code{browseVignettes("rTPC")} for model names, start values searching workflows, and

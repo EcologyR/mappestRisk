@@ -17,7 +17,14 @@
 #' For instance, setting `suitability_threshold` to 80 identifies the top 20%
 #' (or quantile 80) of the maximum values of the development rate predicted by
 #' the chosen TPC model. If `suitability_threshold` equals 100, the function
-#' returns the optimum temperature for development rate.
+#' returns the optimum temperature for development rate. Alternatively,
+#' `suitability_threshold` can be set to "OPS" to calculate an interval of
+#' values between the quantile-50 by the left of the thermal optimum and the
+#' thermal optimum itself. This TPC region name comes from
+#' "Optimal Performance Safe". By "safe", we refer to temperatures at which
+#' the population still has margin before large heat-induced performance
+#' decreases under varying temperatures. A more detailed explanation is
+#' available in  San-Segundo Molina et al. (2026) and the references therein.
 #'
 #' @returns A tibble with six columns:
 #'  - `model_name`: A string indicating the selected TPC model used for projections.
@@ -37,6 +44,11 @@
 #'
 #' @inherit fit_devmodels references
 #' @inherit plot_uncertainties seealso
+#'
+#' @references
+#'  San-Segundo Molina, D., Morales-Castilla, I., & Villén-Pérez, S. (2026).
+#'  Future warming enhances rates of population increase of arthropod crop
+#'  pests globally. <i>Ecography</i> 2026: e08568.
 #'
 #' @export
 #'
@@ -101,10 +113,29 @@ therm_suit_bounds <- function(preds_tbl = NULL,
     message("No suitability_threshold value provided. Default to `suitability_threshold = 75`")
   }
 
-  if (suitability_threshold < 50) {
-    warning("Suitability thresholds under 50% indicate thermal boundaries for positive development but not
+  if (!is.numeric(suitability_threshold) &&
+      !identical(suitability_threshold, "OPS")) {
+    stop("`suitability_threshold` must be numeric or equal to 'OPS'")
+  }
+
+  if (is.numeric(suitability_threshold) && suitability_threshold < 5) {
+    warning(
+      "`suitability_threshold` values below 5% are not allowed. ",
+      "Setting `suitability_threshold = 5` to avoid numerical issues with near-zero predictions."
+    )
+    suitability_threshold <- 5
+  }
+
+  if (is.numeric(suitability_threshold) && suitability_threshold < 50) {
+    warning(
+      "Suitability thresholds under 50% indicate thermal boundaries for positive development but not
     necessarily optimal for pest risk assessment. Subsequent map risk analysis will imply
-    risk of thermal tolerance at each location rather than risk of optimal performance or high pest pressure.")
+    risk of thermal tolerance at each location rather than risk of optimal performance or high pest pressure."
+    )
+  }
+
+  if (length(suitability_threshold) != 1) {
+    stop("`suitability_threshold` must be a single value")
   }
 
   if (is.null(model_name)) {
@@ -145,7 +176,11 @@ therm_suit_bounds <- function(preds_tbl = NULL,
   ## Calculate boundaries for each bootstrap iteration as well as "estimate"
   boundaries <- preds_mod |>
     dplyr::group_by(model, iter) |>
-    dplyr::reframe(bounds_iter(dplyr::pick(dplyr::everything()), suitability_threshold)) |>
+    dplyr::reframe(
+      bounds_iter(df = dplyr::pick(dplyr::everything()),
+                  suit_threshold =   suitability_threshold,
+                  model_iter = dplyr::first(model))
+      ) |>
     dplyr::ungroup()
 
 
@@ -176,8 +211,11 @@ therm_suit_bounds <- function(preds_tbl = NULL,
     # dplyr::filter(!is.na(tval_left)) |>
     dplyr::mutate(
       model_name = model,
-      suitability = paste0(suitability_threshold, "%")
-    ) |>
+      suitability = if (identical(suitability_threshold, "OPS")) {
+        "OPS"
+      } else {
+        paste0(suitability_threshold, "%")
+      }    ) |>
     dplyr::select(model_name, suitability, tval_left, tval_right, pred_suit, iter)
 
   return(out)
@@ -188,13 +226,12 @@ therm_suit_bounds <- function(preds_tbl = NULL,
 
 
 # calculate boundaries for each iteration
-bounds_iter <- function(df = NULL, suit_threshold = NULL) {
+bounds_iter <- function(df = NULL,
+                        suit_threshold = NULL,
+                        model_iter = NULL) {
 
   stopifnot(is.data.frame(df))
-  stopifnot(is.numeric(suit_threshold))
-
   devrate_max <- max(df$dev_rate, na.rm = TRUE)
-
   # Return empty row if the curve is empty or flat
   if (nrow(df) < 2 || devrate_max <= 0) {
     return(dplyr::tibble(tval_left = NA_real_,
@@ -202,23 +239,55 @@ bounds_iter <- function(df = NULL, suit_threshold = NULL) {
                          pred_suit = NA_real_))
   }
 
-  q_threshold <- devrate_max * 0.01 * suit_threshold
 
-  # Find all points on the curve that are above the suitability threshold
-  suitable_points <- df |>
-    dplyr::filter(dev_rate >= q_threshold)
+  if (suit_threshold == "OPS") {
 
-  # If no points are above the threshold, no suitable range exists
-  if (nrow(suitable_points) == 0) {
-    return(dplyr::tibble(tval_left = NA_real_,
-                         tval_right = NA_real_,
-                         pred_suit = q_threshold))
+    fitted_tpc_i <- suppressMessages(
+      fit_devmodels(
+        temp = df$temp,
+        dev_rate = df$dev_rate,
+        model_name = model_iter
+      )
+    )
+
+    topt_i <- as.numeric(
+      rTPC::calc_params(model = fitted_tpc_i$model_fit[[1]])[2]
+    )
+
+    q_threshold <- devrate_max * 0.01 * 50
+
+    suitable_points <- df |>
+      dplyr::filter(temp <= topt_i) |>
+      dplyr::filter(dev_rate >= q_threshold)
+
+    if (nrow(suitable_points) == 0) {
+      return(dplyr::tibble(
+        tval_left = NA_real_,
+        tval_right = NA_real_,
+        pred_suit = q_threshold
+      ))
+    }
+
+  } else {
+
+    stopifnot(is.numeric(suit_threshold))
+
+    q_threshold <- devrate_max * 0.01 * suit_threshold
+
+    suitable_points <- df |>
+      dplyr::filter(dev_rate >= q_threshold)
+
+    if (nrow(suitable_points) == 0) {
+      return(dplyr::tibble(
+        tval_left = NA_real_,
+        tval_right = NA_real_,
+        pred_suit = q_threshold
+      ))
+    }
   }
-
   # The boundaries are the minimum and maximum temperatures of this suitable range
   tval_left <- min(suitable_points$temp, na.rm = TRUE)
   tval_right <- max(suitable_points$temp, na.rm = TRUE)
-
   dplyr::tibble(
     tval_left = tval_left,
     tval_right = tval_right,
@@ -226,3 +295,6 @@ bounds_iter <- function(df = NULL, suit_threshold = NULL) {
   )
 
 }
+
+
+

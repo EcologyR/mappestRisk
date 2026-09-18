@@ -159,14 +159,19 @@ test_that("no failure when plot = TRUE, and output is a SpatRaster", {
   expect_no_failure(map10 <- map_risk(t_vals = bound, t_rast = tavg, plot = TRUE))
   expect_no_failure(map11 <- map_risk(t_vals = bound, t_rast = tavg, interactive = TRUE))
   expect_no_failure(map12 <- map_risk(t_vals = bounds, t_rast = tavg, plot = TRUE))
-  file.remove("Rplots.pdf")
+
+  while (grDevices::dev.cur() != 1) {
+    grDevices::dev.off()
+  }
+
+  if (file.exists("Rplots.pdf")) {
+    file.remove("Rplots.pdf")
+  }
 
   expect_true(inherits(map10, "SpatRaster"))
   expect_true(inherits(map11, "SpatRaster"))
   expect_true(inherits(map12, "SpatRaster"))
-
 })
-
 
 test_that("error is produced if mask is not logical", {
 
@@ -238,5 +243,98 @@ test_that("t_rast should drop a messages", {
   expect_error(map_risk(t_vals = bound, t_rast = subset(tavg, 1)))
 })
 
+test_that("error is produced if 'res' is not one of the allowed values", {
+  expect_error(map_risk(t_vals = bound, t_rast = tavg, res = 1, plot = FALSE))
+})
+
+test_that("error is produced if 'path' is neither NULL nor a character string", {
+  expect_error(map_risk(t_vals = bound, t_rast = tavg, path = 123, plot = FALSE))
+})
+
+test_that("error is produced if 't_vals' is not a data.frame at all", {
+  expect_error(
+    map_risk(t_vals = list(tval_left = 10, tval_right = 20), t_rast = tavg, plot = FALSE)
+  )
+})
+
+test_that("verbose = TRUE reports progress messages for the default (no-region) case", {
+
+  msgs <- capture_messages(
+    map_risk(t_vals = bound, t_rast = tavg, verbose = TRUE, plot = FALSE)
+  )
+
+  expect_true(any(grepl("Computing summary layers", msgs)))
+  expect_true(any(grepl("Finished", msgs)))
+})
+
+test_that("verbose = TRUE reports CRS-assumption and cropping messages for a numeric region", {
+
+  reg.num <- c(xmin = 55.5, xmax = 55.6, ymin = -21, ymax = -20.9)
+
+  msgs <- capture_messages(
+    map_risk(t_vals = bound, t_rast = tavg, region = reg.num,
+             verbose = TRUE, plot = FALSE)
+  )
+
+  expect_true(any(grepl("same CRS", msgs)))
+  expect_true(any(grepl("Cropping temperature rasters", msgs)))
+})
 
 
+test_that("rows with non-finite thermal bounds are skipped without error", {
+
+  bound_inf <- rbind(bound, bound)
+  bound_inf$tval_right[2] <- Inf
+
+  map_inf <- map_risk(t_vals = bound_inf, t_rast = tavg, plot = FALSE)
+
+  expect_true(inherits(map_inf, "SpatRaster"))
+  expect_equal(names(map_inf), c("mean", "sd"))
+})
+
+test_that("mask = TRUE with a non-rectangular region sets cells outside it to NA", {
+
+  e <- terra::ext(tavg)
+
+  # triángulo cuya bounding box coincide con la extensión completa del
+  # raster, así crop() es un no-op y solo mask() puede introducir NAs nuevos
+  tri_coords <- matrix(c(e$xmin, e$ymin,
+                         e$xmax, e$ymin,
+                         e$xmin, e$ymax,
+                         e$xmin, e$ymin),
+                       ncol = 2, byrow = TRUE)
+  tri <- terra::vect(tri_coords, type = "polygons", crs = terra::crs(tavg))
+
+  map_masked   <- map_risk(t_vals = bound, t_rast = tavg, region = tri,
+                           mask = TRUE, plot = FALSE)
+  map_unmasked <- map_risk(t_vals = bound, t_rast = tavg, region = tri,
+                           mask = FALSE, plot = FALSE)
+
+  expect_true(
+    sum(is.na(terra::values(map_masked))) >=
+      sum(is.na(terra::values(map_unmasked)))
+  )
+  expect_false(
+    identical(as.vector(terra::values(map_masked)),
+              as.vector(terra::values(map_unmasked)))
+  )
+})
+
+test_that("interactive = TRUE works with bootstrap (mean + sd) thermal bounds", {
+
+  skip_on_cran()
+
+  expect_no_failure(
+    map_interactive <- map_risk(t_vals = bounds, t_rast = tavg, interactive = TRUE)
+  )
+
+  while (grDevices::dev.cur() != 1) {
+    grDevices::dev.off()
+  }
+  if (file.exists("Rplots.pdf")) {
+    file.remove("Rplots.pdf")
+  }
+
+  expect_true(inherits(map_interactive, "SpatRaster"))
+  expect_equal(names(map_interactive), c("mean", "sd"))
+})

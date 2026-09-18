@@ -120,13 +120,29 @@ test_that("predict_curves should throw an error if `propagate_uncertainty` is no
 ## few samples for bootstrap yields a warning
 test_that("predict_curves should issue a warning if `n_boots_samples` < 100", {
 
-  expect_warning(predict_curves(temp = aphid$temperature,
-                                dev_rate = aphid$rate_value,
-                                fitted_parameters = tpcs,
-                                model_name_2boot = "lactin2",
-                                propagate_uncertainty = TRUE,
-                                n_boots_samples = 2),
-                 regexp = "100 iterations might be desirable. Consider increasing `n_boots_samples` if possible")
+  expect_warning(
+    withCallingHandlers(
+      predict_curves(
+        temp = aphid$temperature,
+        dev_rate = aphid$rate_value,
+        fitted_parameters = tpcs,
+        model_name_2boot = "lactin2",
+        propagate_uncertainty = TRUE,
+        n_boots_samples = 2
+      ),
+      warning = function(w) {
+        if (grepl(
+          "unexpectedly large standard errors",
+          conditionMessage(w),
+          fixed = TRUE
+        )) {
+          invokeRestart("muffleWarning")
+        }
+      }
+    ),
+    regexp = "100 iterations might be desirable. Consider increasing `n_boots_samples` if possible"
+  )
+
 })
 
 
