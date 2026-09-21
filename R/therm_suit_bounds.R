@@ -242,17 +242,7 @@ bounds_iter <- function(df = NULL,
 
   if (suit_threshold == "OPS") {
 
-    fitted_tpc_i <- suppressMessages(
-      fit_devmodels(
-        temp = df$temp,
-        dev_rate = df$dev_rate,
-        model_name = model_iter
-      )
-    )
-
-    topt_i <- as.numeric(
-      rTPC::calc_params(model = fitted_tpc_i$model_fit[[1]])[2]
-    )
+    topt_i <- df$temp[which(df$dev_rate ==max(df$dev_rate, na.rm = TRUE))]
 
     q_threshold <- devrate_max * 0.01 * 50
 
