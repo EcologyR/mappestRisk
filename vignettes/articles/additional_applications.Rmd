@@ -3,7 +3,7 @@ title: "Additional Applications"
 bibliography: references.bib
 ---
 
-## Introduction: three applications
+## Introduction: four additional applications
 
 This vignette illustrates three different applications that can be obtained with the `mappestRisk` package functions. These examples include operations that can be done as additional utilities of the package. They involve more complex forecasting exercises that require more expertise R user experience, since they are not included as easy-to-use functions yet. However, these additional applications will be available either as new functions of the package or as arguments within the existing ones as soon as possible.
 
@@ -322,5 +322,53 @@ ggplot() +
 ![Map showing voltinism (i.e., number of completed generations within a year) based on rate summation under nonlinear TPC models to *Bactrocera zonata* development rate data for its complete life cycle.](figure-3-1.png)
 
 This voltinism map can be used in comparison to the risk map provided by thermal suitability using monthly average temperatures within the core workflow of `mappestRisk`. A detailed comparison between these two methods to predict thermal suitability maps is given in @shocket2025.
+
+## 4. Projecting risk with a safety margin against heat stress
+
+Besides the numeric input for `suitability_threshold` in `therm_suit_bounds()` that defines the quantile of the fitted development rate values, this argument can be set to `"OPS"`. This term refers to the "Optimal Performance & Safe" region of the TPC: *optimal* since it lies in a high performance zone (in the upper half region) and *safe* as it does not include temperatures above the $T_\textrm{opt}$, where small fluctuations of temperatures might sharply decrease performance due to the Jensen's inequality (see [@martin2008; @san-segundomolina2026]).
+
+Below we compare two risk maps using either (1) the default configuration (`suitability_threshold = 75)` from `therm_suit_bounds()`, or (2) setting `suitability_threshold = "OPS"`.
+
+``` r
+peach_fly_50_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
+                                          model_name = "lactin2",
+                                          suitability_threshold = 50)
+
+peach_fly_ops_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
+                                          model_name = "lactin2",
+                                          suitability_threshold = "OPS")
+
+peach_fly_risk_50 <- map_risk(t_vals = peach_fly_50_bounds,
+                             region = "Turkey",
+                             path = tempdir())
+
+peach_fly_risk_ops <- map_risk(t_vals = peach_fly_ops_bounds,
+                                   region = "Turkey",
+                                   path = tempdir())
+plot_riskmap_50 <- ggplot() +
+  tidyterra::geom_spatraster(data = peach_fly_risk_50[[1]]) +
+  khroma::scale_fill_bilbao(reverse = TRUE, discrete = FALSE, range = c(.1,1), 
+                            name = "Risk Index") +
+  theme_bw()+
+  labs(title = "Climatic suitability for the Peach Fly",
+       subtitle = "Thermal suitability boundaries: 50%")
+
+plot_riskmap_ops <- ggplot() +
+  tidyterra::geom_spatraster(data = peach_fly_risk_ops[[1]]) +
+  khroma::scale_fill_bilbao(reverse = TRUE, discrete = FALSE, range = c(.1,1), 
+                            name = "Risk Index") +
+  theme_bw()+
+  labs(title = "Climatic suitability for the Peach Fly",
+       subtitle = "OPS thermal suitability boundaries")       
+
+library(patchwork)
+plot_riskmap_50 + plot_riskmap_ops       
+```
+
+![Difference map (left) between the risk outputs of a default configuration (top right, 75%) and the "OPS" option (bottom right, "OPS"). ](add_app_4.png)
+
+In the map above, the green colors indicate regions where OPS risk projections result into lower risk than by default set up. In other words, at these regions, the default set up may predict risk for several months with temperatures above the $T_\textrm{opt}$, at which the peach fly may experience heat stress, while the "OPS" avoids considering them as "risk" months. By contrast, the "OPS" configuration incorporates new regions into the risk map (in purple), particularly those corresponding to the interval $T_{50L}$ to $T_{75L}$, respectively (temperature below the optimum corresponding to predicted rates of 50% and 75% of their maximum at $T_\textrm{opt}$, respectively).
+
+Users should decide which suitability threshold better responds to the modelling goals and context.
 
 ## References
