@@ -29,7 +29,6 @@ While static maps are useful for reporting results, interactive visualization al
 library(mappestRisk)
 library(leaflet)
 library(leafem)
-
 library(terra)
 library(khroma)
 library(htmlwidgets)
