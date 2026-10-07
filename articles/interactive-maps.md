@@ -31,7 +31,6 @@ using the **leaflet** ecosystem in R.
 library(mappestRisk)
 library(leaflet)
 library(leafem)
-
 library(terra)
 library(khroma)
 library(htmlwidgets)
