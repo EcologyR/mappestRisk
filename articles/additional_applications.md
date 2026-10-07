@@ -1,6 +1,6 @@
 # Additional Applications
 
-## Introduction: three applications
+## Introduction: four additional applications
 
 This vignette illustrates three different applications that can be
 obtained with the `mappestRisk` package functions. These examples
@@ -543,6 +543,83 @@ workflow of `mappestRisk`. A detailed comparison between these two
 methods to predict thermal suitability maps is given in Shocket et al.
 (2025).
 
+## 4. Projecting risk with a safety margin against heat stress
+
+Besides the numeric input for `suitability_threshold` in
+[`therm_suit_bounds()`](https://ecologyr.github.io/mappestRisk/reference/therm_suit_bounds.md)
+that defines the quantile of the fitted development rate values, this
+argument can be set to `"OPS"`. This term refers to the “Optimal
+Performance & Safe” region of the TPC: *optimal* since it lies in a high
+performance zone (in the upper half region) and *safe* as it does not
+include temperatures above the $`T_\textrm{opt}`$, where small
+fluctuations of temperatures might sharply decrease performance due to
+the Jensen’s inequality (see (Martin and Huey 2008; San-Segundo Molina
+et al. 2026)).
+
+Below we compare two risk maps using either (1) the default
+configuration (`suitability_threshold = 75)` from
+[`therm_suit_bounds()`](https://ecologyr.github.io/mappestRisk/reference/therm_suit_bounds.md),
+or (2) setting `suitability_threshold = "OPS"`.
+
+``` r
+
+peach_fly_50_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
+                                          model_name = "lactin2",
+                                          suitability_threshold = 50)
+
+peach_fly_ops_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
+                                          model_name = "lactin2",
+                                          suitability_threshold = "OPS")
+
+peach_fly_risk_50 <- map_risk(t_vals = peach_fly_50_bounds,
+                             region = "Turkey",
+                             path = tempdir())
+
+peach_fly_risk_ops <- map_risk(t_vals = peach_fly_ops_bounds,
+                                   region = "Turkey",
+                                   path = tempdir())
+plot_riskmap_50 <- ggplot() +
+  tidyterra::geom_spatraster(data = peach_fly_risk_50[[1]]) +
+  khroma::scale_fill_bilbao(reverse = TRUE, discrete = FALSE, range = c(.1,1), 
+                            name = "Risk Index") +
+  theme_bw()+
+  labs(title = "Climatic suitability for the Peach Fly",
+       subtitle = "Thermal suitability boundaries: 50%")
+
+plot_riskmap_ops <- ggplot() +
+  tidyterra::geom_spatraster(data = peach_fly_risk_ops[[1]]) +
+  khroma::scale_fill_bilbao(reverse = TRUE, discrete = FALSE, range = c(.1,1), 
+                            name = "Risk Index") +
+  theme_bw()+
+  labs(title = "Climatic suitability for the Peach Fly",
+       subtitle = "OPS thermal suitability boundaries")       
+
+library(patchwork)
+plot_riskmap_50 + plot_riskmap_ops       
+```
+
+![Difference map (left) between the risk outputs of a default
+configuration (top right, 75%) and the “OPS” option (bottom right,
+“OPS”).](add_app_4.png)
+
+Difference map (left) between the risk outputs of a default
+configuration (top right, 75%) and the “OPS” option (bottom right,
+“OPS”).
+
+In the map above, the green colors indicate regions where OPS risk
+projections result into lower risk than by default set up. In other
+words, at these regions, the default set up may predict risk for several
+months with temperatures above the $`T_\textrm{opt}`$, at which the
+peach fly may experience heat stress, while the “OPS” avoids considering
+them as “risk” months. By contrast, the “OPS” configuration incorporates
+new regions into the risk map (in purple), particularly those
+corresponding to the interval $`T_{50L}`$ to $`T_{75L}`$, respectively
+(temperature below the optimum corresponding to predicted rates of 50%
+and 75% of their maximum at $`T_\textrm{opt}`$, respectively).
+
+Users should decide which suitability threshold better responds to the
+modelling goals and context.
+
 ## References
 
 Akel, Mohamed WF Younes Faten A. 2015. “EFFECT OF TEMPERATURE ON
@@ -596,11 +673,20 @@ Lactin, Derek J., N. J. Holliday, D. L. Johnson, and R. Craigen. 1995.
 Arthropods.” *Environmental Entomology* 24 (1): 68–75.
 <https://doi.org/10.1093/ee/24.1.68>.
 
+Martin, Tara Laine, and Raymond B. Huey. 2008. “Why “Suboptimal” Is
+Optimal: Jensen’s Inequality and Ectotherm Thermal Preferences.” *The
+American Naturalist* 171 (3): E102–18. <https://doi.org/10.1086/527502>.
+
 Mordecai, Erin A., Jeremy M. Cohen, Michelle V. Evans, et al. 2017.
 “Detecting the Impact of Temperature on Transmission of Zika, Dengue,
 and Chikungunya Using Mechanistic Models.” *PLOS Neglected Tropical
 Diseases* 11 (4): e0005568.
 <https://doi.org/10.1371/journal.pntd.0005568>.
+
+San-Segundo Molina, Darío, Ignacio Morales-Castilla, and Sara
+Villén-Pérez. 2026. “Future Warming Enhances Rates of Population
+Increase of Arthropod Crop Pests Globally.” *Ecography* n/a (n/a):
+e08568. <https://doi.org/10.1002/ecog.08568>.
 
 Shocket, Marta S., Joey R. Bernhardt, Kerri L. Miazgowicz, et al. 2025.
 “Mean Daily Temperatures Predict the Thermal Limits of Malaria
