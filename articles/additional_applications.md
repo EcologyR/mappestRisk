@@ -563,39 +563,60 @@ or (2) setting `suitability_threshold = "OPS"`.
 
 ``` r
 
-peach_fly_50_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
-                                          model_name = "lactin2",
-                                          suitability_threshold = 50)
+library(patchwork)
+peach_fly_default_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
+                                              model_name = "lactin2",
+                                              suitability_threshold = 75)
 
 peach_fly_ops_bounds <- therm_suit_bounds(preds_tbl = preds_boots_fly,
                                           model_name = "lactin2",
                                           suitability_threshold = "OPS")
 
-peach_fly_risk_50 <- map_risk(t_vals = peach_fly_50_bounds,
-                             region = "Turkey",
-                             path = tempdir())
+peach_fly_risk_default <- map_risk(t_vals = peach_fly_default_bounds,
+                                   region = "Iraq",
+                                   path = tempdir())
 
 peach_fly_risk_ops <- map_risk(t_vals = peach_fly_ops_bounds,
-                                   region = "Turkey",
-                                   path = tempdir())
-plot_riskmap_50 <- ggplot() +
-  tidyterra::geom_spatraster(data = peach_fly_risk_50[[1]]) +
-  khroma::scale_fill_bilbao(reverse = TRUE, discrete = FALSE, range = c(.1,1), 
+                               region = "Iraq",
+                               path = tempdir())
+difference <- peach_fly_risk_ops - peach_fly_risk_default
+
+plot_riskmap_default <- ggplot() +
+  tidyterra::geom_spatraster(data = peach_fly_risk_default[[1]]) +
+  khroma::scale_fill_bilbao(reverse = TRUE, discrete = FALSE, range = c(.1,1),
                             name = "Risk Index") +
   theme_bw()+
-  labs(title = "Climatic suitability for the Peach Fly",
-       subtitle = "Thermal suitability boundaries: 50%")
+  labs(title = "Default: 75")+
+  theme(title = element_text(face = "italic"))
+
 
 plot_riskmap_ops <- ggplot() +
   tidyterra::geom_spatraster(data = peach_fly_risk_ops[[1]]) +
-  khroma::scale_fill_bilbao(reverse = TRUE, discrete = FALSE, range = c(.1,1), 
+  khroma::scale_fill_bilbao(reverse = TRUE,
+                            discrete = FALSE,
                             name = "Risk Index") +
   theme_bw()+
-  labs(title = "Climatic suitability for the Peach Fly",
-       subtitle = "OPS thermal suitability boundaries")       
+  labs(title = "OPS")+
+  theme(title = element_text(face = "italic"))
 
-library(patchwork)
-plot_riskmap_50 + plot_riskmap_ops       
+plot_riskmap_dif <- ggplot() +
+  tidyterra::geom_spatraster(data = difference[[1]]) +
+  khroma::scale_fill_bam(discrete = FALSE,
+                         reverse = TRUE,
+                            midpoint = 0,
+                            name = "Difference in Risk Months") +
+  theme_bw()+
+  labs(title = "Difference: OPS - Default")+
+  theme(title = element_text(face = "italic"))
+
+
+
+plot_grid_peachfly <- plot_riskmap_dif | (plot_riskmap_default / plot_riskmap_ops)
+plot_grid_peachfly +
+  plot_annotation(
+    title = 'Climatic Suitability for the Peach Fly in Iraq',
+    theme = theme(plot.title = element_text(face = "bold"))
+  )
 ```
 
 ![Difference map (left) between the risk outputs of a default
